@@ -1,0 +1,100 @@
+
+Non prendere tutto e basta comunque ragionaci su tu
+
+
+1. Design Tokens (Colori)
+Il sistema di colori è ibrido, definito in 
+tailwind.config.js
+ e 
+constants/theme.ts
+.
+
+Palette Tailwind (Utility Colors)
+Nome Classe	Valore HEX	Utilizzo
+bg-field	#2E7D32	Green Field (Primary Action)
+bg-deepBlack	#121212	Deep Black (OLED Backgrounds)
+text-contrastWhite	#FFFFFF	Testo primario su sfondo scuro
+bg-whistle	#E0E0E0	Silver (Borders, Dividers)
+bg-alert	#D32F2F	Errori, Logout, Azioni Distruttive
+bg-warning	#FBC02D	Stati di attesa o visualizzazione warning
+bg-cardParams	#1E1E1E	Sfondo Cards secondarie
+bg-screenBg	#121212	Background generale screen
+Tema Globale (Navigation & Context)
+Gestito da 
+constants/theme.ts
+ e 
+RootLayout
+.
+
+Modo Scuro (Dark)
+
+Background App: #1f1f1fff (Custom Dark Theme)
+Primary Tint: #fff
+Tab Bar Active: #4ADE80 (Light Green)
+Tab Bar Inactive: #9CA3AF (Gray 400)
+Tab Bar Background: #000000
+Modo Chiaro (Light)
+
+Background App: #FFFFFF
+Primary Tint: #0a7ea4
+Tab Bar Active: #2E7D32 (Dark Green)
+Tab Bar Inactive: #6B7280 (Gray 500)
+Tab Bar Background: #FFFFFF
+2. Tipografia
+Sistema basato su 
+ThemedText
+ che utilizza i font di sistema nativi.
+
+Preset	Font Size	Line Height	Weight	Esempio Uso
+Title	32	32	Bold	Intestazioni Schermate
+Subtitle	20	-	Bold	Sezioni Interne
+DefaultSemiBold	16	24	600	Etichette importanti
+Default	16	24	Regular	Paragrafi, descrizioni
+Link	16	30	Regular	Collegamenti esterni
+3. Componenti UI Principali
+NextMatchCard
+Card "Hero" per il prossimo evento.
+
+Sfondo: Linear Gradient ['#22c55e', '#16a34a'].
+Shadow: Colore #22c55e, Offset {0,8}, Radius 16, Opacity 0.3.
+Border Radius: 24.
+Micro-interactions: BlurView (intensity 30) sui loghi dei team.
+CalendarPicker
+Calendario interattivo per selezione date.
+
+Stati Giorno:
+Today: Border 1px Primary.
+Selected: Border 2px Primary (cerchio vuoto).
+Event (Future): Sfondo Solid Green (#2E7D32) + Testo Bianco.
+Event (Past): Sfondo Solid Orange (#f97316) + Testo Bianco.
+Layout: Grid 7 colonne, Aspect Ratio 1:1.
+MatchMap
+Card visualizzazione mappa evento.
+
+Container: Border Radius 16, Border 1px (theme.border).
+Map View: Altezza fissa 160px.
+Marker: Pin colore primario (theme.primary).
+Avatar
+Elemento circolare fallback per immagini profilo.
+
+Logica: Genera colore di sfondo deterministico/random.
+Contenuto: Iniziali del nome (max 2 caratteri), testo bianco bold.
+4. Elementi Interattivi (Bottoni)
+I bottoni non sono centralizzati ma seguono un pattern comune (es. in 
+MatchMap
+).
+
+Primary Button
+
+Container: borderRadius: 12, padding: 12.
+Colore: Primary Theme Color.
+Shadow: Offset {0,4}, Opacity 0.3, Radius 8.
+Contenuto: Icona (opzionale) + Testo (White, Bold, Size 14).
+5. Struttura Navigazione (Tabs)
+La Bottom Tab Bar è personalizzata in 
+app/(tabs)/_layout.tsx
+.
+
+Altezza: 88px (iOS), 60px (Android).
+Icone: MaterialIcons (size 28).
+Elevation: 8 (Android) per ombra, 0 per iOS (gestito nativamente).

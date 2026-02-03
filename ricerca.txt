@@ -1,0 +1,1298 @@
+SPORTS CLUB APP BUILDER
+
+Piattaforma per Club Sportivi Reali
+
+ 
+
+ 
+
+Report di Ricerca per Squadre, Associazioni e Club Sportivi
+Gestione, Comunicazione e Coinvolgimento Tifosi
+
+ 
+
+ 
+
+ 
+
+Gennaio 2026
+
+
+
+INDICE
+• 1. Executive Summary
+• 2. Analisi del Mercato - App per Club Sportivi
+•   2.1 TeamLinkt
+•   2.2 SportEasy
+•   2.3 Spond
+•   2.4 SportMember
+•   2.5 TeamSnap
+•   2.6 Heja
+•   2.7 SportsPlus
+•   2.8 ClubZap
+• 3. Funzionalità Core per Club Sportivi Reali
+•   3.1 Gestione Membri e Iscrizioni
+•   3.2 Comunicazione e Notifiche
+•   3.3 Calendario e Eventi
+•   3.4 Live Scoring e Risultati
+•   3.5 Sponsor e Visibilità
+•   3.6 Coinvolgimento Tifosi
+•   3.7 Gestione Finanziaria
+•   3.8 Foto, Video e Media
+• 4. Sport Target e Specificità
+• 5. Schema Database per Club Sportivi
+• 6. Architettura Tecnica Consigliata
+• 7. Business Model e Pricing
+• 8. Conclusioni e Roadmap
+
+
+1. EXECUTIVE SUMMARY
+
+OBIETTIVO DEL PROGETTO:
+
+Creare una piattaforma no-code che permetta a squadre, associazioni e club sportivi
+(amatoriali, giovanili, dilettantistici) di generare la propria app personalizzata
+per gestire la comunicazione con tifosi, soci, genitori e membri.
+
+DIFFERENZA CHIAVE rispetto ai giochi manageriali:
+• Non è un gioco, è uno strumento REALE per club REALI
+• Focus su COMUNICAZIONE e COINVOLGIMENTO, non su simulazione
+• Target: club piccoli e medi che vogliono professionalità digitale
+• Obiettivo: far sentire tifosi più vicini alla squadra
+
+TARGET UTENTE:
+• Squadre di calcio dilettantistiche (Serie D, Eccellenza, Promozione)
+• Club giovanili (settorini giovanili)
+• Società sportive dilettantistiche (basket, volley, rugby)
+• Associazioni sportive culturali
+• Team amatoriali
+
+VALORE PROPOSTO:
+"Dai al tuo club l'app che si merita, senza costi di sviluppo"
+
+FUNZIONALITÀ CHIAVE:
+✓ Live scoring durante le partite
+✓ Notifiche push in tempo reale
+✓ Calendario eventi sincronizzato
+✓ Gestione iscrizioni e pagamenti
+✓ Area foto/video condivisa
+✓ Visibilità sponsor
+✓ Chat di squadra
+✓ Statistiche giocatori
+✓ Classifiche e risultati
+
+
+
+2. ANALISI DEL MERCATO - App per Club Sportivi
+
+Il mercato delle app per club sportivi amatoriali è in forte crescita.
+Le soluzioni esistenti si concentrano su:
+• Gestione membri e comunicazione
+• Live scoring e risultati
+• Coinvolgimento famiglie/genitori
+• Sponsor visibility
+
+2.1 TeamLinkt
+
+PIATTAFORMA: Leader mondiale con 3.5+ milioni di utenti
+
+PUNTI DI FORZA:
+• App gratuita per team
+• AI Assistant (Emi) per automazione
+• Live scoring integrato
+• Gestione roster completa
+• Stats tracking digitale
+• League & Club Tools
+
+FUNZIONALITÀ:
+✓ Team Communication (chat, messaggi diretti, broadcast)
+✓ Scheduling & Availability (calendario, disponibilità, reminder automatici)
+✓ AI Assistant per generazione schedule e task admin
+✓ Roster Management (aggiunta/rimozione giocatori, waitlist)
+✓ Scores & Stats Tracking (digital game sheets, live updates)
+✓ Media & File Sharing (foto, video, documenti)
+✓ League & Club Tools (website builder, registrazioni, pagamenti)
+
+TARGET: Club e leghe di ogni dimensione
+
+PRICING: Gratuito; $4.99/mese per versione ad-free + funzioni avanzate
+
+APP STORE: 4.8/5 (11,000 recensioni)
+
+2.2 SportEasy
+
+PIATTAFORMA: #1 in Europa per team management
+
+PUNTI DI FORZA:
+• Interfaccia intuitiva
+• Focus su coinvolgimento team
+• Gestione tattica (formazioni)
+• Statistiche dettagliate
+• Integrazione league
+
+FUNZIONALITÀ:
+✓ RSVP & Attendance Tracking (conferme presenze in tempo reale)
+✓ Team Lineups (formazioni tattiche, multiple lineup per partita)
+✓ Task Management (assegnazione compiti a giocatori/genitori/volontari)
+✓ Leagues (calendario, risultati, classifiche)
+✓ Statistics (statistiche team e giocatori, report automatici)
+✓ Live Feed (segui la partita in tempo reale)
+✓ After the Game (voti giocatori, MVP, foto/video)
+✓ Fee Collections (riscossione quote)
+
+TARGET: Team amatoriali, club sportivi
+
+PRICING: Gratuito per team; Club version a pagamento per base membri
+
+UTENTI: 3+ milioni di manager, coach e giocatori
+
+
+PIATTAFORMA: #1 in Europa per team management
+
+PUNTI DI FORZA:
+• Interfaccia intuitiva
+• Focus su coinvolgimento team
+• Gestione tattica (formazioni)
+• Statistiche dettagliate
+• Integrazione league
+
+FUNZIONALITÀ:
+✓ RSVP & Attendance Tracking (conferme presenze in tempo reale)
+✓ Team Lineups (formazioni tattiche, multiple lineup per partita)
+✓ Task Management (assegnazione compiti a giocatori/genitori/volontari)
+✓ Leagues (calendario, risultati, classifiche)
+✓ Statistics (statistiche team e giocatori, report automatici)
+✓ Live Feed (segui la partita in tempo reale)
+✓ After the Game (voti giocatori, MVP, foto/video)
+✓ Fee Collections (riscossione quote)
+
+TARGET: Team amatoriali, club sportivi
+
+PRICING: Gratuito per team; Club version a pagamento per base membri
+
+UTENTI: 3+ milioni di manager, coach e giocatori
+
+2.3 Spond
+
+PIATTAFORMA: App gratuita mobile-first per grassroots sports
+
+PUNTI DI FORZA:
+• Completamente gratuito (no subscription, no ads)
+• Semplicità e velocità
+• Safeguard giovanili
+• Gestione pagamenti integrata
+
+FUNZIONALITÀ:
+✓ Events and RSVPs (eventi ricorrenti, tracking presenze, reminder)
+✓ Availability Requests (chiedi disponibilità prima di schedulare)
+✓ Messaging and Notifications (comunicazione centralizzata)
+✓ Payments (riscossione quote, tornei, kit, tracking pagamenti)
+✓ Guardians and Youth Safeguards (genitori gestiscono inviti e pagamenti)
+✓ Spond Club (gestione multi-team, website builder)
+
+TARGET: Volunteer coaches, team admin in youth/amateur sports
+
+PRICING: Gratuito; solo fee transazione per pagamenti; website opzionale a pagamento
+
+APP STORE: 4.8/5 (6,000 recensioni)
+
+2.4 SportMember
+
+PIATTAFORMA: Leader EU-based per club management
+
+PUNTI DI FORZA:
+• 180,000+ utenti attivi mensili
+• Economia su autopilot
+• GDPR compliant
+• Multi-sport (rugby, cricket, football, fitness, dance)
+
+FUNZIONALITÀ:
+✓ Online Member System (registrazione, presenze, pagamenti)
+✓ Automatic Subscriptions (fatture automatiche, reminder)
+✓ Block Attendance (blocca membri con pagamenti in sospeso)
+✓ Intelligent Calendar (tutte le attività del club)
+✓ Webshop (vendita kit, merchandise, biglietti)
+✓ Info Screen (display per campi, spogliatoi)
+✓ Chat (team chat, comunicazione coach)
+✓ Digital Membership Cards (con QR code)
+
+TARGET: Club multi-sport, associazioni, centri fitness
+
+PRICING: Basic gratuito; PRO a pagamento
+
+2.5 TeamSnap
+
+PIATTAFORMA: Pioniere dal 2009, molto popolare in USA
+
+PUNTI DI FORZA:
+• 20+ milioni di utenti
+• Forte su scheduling e availability
+• Comunicazione robusta
+• Roster management completo
+
+FUNZIONALITÀ:
+✓ Schedule & Availability (calendario giochi/pratiche, disponibilità, sync calendari)
+✓ Team Messaging & Push Notifications (chat, broadcast alerts)
+✓ Roster & Contact Management (contatti, presenze, tracking)
+
+TARGET: Youth and amateur sports, USA-centric
+
+PRICING: Free limitato a 15 utenti; piano comune $15.99/mese per team
+
+APP STORE: 4.7/5 (18,000 recensioni)
+
+2.6 Heja
+
+PIATTAFORMA: Semplice e user-friendly
+
+PUNTI DI FORZA:
+• Design pulito
+• Facile per tutte le età
+• Focus su comunicazione base
+
+FUNZIONALITÀ:
+✓ Calendar Sync (sync con calendari personali)
+✓ Event Reminders (push notification per cambi)
+✓ RSVP Availability (tracking presenze)
+
+TARGET: Youth and amateur sports teams
+
+PRICING: Free con ads; piano da $8.33/mese per team
+
+APP STORE: 4.8/5 (2,300 recensioni)
+
+2.7 SportsPlus
+
+PIATTAFORMA: Live scoring e gestione league completa
+
+PUNTI DI FORZA:
+• Live scoring avanzato
+• Broadcast stats in tempo reale
+• Gestione tornei e bracket
+• Multi-sport support
+
+FUNZIONALITÀ:
+✓ Live Scoring (metriche sport-specifiche, aggiornamenti real-time)
+✓ Instant Updates (ogni punteggio appare live, no refresh)
+✓ Comprehensive Stats (report dettagliati giocatore e team)
+✓ Cross-Device Support (mobile, tablet, desktop)
+✓ Fan Engagement (condivisione punteggi con fan)
+✓ Approval Workflow (solo membri designati possono fare scoring)
+✓ Leaderboards e Box Scores
+✓ Standings e Brackets per tornei
+
+TARGET: Leghe, tornei, club con focus su competizioni
+
+2.8 ClubZap
+
+PIATTAFORMA: Full-stack solution per club
+
+PUNTI DI FORZA:
+• Completo (tutto in uno)
+• Governance e compliance
+• Sponsor professionalizzazione
+• Fundraising tools
+
+FUNZIONALITÀ:
+✓ Membership Management (tracking membri, rinnovi, pagamenti)
+✓ Payment Processing (riscossione sicura, refund)
+✓ Communication Tools (push, email, newsletter)
+✓ Fundraising Tools (lotterie, shop, event tickets)
+✓ Reporting and Analytics (finanze, engagement, presenze)
+✓ Club App and Website (shop front per il club)
+✓ Governance e Data-compliance (GDPR, child protection)
+
+TARGET: Club che cercano soluzione completa
+
+
+
+3. FUNZIONALITÀ CORE PER CLUB SPORTIVI REALI
+3.1 Gestione Membri e Iscrizioni
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. REGISTRAZIONE ONLINE:
+  • Form personalizzabili per raccolta dati
+  • Upload documenti (certificati medici, liberatorie)
+  • Firma digitale per waiver e consensi
+  • Registrazione familiare (genitori + figli)
+
+2. DATABASE MEMBRI:
+  • Profili completi con foto
+  • Categorie membri (giocatore, genitore, volontario, staff)
+  • Stato iscrizione (attivo, in attesa, scaduto)
+  • Storico partecipazione
+
+3. MEMBERSHIP TIERS:
+  • Tipologie iscrizione (annuale, semestrale, trimestrale)
+  • Livelli membership (base, premium, sostenitore)
+  • Benefits per livello
+
+4. DIGITAL MEMBERSHIP CARDS:
+  • Card con QR code per check-in
+  • Wallet integration (Apple/Google Pay)
+  • Validazione automatica
+
+5. RINNOVI AUTOMATICI:
+  • Reminder via email/push
+  • Auto-renewal con pagamento
+  • Tracking scadenze
+
+3.2 Comunicazione e Notifiche
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. PUSH NOTIFICATIONS:
+  • Ritardi/cancellazioni partite
+  • Cambi orario/luogo
+  • Reminder eventi
+  • Risultati live
+  • News e annunci
+
+2. TEAM CHAT:
+  • Chat di gruppo per squadra
+  • Messaggi diretti
+  • Canali organizzativi (coach, genitori)
+  • Condivisione file
+
+3. NEWSLETTER:
+  • Template predefiniti
+  • Segmentazione destinatari
+  • Tracking apertura/click
+
+4. ANNUNCI:
+  • Bacheca digitale
+  • Pin important messages
+  • Scadenza automatica
+
+5. MULTILINGUA:
+  • Supporto italiano/inglese
+  • Traduzione automatica
+
+3.3 Calendario e Eventi
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. CALENDARIO CONDIVISO:
+  • Visualizzazione mensile/settimanale/giornaliera
+  • Filtri per tipo evento (partita, allenamento, evento sociale)
+  • Colori per squadra/categoria
+
+2. EVENT MANAGEMENT:
+  • Creazione rapida eventi
+  • Template eventi ricorrenti
+  • Locazione con mappa integrata
+  • Indicazioni stradali
+
+3. RSVP SYSTEM:
+  • Conferma presenza/assenza
+  • Maybe/opzionale
+  • Deadline RSVP
+  • Reminder automatici
+
+4. SYNC ESTERNO:
+  • Google Calendar
+  • Apple Calendar
+  • Outlook
+
+5. AVAILABILITY:
+  • Giocatori indicano disponibilità settimanale
+  • Visualizzazione per coach
+  • Suggerimenti formazione
+
+3.4 Live Scoring e Risultati
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. LIVE SCORING:
+  • Interfaccia semplice per segnapunti
+  • Aggiornamento real-time (no refresh)
+  • Sport-specific metrics:
+    - Calcio: gol, cartellini, sostituzioni
+    - Basket: punti per quarto, falli, timeout
+    - Volley: set, punti per set
+    - Rugby: mete, calci, cartellini
+
+2. NOTIFICHE LIVE:
+  • Gol/punti (con nome marcatore)
+  • Fine tempo/set
+  • Cartellini/espulsioni
+  • Sostituzioni
+
+3. CLASSIFICHE:
+  • Aggiornamento automatico
+  • Filtri per competizione
+  • Storico posizioni
+
+4. STATISTICHE:
+  • Marcatori
+  • Presenze
+  • Cartellini
+  • Forma squadra
+
+5. GAME RECAP:
+  • Riassunto post-partita
+  • MVP votazione
+  • Commenti tifosi
+
+3.5 Sponsor e Visibilità
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. BANNER SPONSOR:
+  • Banner rotanti in app
+  • Posizioni: header, footer, sidebar
+  • Fino a 15 banner
+  • Rotazione automatica
+
+2. SPONSOR PAGE:
+  • Pagina dedicata sponsor
+  • Logo, descrizione, link
+  • Categorie sponsor (main, gold, silver)
+
+3. SPONSOR ACTIVATION:
+  • QR code sponsor
+  • Coupon sconto digitali
+  • Tracking click/visualizzazioni
+
+4. REPORT SPONSOR:
+  • Impression count
+  • Click-through rate
+  • Engagement metrics
+
+5. DIGITAL SIGNAGE:
+  • Info screen per impianti
+  • Rotazione sponsor in tempo reale
+  • Integrazione con app
+
+3.6 Coinvolgimento Tifosi
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. FAN ZONE:
+  • Area dedicata tifosi
+  • Commenti partite live
+  • Reactions (emoji)
+
+2. VOTAZIONI:
+  • MVP partita
+  • Miglior gol mese
+  • Formazione ideale
+  • Sondaggi vari
+
+3. GAMIFICATION:
+  • Punti per interazione
+  • Badge e achievement
+  • Leaderboard tifosi
+  • Premi e riconoscimenti
+
+4. SOCIAL INTEGRATION:
+  • Condivisione su social
+  • Hashtag ufficiale
+  • Feed social integrato
+
+5. ESCLUSIVITÀ:
+  • Contenuti dietro le quinte
+  • Interviste esclusive
+  • Accesso aree riservate
+
+3.7 Gestione Finanziaria
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. PAGAMENTI ONLINE:
+  • Carta di credito/debito
+  • Apple Pay / Google Pay
+  • Bonifico SEPA
+  • PayPal
+
+2. QUOTE E ISCRIZIONI:
+  • Riscossione quote associative
+  • Quote partite/tornei
+  • Abbonamenti stagionali
+  • Rateizzazione pagamenti
+
+3. TRACKING:
+  • Chi ha pagato/chi no
+  • Pagamenti in sospeso
+  • Reminder automatici
+  • Blocco funzionalità per morosi
+
+4. REPORT FINANZIARI:
+  • Entrate/uscite
+  • Cash flow
+  • Export Excel/PDF
+
+5. FUNDING:
+  • Campagne fundraising
+  • Lotterie
+  • Donazioni
+  • Merchandise sales
+
+3.8 Foto, Video e Media
+
+FUNZIONALITÀ ESSENZIALI:
+
+1. GALLERY CONDIVISA:
+  • Upload foto/video
+  • Album per evento
+  • Tag giocatori
+  • Moderazione contenuti
+
+2. PHOTO SHARING:
+  • Condivisione rapida
+  • Download
+  • Condivisione social
+
+3. LIVE STREAMING:
+  • Integrazione YouTube/Facebook
+  • Streaming diretto da app
+  • Replay
+
+4. DOCUMENTI:
+  • Upload PDF (regolamenti, convocazioni)
+  • Archivio documenti
+  • Version control
+
+5. CONSENSO FOTO:
+  • Gestione consensi GDPR
+  • Blocco upload per minori senza consenso
+  • Audit trail
+
+
+
+4. SPORT TARGET E SPECIFICITÀ
+4.1 Calcio
+
+SPECIFICITÀ:
+• Formazioni tattiche (4-4-2, 4-3-3, etc.)
+• Marcatori e assist
+• Cartellini gialli/rossi
+• Sostituzioni
+• Classifica con punti
+• Marcatori classifica
+• Clean sheet
+
+4.2 Basket
+
+SPECIFICITÀ:
+• Punteggio per quarto
+• Box score completo
+• Falli personali
+• Timeout
+• Tiri da 3 punti
+• Rimbalzi
+• Assist
+
+4.3 Volley
+
+SPECIFICITÀ:
+• Set (25 punti, 15 nel 5°)
+• Punti per set
+• Ace
+• Muri
+• Attacchi vincenti
+• Classifica con punti speciali
+
+4.4 Rugby
+
+SPECIFICITÀ:
+• Mete (5 punti)
+• Trasformazioni (2 punti)
+• Calci piazzati (3 punti)
+• Drop goal (3 punti)
+• Cartellini
+• Tackle
+
+4.5 Tennis
+
+SPECIFICITÀ:
+• Set e game
+• Tie-break
+• Ace e doppi falli
+• Break point
+• Classifica tornei
+
+4.6 Padel/Paddle
+
+SPECIFICITÀ:
+• Punteggio come tennis
+• Set
+• Posizioni giocatori
+• Tornei e classifiche
+
+4.7 Altri Sport
+
+SPORT AGGIUNTIVI:
+• Pallamano
+• Pallanuoto
+• Hockey su ghiaccio/prato
+• Baseball/Softball
+• Atletica leggera
+• Arti marziali
+• Nuoto
+• Scherma
+• Ciclismo (cronometro)
+• Golf
+
+
+
+5. SCHEMA DATABASE PER CLUB SPORTIVI
+
+Schema database ottimizzato per club sportivi reali con focus su:
+• Gestione membri e iscrizioni
+• Comunicazione e notifiche
+• Eventi e calendario
+• Live scoring
+• Sponsor visibility
+
+5.1 Tabelle Core
+
+-- ============================================
+-- CLUBS
+-- ============================================
+CREATE TABLE clubs (
+   id              SERIAL PRIMARY KEY,
+   name            VARCHAR(200) NOT NULL,
+   slug            VARCHAR(100) UNIQUE,
+   sport_type      VARCHAR(50) NOT NULL,
+
+   -- Info
+   description     TEXT,
+   founded_year    INTEGER,
+   colors_primary  VARCHAR(7),
+   colors_secondary VARCHAR(7),
+
+   -- Contact
+   email           VARCHAR(200),
+   phone           VARCHAR(50),
+   website         VARCHAR(500),
+
+   -- Location
+   address         TEXT,
+   city            VARCHAR(100),
+   country         VARCHAR(3) DEFAULT 'ITA',
+
+   -- Settings
+   logo_url        VARCHAR(500),
+   banner_url      VARCHAR(500),
+
+   -- Status
+   is_active       BOOLEAN DEFAULT true,
+   subscription_plan VARCHAR(50) DEFAULT 'free',
+
+   created_at      TIMESTAMP DEFAULT NOW(),
+   updated_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- USERS (Members)
+-- ============================================
+CREATE TABLE users (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+
+   -- Auth
+   email           VARCHAR(200) UNIQUE,
+   password_hash   VARCHAR(255),
+
+   -- Profile
+   first_name      VARCHAR(100),
+   last_name       VARCHAR(100),
+   display_name    VARCHAR(200),
+   phone           VARCHAR(50),
+   birth_date      DATE,
+
+   -- Role
+   role            VARCHAR(50) DEFAULT 'member', -- admin, coach, player, parent, member
+
+   -- Status
+   is_active       BOOLEAN DEFAULT true,
+   email_verified  BOOLEAN DEFAULT false,
+
+   -- Media
+   avatar_url      VARCHAR(500),
+
+   created_at      TIMESTAMP DEFAULT NOW(),
+   updated_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- TEAMS (Squadre all'interno del club)
+-- ============================================
+CREATE TABLE teams (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+   name            VARCHAR(200) NOT NULL,
+   category        VARCHAR(50), -- under 10, under 12, prima squadra, etc.
+   season          VARCHAR(20), -- 2025-26
+
+   -- Coach
+   coach_id        INTEGER REFERENCES users(id),
+   assistant_coach_id INTEGER REFERENCES users(id),
+
+   -- Settings
+   description     TEXT,
+   logo_url        VARCHAR(500),
+
+   is_active       BOOLEAN DEFAULT true,
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- TEAM_MEMBERS (Relazione utente-squadra)
+-- ============================================
+CREATE TABLE team_members (
+   id              SERIAL PRIMARY KEY,
+   team_id         INTEGER REFERENCES teams(id),
+   user_id         INTEGER REFERENCES users(id),
+
+   role            VARCHAR(50) DEFAULT 'player', -- player, captain, coach
+   jersey_number   INTEGER,
+   position        VARCHAR(50),
+
+   joined_at       TIMESTAMP DEFAULT NOW(),
+   left_at         TIMESTAMP,
+
+   UNIQUE(team_id, user_id)
+);
+
+5.2 Tabelle Eventi e Partite
+
+-- ============================================
+-- EVENTS
+-- ============================================
+CREATE TABLE events (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+   team_id         INTEGER REFERENCES teams(id),
+
+   -- Type
+   event_type      VARCHAR(50), -- match, training, meeting, social
+   title           VARCHAR(200),
+   description     TEXT,
+
+   -- Date/Time
+   start_datetime  TIMESTAMP NOT NULL,
+   end_datetime    TIMESTAMP,
+   timezone        VARCHAR(50) DEFAULT 'Europe/Rome',
+
+   -- Location
+   venue_name      VARCHAR(200),
+   venue_address   TEXT,
+   latitude        DECIMAL(10,8),
+   longitude       DECIMAL(11,8),
+
+   -- RSVP
+   rsvp_required   BOOLEAN DEFAULT true,
+   rsvp_deadline   TIMESTAMP,
+
+   -- Status
+   status          VARCHAR(20) DEFAULT 'scheduled', -- scheduled, cancelled, completed
+
+   created_by      INTEGER REFERENCES users(id),
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- EVENT_ATTENDANCE (RSVP)
+-- ============================================
+CREATE TABLE event_attendance (
+   id              SERIAL PRIMARY KEY,
+   event_id        INTEGER REFERENCES events(id),
+   user_id         INTEGER REFERENCES users(id),
+
+   status          VARCHAR(20), -- attending, not_attending, maybe, no_response
+   notes           TEXT,
+
+   responded_at    TIMESTAMP,
+   created_at      TIMESTAMP DEFAULT NOW(),
+
+   UNIQUE(event_id, user_id)
+);
+
+-- ============================================
+-- MATCHES (Partite)
+-- ============================================
+CREATE TABLE matches (
+   id              SERIAL PRIMARY KEY,
+   event_id        INTEGER REFERENCES events(id),
+
+   -- Teams
+   home_team_id    INTEGER REFERENCES teams(id),
+   away_team_id    INTEGER REFERENCES teams(id),
+   away_team_name  VARCHAR(200), -- per squadre esterne
+
+   -- Competition
+   competition     VARCHAR(200),
+   matchday        INTEGER,
+
+   -- Result
+   home_score      INTEGER,
+   away_score      INTEGER,
+   result          VARCHAR(20), -- win, loss, draw, cancelled
+
+   -- Status
+   status          VARCHAR(20) DEFAULT 'scheduled', -- scheduled, live, finished, cancelled
+
+   -- Scoring started by
+   scorer_id       INTEGER REFERENCES users(id),
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- MATCH_EVENTS (Eventi partita)
+-- ============================================
+CREATE TABLE match_events (
+   id              SERIAL PRIMARY KEY,
+   match_id        INTEGER REFERENCES matches(id),
+
+   minute          INTEGER,
+   event_type      VARCHAR(50), -- goal, card, substitution, timeout, etc.
+
+   -- Players
+   primary_player_id   INTEGER REFERENCES users(id),
+   secondary_player_id INTEGER REFERENCES users(id), -- assist, replaced_by
+
+   -- Details
+   details         JSONB, -- sport-specific details
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+5.3 Tabelle Comunicazione
+
+-- ============================================
+-- NOTIFICATIONS
+-- ============================================
+CREATE TABLE notifications (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+
+   -- Target
+   user_id         INTEGER REFERENCES users(id), -- NULL = broadcast
+   team_id         INTEGER REFERENCES teams(id), -- NULL = all teams
+
+   -- Content
+   title           VARCHAR(200),
+   body            TEXT,
+   type            VARCHAR(50), -- event_reminder, match_result, news, etc.
+
+   -- Data
+   data            JSONB, -- extra data for deep linking
+
+   -- Status
+   sent_at         TIMESTAMP,
+   read_at         TIMESTAMP,
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- MESSAGES (Chat)
+-- ============================================
+CREATE TABLE messages (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+   team_id         INTEGER REFERENCES teams(id),
+
+   sender_id       INTEGER REFERENCES users(id),
+
+   -- Content
+   content         TEXT,
+   message_type    VARCHAR(20) DEFAULT 'text', -- text, image, file
+   attachment_url  VARCHAR(500),
+
+   -- Threading
+   parent_id       INTEGER REFERENCES messages(id),
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- NEWS/ANNOUNCEMENTS
+-- ============================================
+CREATE TABLE news (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+
+   title           VARCHAR(200),
+   content         TEXT,
+   excerpt         TEXT,
+
+   -- Media
+   image_url       VARCHAR(500),
+
+   -- Author
+   author_id       INTEGER REFERENCES users(id),
+
+   -- Status
+   is_published    BOOLEAN DEFAULT false,
+   published_at    TIMESTAMP,
+
+   -- Engagement
+   views_count     INTEGER DEFAULT 0,
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+5.4 Tabelle Sponsor e Media
+
+-- ============================================
+-- SPONSORS
+-- ============================================
+CREATE TABLE sponsors (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+
+   name            VARCHAR(200),
+   description     TEXT,
+   website         VARCHAR(500),
+   logo_url        VARCHAR(500),
+
+   -- Tier
+   tier            VARCHAR(50), -- main, gold, silver, bronze
+
+   -- Contact
+   contact_name    VARCHAR(200),
+   contact_email   VARCHAR(200),
+   contact_phone   VARCHAR(50),
+
+   -- Contract
+   start_date      DATE,
+   end_date        DATE,
+
+   is_active       BOOLEAN DEFAULT true,
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- SPONSOR_VIEWS (Tracking)
+-- ============================================
+CREATE TABLE sponsor_views (
+   id              SERIAL PRIMARY KEY,
+   sponsor_id      INTEGER REFERENCES sponsors(id),
+   user_id         INTEGER REFERENCES users(id),
+   view_type       VARCHAR(50), -- impression, click
+   viewed_at       TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- MEDIA (Foto/Video)
+-- ============================================
+CREATE TABLE media (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+   team_id         INTEGER REFERENCES teams(id),
+   event_id        INTEGER REFERENCES events(id),
+
+   -- Uploader
+   uploaded_by     INTEGER REFERENCES users(id),
+
+   -- File
+   file_url        VARCHAR(500),
+   thumbnail_url   VARCHAR(500),
+   file_type       VARCHAR(20), -- image, video
+
+   -- Metadata
+   title           VARCHAR(200),
+   description     TEXT,
+
+   -- Tags
+   tags            TEXT[],
+   tagged_users    INTEGER[],
+
+   -- Status
+   is_public       BOOLEAN DEFAULT true,
+
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- PAYMENTS
+-- ============================================
+CREATE TABLE payments (
+   id              SERIAL PRIMARY KEY,
+   club_id         INTEGER REFERENCES clubs(id),
+   user_id         INTEGER REFERENCES users(id),
+
+   -- Payment details
+   amount          DECIMAL(10,2),
+   currency        VARCHAR(3) DEFAULT 'EUR',
+
+   -- Type
+   payment_type    VARCHAR(50), -- membership, match_fee, donation, merchandise
+   description     TEXT,
+
+   -- Status
+   status          VARCHAR(20) DEFAULT 'pending', -- pending, completed, failed, refunded
+
+   -- External
+   external_id     VARCHAR(200), -- Stripe/PayPal ID
+
+   paid_at         TIMESTAMP,
+   created_at      TIMESTAMP DEFAULT NOW()
+);
+
+5.5 Indici
+
+-- ============================================
+-- INDICI PER PERFORMANCE
+-- ============================================
+
+-- Users
+CREATE INDEX idx_users_club ON users(club_id);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+
+-- Teams
+CREATE INDEX idx_teams_club ON teams(club_id);
+
+-- Events
+CREATE INDEX idx_events_club ON events(club_id);
+CREATE INDEX idx_events_team ON events(team_id);
+CREATE INDEX idx_events_start ON events(start_datetime);
+CREATE INDEX idx_events_status ON events(status);
+
+-- Matches
+CREATE INDEX idx_matches_event ON matches(event_id);
+CREATE INDEX idx_matches_status ON matches(status);
+
+-- Notifications
+CREATE INDEX idx_notifications_user ON notifications(user_id);
+CREATE INDEX idx_notifications_sent ON notifications(sent_at);
+
+-- Messages
+CREATE INDEX idx_messages_team ON messages(team_id);
+CREATE INDEX idx_messages_created ON messages(created_at);
+
+
+
+6. ARCHITETTURA TECNICA CONSIGLIATA
+6.1 Stack Tecnologico
+
+BACKEND:
+• Node.js + Express / NestJS
+• PostgreSQL (database principale)
+• Redis (caching, sessioni)
+• Socket.io (real-time updates)
+• AWS S3 / Cloudinary (storage media)
+
+FRONTEND WEB (Admin Dashboard):
+• React 18+
+• Tailwind CSS
+• shadcn/ui components
+• React Query (data fetching)
+• Zustand (state management)
+
+MOBILE APP:
+• React Native (iOS + Android)
+• Expo (sviluppo rapido)
+• Push notifications (Firebase/OneSignal)
+
+INFRASTRUTTURA:
+• Docker (containerization)
+• Railway / Render (hosting backend)
+• Vercel (hosting frontend)
+• AWS / DigitalOcean (storage)
+
+6.2 Real-Time Architecture
+
+LIVE SCORING E NOTIFICHE:
+
+1. WEBSOCKET CONNECTION:
+  • Socket.io per comunicazione bidirezionale
+  • Rooms per club/team/match
+  • Reconnection automatico
+
+2. LIVE SCORING FLOW:
+  Scorer App -> WebSocket -> Server -> Broadcast -> Fan Apps
+
+3. NOTIFICATION SYSTEM:
+  • Push notifications (Firebase Cloud Messaging)
+  • In-app notifications
+  • Email notifications (SendGrid/Mailgun)
+  • SMS (Twilio) - opzionale
+
+4. EVENT DRIVEN:
+  • Redis Pub/Sub per eventi interni
+  • Queue system per job asincroni (Bull/Agenda)
+
+6.3 Multi-Tenant Architecture
+
+OGNI CLUB HA:
+• Database separato (schema isolation)
+• Configurazione personalizzata
+• Branding (colori, logo)
+• Sottodominio personalizzato (clubname.platform.com)
+
+VANTAGGI:
+• Isolamento dati
+• Scalabilità indipendente
+• Backup separati
+• Customizzazione completa
+
+
+
+7. BUSINESS MODEL E PRICING
+7.1 Modello Freemium
+
+PIANO FREE:
+• Fino a 50 membri
+• 1 squadra
+• Funzioni base (calendario, RSVP, chat)
+• Sponsor banner limitati
+• Supporto email
+
+PIANO PRO (€29/mese):
+• Membri illimitati
+• Squadre illimitate
+• Live scoring
+• Sponsor banner illimitati
+• Statistiche avanzate
+• API access
+• Supporto prioritario
+
+PIANO CLUB (€79/mese):
+• Tutto il Pro
+• White-label app
+• Custom domain
+• Integrazioni avanzate
+• Account manager dedicato
+
+7.2 Revenue Streams Aggiuntivi
+
+1. TRANSACTION FEES:
+  • 2% su pagamenti processati
+  • Revenue share su donazioni
+
+2. PREMIUM FEATURES:
+  • Live streaming addon
+  • Advanced analytics
+  • Custom development
+
+3. SPONSOR MARKETPLACE:
+  • Matchmaking club-sponsor
+  • Commissione su accordi
+
+4. WHITE LABEL:
+  • App completamente custom
+  • Setup fee + maintenance
+
+7.3 Costi Operativi
+
+INFRASTRUTTURA (per 100 club):
+• Database: €500/mese
+• Storage: €200/mese
+• Push notifications: €100/mese
+• Hosting: €300/mese
+• TOTALE: ~€1,100/mese
+
+SVILUPPO:
+• Team 3 persone
+• Costo mensile: ~€15,000
+
+BREAK-EVEN:
+• ~600 club Pro per coprire costi
+
+
+
+8. CONCLUSIONI E ROADMAP
+8.1 Sommario
+
+IL PROGETTO IN SINTESI:
+
+Piattaforma no-code per club sportivi reali (amatoriali, giovanili, dilettantistici)
+che permette di creare app personalizzate per:
+
+✓ Comunicazione con tifosi/soci/genitori
+✓ Live scoring durante le partite
+✓ Gestione eventi e calendario
+✓ Sponsor visibility
+✓ Coinvolgimento community
+
+DIFFERENZIAZIONE:
+• Non è un gioco, è uno strumento reale
+• Focus su club piccoli e medi
+• Prezzo accessibile
+• Setup rapido (minuti, non mesi)
+
+TARGET PRIMARIO:
+• Squadre di calcio dilettantistiche
+• Club giovanili
+• Società sportive dilettantistiche
+• Associazioni sportive
+
+8.2 Roadmap Sviluppo
+
+FASE 1 - MVP (3 mesi):
+□ Setup progetto e infrastruttura
+□ Database schema
+□ API backend base
+□ Admin dashboard
+□ App mobile base (iOS/Android)
+□ Calendario e RSVP
+□ Chat di squadra
+□ Notifiche push
+
+FASE 2 - Live Scoring (2 mesi):
+□ Interfaccia segnapunti
+□ Real-time updates
+□ Sport-specific scoring
+□ Classifiche automatiche
+□ Statistiche
+
+FASE 3 - Sponsor & Monetization (2 mesi):
+□ Sponsor banner system
+□ Tracking views/clicks
+□ Payment integration
+□ Membership management
+
+FASE 4 - Advanced Features (3 mesi):
+□ Live streaming
+□ Advanced analytics
+□ White-label option
+□ API pubblica
+□ Integrazioni terze parti
+
+FASE 5 - Scale (continuo):
+□ Performance optimization
+□ Multi-region deployment
+□ Enterprise features
+
+8.3 Success Metrics
+
+KPI TRACCIATI:
+
+• Numero club attivi
+• Numero utenti totali
+• Monthly Active Users (MAU)
+• Retention rate (30/60/90 giorni)
+• Revenue MRR (Monthly Recurring Revenue)
+• Customer Acquisition Cost (CAC)
+• Lifetime Value (LTV)
+• Net Promoter Score (NPS)
+• App Store ratings
+
+8.4 Prossimi Passi
+
+1. VALIDAZIONE:
+  □ Interviste 10+ club potenziali
+  □ Validare pain points
+  □ Definire MVP features
+
+2. PROTOTIPO:
+  □ Wireframes UI/UX
+  □ Clickable prototype
+  □ User testing
+
+3. SVILUPPO:
+  □ Setup team
+  □ Sprint planning
+  □ Development
+
+4. LAUNCH:
+  □ Beta con 5 club
+  □ Iterazione feedback
+  □ Public launch

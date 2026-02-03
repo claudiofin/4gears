@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClubForge - App Builder Professionale</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#152033', 900: '#0f172a', 950: '#020617' },
+                        brand: { 500: '#3b82f6', 600: '#2563eb' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Babel for JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Mobile Frame */
+        .iphone-mockup {
+            box-shadow: 0 0 0 12px #1e293b, 0 0 0 14px #334155, 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+    </style>
+
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.263.1?external=react",
+            "jszip": "https://esm.sh/jszip@3.10.1",
+            "file-saver": "https://esm.sh/file-saver@2.0.5",
+            "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom"
+        }
+    }
+    </script>
+</head>
+
+<body class="bg-slate-950 text-slate-200 overflow-hidden h-screen flex flex-col">
+    <div id="root" class="h-full flex flex-col"></div>
+
+    <!-- MAIN APP SCRIPT -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import {
+            Shield, Smartphone, Database, Layout, Download, Settings,
+            Users, CreditCard, Activity, Trophy, Globe, Code,
+            ChevronRight, Check, Plus, Trash2, Home, Calendar,
+            User, ShoppingBag, Bell, Menu, MapPin, Clock, Search,
+            Shirt, ArrowRight, Star, Ticket, Image as ImageIcon,
+            Lock, Video, ArrowLeft, Share2, ShieldCheck, UserCircle, Zap, Heart,
+            MessageCircle, X, ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Sun, Moon
+        } from 'lucide-react';
+        import JSZip from 'jszip';
+        import FileSaver from 'file-saver';
+        import { motion, AnimatePresence } from 'framer-motion';
+
+        // Fix for FileSaver export in ESM
+        const saveAs = FileSaver.saveAs || FileSaver;
+
+        // --- SPORT CONFIGURATION ENGINE ---
+        const SPORT_CONFIG = {
+            'Calcio': {
+                roles: ['Portiere', 'Difensore', 'Centrocampista', 'Attaccante'],
+                scoring: { term: 'Goal', format: '2 - 1', period: "90'" },
+                events: ['Partita', 'Allenamento', 'Tattica'],
+                icon: Activity,
+                bgGradient: 'from-emerald-900 to-green-900',
+                heroImage: 'https://images.unsplash.com/photo-1522778119026-d647f0565c6d?auto=format&fit=crop&w=800&q=80'
+            },
+            'Basket': {
+                roles: ['Playmaker', 'Guardia', 'Ala Piccola', 'Ala Grande', 'Centro'],
+                scoring: { term: 'Punti', format: '86 - 82', period: 'Q4' },
+                events: ['Game', 'Shooting Session', 'Palestra'],
+                icon: Trophy,
+                bgGradient: 'from-orange-900 to-amber-900',
+                heroImage: 'https://images.unsplash.com/photo-1546519638-68e109498ee2?auto=format&fit=crop&w=800&q=80'
+            },
+            'Volley': {
+                roles: ['Palleggiatore', 'Schiacciatore', 'Centrale', 'Opposto', 'Libero'],
+                scoring: { term: 'Set', format: '3 - 1', period: '4° Set' },
+                events: ['Gara', 'Tecnica', 'Fisica'],
+                icon: Activity,
+                bgGradient: 'from-blue-900 to-indigo-900',
+                heroImage: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=800&q=80'
+            },
+            'Rugby': {
+                roles: ['Pilone', 'Tallonatore', 'Mediano', 'Tre quarti', 'Estremo'],
+                scoring: { term: 'Mete', format: '24 - 17', period: "80'" },
+                events: ['Match', 'Mischia', 'Video Analisi'],
+                icon: Shield,
+                bgGradient: 'from-red-900 to-rose-900',
+                heroImage: 'https://images.unsplash.com/photo-1626245053155-2274b5b7193b?auto=format&fit=crop&w=800&q=80'
+            },
+            'Tennis': {
+                roles: ['Singolarista', 'Doppista', 'Maestro', 'Preparatore'],
+                scoring: { term: 'Game', format: '6-4, 6-3', period: 'Finale' },
+                events: ['Torneo', 'Lezione Privata', 'Preparazione'],
+                icon: Activity,
+                bgGradient: 'from-yellow-900 to-orange-900',
+                heroImage: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80'
+            }
+        };
+
+        const generatePlayers = (sport) => {
+            const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
+            return Array.from({ length: 12 }).map((_, i) => ({
+                id: i,
+                name: ['Alessandro Rossi', 'Marco Banchi', 'Luca Sarti', 'Davide Moro', 'Giuseppe Verdi', 'Andrea Conti', 'Matteo Longo', 'Francesco Totti', 'Luigi Riva', 'Paolo Maldini', 'Roberto Baggio', 'Filippo Inzaghi'][i],
+                role: config.roles[i % config.roles.length],
+                number: Math.floor(Math.random() * 99) + 1,
+                stats: {
+                    presenze: Math.floor(Math.random() * 20) + 1,
+                    performance: Math.floor(Math.random() * 10)
+                },
+                image: `https://i.pravatar.cc/150?u=${i}`
+            }));
+        };
+
+        const generateEvents = (sport) => {
+            const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
+            return [
+                { id: 1, title: 'Big Match vs Rivali', type: 'match', date: 'Dom, 12 Mag', time: '15:00', location: 'Stadio Comunale', opponent: 'Real Rival' },
+                { id: 2, title: config.events[1], type: 'training', date: 'Mar, 14 Mag', time: '18:30', location: 'Centro Sportivo' },
+                { id: 3, title: 'Evento Societario', type: 'event', date: 'Ven, 17 Mag', time: '20:00', location: 'Club House' },
+                { id: 4, title: config.events[2], type: 'training', date: 'Lun, 20 Mag', time: '19:00', location: 'Palestra' }
+            ];
+        };
+
+        const Main = () => {
+            const [previewPage, setPreviewPage] = useState('home');
+            const [viewMode, setViewMode] = useState('USER'); // 'USER' | 'ADMIN'
+            const [appTier, setAppTier] = useState('FREE'); // 'FREE' | 'PREMIUM' | 'ELITE'
+            const [userPersona, setUserPersona] = useState('COACH'); // 'ADMIN', 'COACH', 'PLAYER', 'FAN'
+            const [notchStyle, setNotchStyle] = useState('FLOATING'); // 'NONE', 'STANDARD', 'FLOATING'
+            const [isDarkMode, setIsDarkMode] = useState(false);
+            const [showPaywall, setShowPaywall] = useState(false);
+            const [activeChat, setActiveChat] = useState(null); // null or { id, name }
+            const [chatMessages, setChatMessages] = useState([
+                { id: 1, sender: 'ADMIN', text: 'Benvenuto nel portale del Club! Come posso aiutarti?', time: '10:30' }
+            ]);
+            const [sponsors] = useState([
+                { id: 1, name: 'Main Partner', icon: 'Shield', color: 'bg-emerald-500' },
+                { id: 2, name: 'Technical Sponsor', icon: 'Zap', color: 'bg-blue-50' },
+                { id: 3, name: 'Local Hero', icon: 'Heart', color: 'bg-rose-500' }
+            ]);
+
+            // Customizable Tab Bar
+            const [availableTabs] = useState([
+                { id: 'home', icon: Home, label: 'Home', required: true },
+                { id: 'roster', icon: Users, label: 'Rosa' },
+                { id: 'events', icon: Calendar, label: 'Eventi' },
+                { id: 'tactics', icon: Layout, label: 'Tattiche' },
+                { id: 'video', icon: Video, label: 'Video' },
+                { id: 'shop', icon: ShoppingBag, label: 'Shop' }
+            ]);
+            const [activeTabs, setActiveTabs] = useState([
+                { id: 'home', icon: Home, label: 'Home' },
+                { id: 'roster', icon: Users, label: 'Rosa' },
+                { id: 'events', icon: Calendar, label: 'Eventi' },
+                { id: 'shop', icon: ShoppingBag, label: 'Shop' }
+            ]);
+
+            const toggleTab = (tabId) => {
+                if (tabId === 'home') return; // Cannot disable home
+                if (activeTabs.find(t => t.id === tabId)) {
+                    setActiveTabs(prev => prev.filter(t => t.id !== tabId));
+                } else {
+                    const tabToAdd = availableTabs.find(t => t.id === tabId);
+                    if (tabToAdd && activeTabs.length < 5) { // Max 5 tabs
+                        setActiveTabs(prev => [...prev, tabToAdd]);
+                    } else if (activeTabs.length >= 5) {
+                        alert("Puoi avere massimo 5 tab attive.");
+                    }
+                }
+            };
+
+            // Granular Feature Flags
+            const [featureFlags, setFeatureFlags] = useState({
+                news: { id: 'news', label: 'News & Highlights', enabled: true, minTier: 'PREMIUM' },
+                tactics: { id: 'tactics', label: 'Tactics Board', enabled: true, minTier: 'PREMIUM' },
+                video: { id: 'video', label: 'Video Analysis', enabled: true, minTier: 'ELITE' },
+                shop: { id: 'shop', label: 'Merchandising', enabled: true, minTier: 'FREE' },
+                events: { id: 'events', label: 'Eventi & Calendario', enabled: true, minTier: 'FREE' }
+            });
+
+            // Permission Helper
+            const canAccess = (featureId) => {
+                // 1. Home is always accessible
+                if (featureId === 'home') return true;
+
+                // 2. App-Level Feature Flag check (Overrides Persona)
+                const feature = featureFlags[featureId];
+                if (feature && !feature.enabled) return false;
+
+                // 3. Admin/Coach bypass Tier restrictions
+                if (userPersona === 'ADMIN' || userPersona === 'COACH') return true;
+
+                // 4. Standard User Tier Check
+                if (!feature) return true;
+                const tierLevels = { 'FREE': 0, 'PREMIUM': 1, 'ELITE': 2 };
+                return tierLevels[appTier] >= tierLevels[feature.minTier];
+            };
+
+            // Sync Active Tabs with Permissions
+            useEffect(() => {
+                setActiveTabs(prev => prev.filter(tab => canAccess(tab.id)));
+                // Also reset previewPage if current page is disabled
+                if (!canAccess(previewPage)) {
+                    setPreviewPage('home');
+                }
+            }, [featureFlags, appTier, userPersona]);
+
+            // Multi-Team / Squad Mock Data
+            const [teams, setTeams] = useState([
+                { id: 1, name: "AS Virtus Milano", slug: "virtus-milano", sportType: "Calcio", branding: { primary: "#2563eb", secondary: "#0f172a" }, modules: { liveScoring: true, payments: true, sponsors: true } },
+                { id: 2, name: "Virtus Basket", slug: "virtus-basket", sportType: "Basket", branding: { primary: "#ea580c", secondary: "#1e1b4b" }, modules: { liveScoring: true, payments: false, sponsors: true } },
+                { id: 3, name: "Volley Under 18", slug: "virtus-volley", sportType: "Volley", branding: { primary: "#4f46e5", secondary: "#312e81" }, modules: { liveScoring: false, payments: true, sponsors: true } }
+            ]);
+
+            const [currentTeamId, setCurrentTeamId] = useState(1);
+
+            // Derived State
+            const club = teams.find(t => t.id === currentTeamId) || teams[0];
+            // Config with Universal Fallback
+            const defaultConfig = {
+                roles: ['Atleta', 'Capitano', 'Staff'],
+                scoring: { term: 'Punti', format: '0 - 0', period: 'Tempo' },
+                events: ['Gara', 'Allenamento', 'Ritrovo'],
+                icon: Activity,
+                bgGradient: 'from-slate-800 to-slate-900',
+                heroImage: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80'
+            };
+            const config = {
+                ...(SPORT_CONFIG[club.sportType] || defaultConfig),
+                heroImage: club.branding.customHeroImage || (SPORT_CONFIG[club.sportType] || defaultConfig).heroImage
+            };
+
+            const updateClub = (updates) => {
+                setTeams(prev => prev.map(t => t.id === currentTeamId ? { ...t, ...updates } : t));
+            };
+
+            const setClub = (fn) => {
+                const updates = typeof fn === 'function' ? fn(club) : fn;
+                updateClub(updates);
+            };
+
+            const updateConfig = (updates) => {
+                // Since config is derived, we update the team's custom properties or sportType
+                if (updates.heroImage) {
+                    updateClub({ branding: { ...club.branding, customHeroImage: updates.heroImage } });
+                }
+            };
+
+            const setConfig = (fn) => {
+                const updates = typeof fn === 'function' ? fn(config) : fn;
+                updateConfig(updates);
+            };
+
+            // Reactive Data
+            const [players, setPlayers] = useState([]);
+            const [events, setEvents] = useState([]);
+
+            // SHOP STATE
+            const [cart, setCart] = useState([]);
+            const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+            const addToCart = (item) => setCart(prev => [...prev, item]);
+
+            // MOCK STATE & HANDLERS
+            const [activeModal, setActiveModal] = useState(null); // 'NOTIFICATIONS', 'NEWS', 'PLAYER_DETAIL', 'LIVE_MATCH'
+            const [selectedPlayer, setSelectedPlayer] = useState(null);
+            const [selectedNews, setSelectedNews] = useState(null);
+            const [tacticsList, setTacticsList] = useState(['Schema Angolo', 'Punizione dal Limite', 'Uscita Palla']);
+
+            // Mock Data Generators
+            const notifications = [
+                { id: 1, title: 'Prossima Partita', message: 'Mancano 2 giorni al big match!', time: '2h fa', type: 'alert' },
+                { id: 2, title: 'Nuovo Risultato', message: 'Under 18 ha vinto 3-1', time: '5h fa', type: 'success' },
+                { id: 3, title: 'Shop', message: 'Sconti del 20% sul merchandising', time: '1g fa', type: 'promo' }
+            ];
+
+            const newsList = [
+                { id: 1, title: 'Vittoria Schiacciante nel Derby', category: 'Prima Squadra', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=300&q=80', date: 'Oggi' },
+                { id: 2, title: 'Nuovo Sponsor Tecnico', category: 'Società', image: 'https://images.unsplash.com/photo-1522778119026-d647f0565c6d?auto=format&fit=crop&w=300&q=80', date: 'Ieri' },
+                { id: 3, title: 'Cena di Natale', category: 'Eventi', image: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=300&q=80', date: '2 giorni fa' }
+            ];
+
+            const liveMatchData = {
+                home: club.name,
+                away: 'Real Rivals',
+                score: { home: 1, away: 1 },
+                time: "65'",
+                events: [
+                    { id: 1, min: "12'", type: 'goal', team: 'home', player: 'Rossi' },
+                    { id: 2, min: "34'", type: 'card', team: 'away', player: 'Bianchi' },
+                    { id: 3, min: "58'", type: 'goal', team: 'away', player: 'Verdi' }
+                ]
+            };
+
+            const handleLogoUpload = () => {
+                const url = window.prompt("Inserisci URL del logo (es. https://example.com/logo.png):", "https://via.placeholder.com/150");
+                if (url) {
+                    const updated = teams.map(t => t.id === currentTeamId ? { ...t, logo: url } : t);
+                    setTeams(updated);
+                }
+            };
+
+            const handleAddTeam = () => {
+                const newId = teams.length + 1;
+                const newTeam = {
+                    id: newId,
+                    name: `Nuova Squadra ${newId}`,
+                    slug: `team-${newId}`,
+                    sportType: 'Calcio',
+                    branding: { primary: "#000000", secondary: "#ffffff" },
+                    modules: { liveScoring: true, payments: true, sponsors: false }
+                };
+                setTeams([...teams, newTeam]);
+                setCurrentTeamId(newId);
+            };
+
+            const handleAddTactic = () => {
+                const name = window.prompt("Nome della nuova tattica:");
+                if (name) setTacticsList([...tacticsList, name]);
+            };
+
+            useEffect(() => {
+                setPlayers(generatePlayers(club.sportType));
+                setEvents(generateEvents(club.sportType));
+            }, [club.sportType, currentTeamId]);
+
+            // --- EXPORT FUNCTION ---
+            const handleExport = async () => {
+                const zip = new JSZip();
+                const sql = `
+CREATE TABLE clubs ( id SERIAL PRIMARY KEY, name VARCHAR(255), sport VARCHAR(50) );
+INSERT INTO clubs (name, sport) VALUES ('${club.name}', '${club.sportType}');
+`;
+                zip.file("database.sql", sql);
+                const content = await zip.generateAsync({ type: "blob" });
+                saveAs(content, `ClubForge_${club.slug}.zip`);
+            };
+
+            return (
+                <div className="flex h-full bg-slate-950 text-slate-200 font-sans">
+
+                    {/* --- BUILDER SIDEBAR --- */}
+                    <div className="w-[420px] flex flex-col border-r border-slate-800 bg-slate-900/90 backdrop-blur-md z-30 shadow-2xl">
+                        <div className="p-8 border-b border-slate-800">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                    <Shield size={20} className="text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold font-display text-white tracking-tight">ClubForge</h1>
+                                    <p className="text-[10px] text-blue-400 font-bold tracking-widest uppercase">App Builder Pro</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-8 space-y-10">
+
+                            {/* Identity Control */}
+                            <section>
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                    <Settings size={14} /> Configurazione & Teams
+                                </h3>
+
+                                {/* Persona Switcher (New) */}
+                                <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                                    <label className="text-xs font-semibold text-slate-400 mb-3 block">Simula Utente</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['ADMIN', 'COACH', 'PLAYER', 'FAN'].map(p => (
+                                            <button
+                                                key={p}
+                                                onClick={() => {
+                                                    setUserPersona(p);
+                                                    if (p === 'ADMIN') setViewMode('ADMIN');
+                                                    else setViewMode('USER');
+                                                }}
+                                                className={`py-2 px-3 text-[10px] font-bold rounded-lg transition-all border ${userPersona === p
+                                                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg'
+                                                    : 'bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600'}`}
+                                            >
+                                                {p}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="mt-2 text-[10px] text-slate-500 leading-tight">
+                                        Stai vedendo l'app come: <span className="text-indigo-400 font-bold">{userPersona}</span>
+                                    </p>
+                                </div>
+
+                                {/* App Tier Control */}
+                                <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                                    <label className="text-xs font-semibold text-slate-400 mb-3 block">Piano Abbonamento (Simulato)</label>
+                                    <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                                        {['FREE', 'PREMIUM', 'ELITE'].map(tier => (
+                                            <button
+                                                key={tier}
+                                                onClick={() => setAppTier(tier)}
+                                                className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${appTier === tier
+                                                    ? (tier === 'ELITE' ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg' : 'bg-blue-600 text-white shadow-md')
+                                                    : 'text-slate-500 hover:text-slate-300'}`}
+                                            >
+                                                {tier}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Feature Permission Config */}
+                                <div className="mb-8">
+                                    <label className="text-xs font-semibold text-slate-400 mb-3 block">Permessi & Funzionalità</label>
+                                    <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                        {Object.values(featureFlags).map(flag => (
+                                            <div key={flag.id} className="flex items-center justify-between p-2 bg-slate-950 rounded-lg border border-slate-800/50">
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={flag.enabled}
+                                                        onChange={() => setFeatureFlags(prev => ({ ...prev, [flag.id]: { ...flag, enabled: !flag.enabled } }))}
+                                                        className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500/20"
+                                                    />
+                                                    <span className="text-[10px] font-medium text-slate-300">{flag.label}</span>
+                                                </div>
+                                                <select
+                                                    value={flag.minTier}
+                                                    onChange={(e) => setFeatureFlags(prev => ({ ...prev, [flag.id]: { ...flag, minTier: e.target.value } }))}
+                                                    className="bg-slate-900 text-[9px] text-slate-400 border border-slate-800 rounded px-1 py-0.5 outline-none focus:border-blue-500"
+                                                >
+                                                    <option value="FREE">FREE</option>
+                                                    <option value="PREMIUM">PREM</option>
+                                                    <option value="ELITE">ELITE</option>
+                                                </select>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Asset Management (New) */}
+                                <div className="mb-8">
+                                    <label className="text-xs font-semibold text-slate-400 mb-3 block">Asset Club</label>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div onClick={handleLogoUpload} className="w-12 h-12 bg-slate-800 rounded-lg border border-slate-700 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-blue-500 transition-colors">
+                                                {club.logo ? (
+                                                    <img src={club.logo} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <ImageIcon size={20} className="text-slate-500" />
+                                                )}
+                                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Plus size={16} className="text-white" />
+                                                </div>
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="text-xs font-bold text-slate-300">Logo Club</div>
+                                                <div className="text-[10px] text-slate-500">PNG, SVG (max 2MB)</div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-500 mb-1 block">Colore Sociale</label>
+                                            <div className="flex gap-2">
+                                                {['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#0f172a'].map(c => (
+                                                    <button
+                                                        key={c}
+                                                        onClick={() => updateClub({ branding: { ...club.branding, primary: c } })}
+                                                        className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${club.branding.primary === c ? 'border-white scale-110 shadow-lg' : 'border-transparent'}`}
+                                                        style={{ background: c }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Background Picker */}
+                                        <div className="mt-4">
+                                            <label className="text-[10px] font-bold text-slate-500 mb-1 block">Sfondo Hero</label>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {['https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80',
+                                                    'https://images.unsplash.com/photo-1540747913346-19e32dc3e96e?auto=format&fit=crop&w=800&q=80',
+                                                    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
+                                                    'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=800&q=80'
+                                                ].map((img, i) => (
+                                                    <div key={i} onClick={() => setConfig(prev => ({ ...prev, heroImage: img }))}
+                                                        className={`aspect-video rounded-md bg-cover bg-center cursor-pointer border-2 ${config.heroImage === img ? 'border-blue-500' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                                        style={{ backgroundImage: `url(${img})` }}>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Team Selector (New) */}
+                                <div className="mb-6">
+                                    <label className="text-xs font-semibold text-slate-400 mb-2 block">Seleziona Squadra</label>
+                                    <div className="relative">
+                                        <select
+                                            value={currentTeamId}
+                                            onChange={(e) => setCurrentTeamId(Number(e.target.value))}
+                                            className="w-full appearance-none bg-slate-950 border border-slate-800 text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-blue-500 font-medium"
+                                        >
+                                            {teams.map(t => (
+                                                <option key={t.id} value={t.id}>{t.name} ({t.sportType})</option>
+                                            ))}
+                                        </select>
+                                        <ChevronRight className="absolute right-4 top-3.5 text-slate-500 rotate-90" size={16} />
+                                    </div>
+                                    <button onClick={handleAddTeam} className="mt-2 w-full py-2 border border-dashed border-slate-700 hover:border-blue-500/50 hover:bg-blue-500/10 text-slate-500 hover:text-blue-400 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                        <Plus size={14} /> Aggiungi Nuova Squadra
+                                    </button>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="group">
+                                        <label className="text-xs font-semibold text-slate-400 mb-2 block group-focus-within:text-blue-400 transition-colors">Nome Società</label>
+                                        <input
+                                            value={club.name}
+                                            onChange={e => {
+                                                const updated = teams.map(t => t.id === currentTeamId ? { ...t, name: e.target.value } : t);
+                                                setTeams(updated);
+                                            }}
+                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium placeholder-slate-600"
+                                            placeholder="Es. Real Madrid"
+                                        />
+                                    </div>
+
+                                    <div className="group">
+                                        <label className="text-xs font-semibold text-slate-400 mb-2 block group-focus-within:text-blue-400 transition-colors">Disciplina Sportiva</label>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {Object.keys(SPORT_CONFIG).map(sport => (
+                                                <button
+                                                    key={sport}
+                                                    onClick={() => {
+                                                        const updated = teams.map(t => t.id === currentTeamId ? { ...t, sportType: sport } : t);
+                                                        setTeams(updated);
+                                                    }}
+                                                    className={`p-3 rounded-lg text-xs font-bold transition-all border ${club.sportType === sport ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/50' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
+                                                >
+                                                    {sport}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-xs font-semibold text-slate-400 mb-2 block">Brand Primary</label>
+                                            <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-slate-700 transition-colors">
+                                                <input type="color" value={club.branding.primary} onChange={e => {
+                                                    const updated = teams.map(t => t.id === currentTeamId ? { ...t, branding: { ...t.branding, primary: e.target.value } } : t);
+                                                    setTeams(updated);
+                                                }} className="w-10 h-10 rounded-lg bg-transparent cursor-pointer border-none" />
+                                                <span className="text-xs font-mono text-slate-400">{club.branding.primary}</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-semibold text-slate-400 mb-2 block">Secondary</label>
+                                            <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-slate-700 transition-colors">
+                                                <input type="color" value={club.branding.secondary} onChange={e => {
+                                                    const updated = teams.map(t => t.id === currentTeamId ? { ...t, branding: { ...t.branding, secondary: e.target.value } } : t);
+                                                    setTeams(updated);
+                                                }} className="w-10 h-10 rounded-lg bg-transparent cursor-pointer border-none" />
+                                                <span className="text-xs font-mono text-slate-400">{club.branding.secondary}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <div className="h-px bg-slate-800/50"></div>
+
+                            {/* Export */}
+                            <section>
+                                <button onClick={handleExport} className="w-full py-5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-xl flex items-center justify-center gap-3 shadow-xl shadow-emerald-900/20 transition-all transform hover:scale-[1.02] border border-emerald-400/20">
+                                    <Download size={20} /> Scarica Progetto
+                                </button>
+                                <button onClick={() => window.location.href = 'mailto:claudio.cavalli012@gmail.com?subject=Richiesta Preventivo ClubForge&body=Salve, vorrei ricevere un preventivo per...'} className="mt-3 w-full py-4 bg-transparent border-2 border-slate-700 hover:border-blue-500 hover:bg-blue-500/10 text-slate-400 hover:text-blue-400 font-bold rounded-xl flex items-center justify-center gap-3 transition-all">
+                                    <MessageCircle size={20} /> Richiedi Preventivo
+                                </button>
+                            </section>
+
+                            {/* Simulator Settings */}
+                            <section className="pt-6 border-t border-slate-800">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 px-1">
+                                        <Smartphone size={16} className="text-slate-400" />
+                                        <span className="text-sm font-bold text-white">Configurazione Simulator</span>
+                                    </div>
+
+                                    {/* TAB BAR CONFIGURATION */}
+                                    <div className="space-y-4 pt-4 border-t border-slate-800">
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Menu Di Navigazione</h3>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {availableTabs.map(tab => (
+                                                <button
+                                                    key={tab.id}
+                                                    onClick={() => toggleTab(tab.id)}
+                                                    className={`flex items-center gap-2 p-2 rounded-lg text-xs font-bold transition-all ${activeTabs.find(t => t.id === tab.id)
+                                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
+                                                        : 'bg-slate-800 text-slate-500 hover:bg-slate-700'
+                                                        } ${tab.required ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    disabled={tab.required}
+                                                >
+                                                    <tab.icon size={14} />
+                                                    {tab.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-slate-500">Seleziona fino a 5 tab da mostrare nella barra di navigazione.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+                                        <button
+                                            onClick={() => setIsDarkMode(false)}
+                                            className={`py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${!isDarkMode ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                        >
+                                            <Sun size={12} /> Light
+                                        </button>
+                                        <button
+                                            onClick={() => setIsDarkMode(true)}
+                                            className={`py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${isDarkMode ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                        >
+                                            <Moon size={12} /> Dark
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+                                        {[
+                                            { id: 'NONE', label: 'No Notch' },
+                                            { id: 'STANDARD', label: 'Classic' },
+                                            { id: 'FLOATING', label: 'Floating' }
+                                        ].map(style => (
+                                            <button
+                                                key={style.id}
+                                                onClick={() => setNotchStyle(style.id)}
+                                                className={`py-2 px-1 rounded-lg text-[10px] font-bold transition-all ${notchStyle === style.id ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                            >
+                                                {style.label}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Feature Lock Teaser */}
+                                    <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                                        <div className="flex items-start gap-3">
+                                            <div className="p-2 bg-blue-500/20 rounded-lg">
+                                                <Lock size={14} className="text-blue-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-blue-400 mb-1">Pannello Pro</div>
+                                                <p className="text-[10px] text-blue-300/70 leading-relaxed italic">
+                                                    "Ulteriori funzionalità disponibili nel pannello completo del builder"
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    {/* --- PREVIEW AREA --- */}
+                    <div className="flex-1 bg-slate-950 relative flex items-center justify-center overflow-hidden">
+
+                        {/* Ambient Background */}
+                        <div className="absolute inset-0 bg-slate-950">
+                            <div className={`absolute top-0 right-0 w-[80%] h-[80%] bg-gradient-to-bl ${config.bgGradient} opacity-20 blur-[150px] rounded-full`}></div>
+                            <div className="absolute bottom-0 left-0 w-[60%] h-[60%] bg-blue-900/10 blur-[120px] rounded-full"></div>
+                        </div>
+
+                        {/* IPHONE MOCKUP */}
+                        <div className={`iphone-mockup w-[390px] h-[844px] ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'} flex flex-col z-10 shadow-2xl shadow-black/80 scale-[0.85] lg:scale-95 transition-transform duration-700 relative border-[12px] border-slate-900 rounded-[55px] overflow-hidden`}>
+
+                            {/* View Mode Toggle (Floating Outside) */}
+                            <div className="absolute -left-20 top-10 flex flex-col gap-2 z-50">
+                                <button
+                                    onClick={() => setViewMode('USER')}
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-xl ${viewMode === 'USER' ? 'bg-white text-slate-900 scale-110' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                                >
+                                    <Smartphone size={20} />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('ADMIN')}
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-xl ${viewMode === 'ADMIN' ? 'bg-white text-slate-900 scale-110' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                                >
+                                    <Layout size={20} />
+                                </button>
+
+                                <div className="mt-8 flex flex-col gap-3 p-2 bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl">
+                                    <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center py-1">Persona</div>
+                                    {[
+                                        { id: 'ADMIN', icon: ShieldCheck, color: 'text-rose-500' },
+                                        { id: 'COACH', icon: UserCircle, color: 'text-blue-500' },
+                                        { id: 'PLAYER', icon: Zap, color: 'text-emerald-500' },
+                                        { id: 'FAN', icon: Heart, color: 'text-rose-400' }
+                                    ].map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => setUserPersona(p.id)}
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${userPersona === p.id ? 'bg-white shadow-lg scale-110 ' + p.color : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
+                                            title={p.id}
+                                        >
+                                            <p.icon size={18} />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* IPHONE NOTCH SYSTEM */}
+                            {notchStyle === 'STANDARD' && (
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-8 bg-black rounded-b-3xl z-[100] flex items-end justify-center pb-1">
+                                    <div className="w-12 h-1 bg-slate-900 rounded-full opacity-50"></div>
+                                </div>
+                            )}
+                            {notchStyle === 'FLOATING' && (
+                                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-32 h-7 bg-black rounded-full z-[100] flex items-center justify-center gap-2 border border-white/5 active:scale-95 transition-transform duration-300">
+                                    <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                                    <div className="w-10 h-1 bg-slate-800 rounded-full"></div>
+                                </div>
+                            )}
+
+                            {/* DYNAMIC HEADER - Conditional */}
+                            {
+                                viewMode === 'USER' ? (
+                                    <div className="relative h-64 shrink-0 transition-colors duration-500 overflow-hidden">
+                                        {/* Hero Image based on Sport */}
+                                        <div className="absolute inset-0 bg-slate-900">
+                                            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${club.branding.primary}, ${club.branding.secondary})` }}></div>
+                                            <img src={config.heroImage} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50" alt="Hero" />
+                                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90"></div>
+                                        </div>
+
+                                        <div className="absolute top-0 w-full z-20 pt-14 px-6">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+                                                        {React.createElement(config.icon || Activity, { className: "text-white", size: 24 })}
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-xl font-display font-bold text-white leading-none shadow-black drop-shadow-md">{club.name}</h2>
+                                                        <span className="text-[10px] text-white/70 font-medium uppercase tracking-wider">{club.sportType} Elite Club</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="relative" onClick={() => setActiveChat({ id: 99, name: 'Support' })}>
+                                                        <MessageCircle className="text-white cursor-pointer hover:scale-110 transition-transform" size={24} />
+                                                        {/* Optional Badge */}
+                                                        {/* <div className="absolute -top-1 -right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-slate-900"></div> */}
+                                                    </div>
+                                                    <div className="relative" onClick={() => setActiveModal('NOTIFICATIONS')}>
+                                                        <Bell className="text-white cursor-pointer hover:scale-110 transition-transform" size={24} />
+                                                        <div className="absolute -top-1 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Stats Summary */}
+                                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                                                <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 min-w-[100px]">
+                                                    <div className="text-[10px] text-white/60 font-bold uppercase">Ranking</div>
+                                                    <div className="text-lg font-display font-bold text-white">#3</div>
+                                                </div>
+                                                <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 min-w-[100px]">
+                                                    <div className="text-[10px] text-white/60 font-bold uppercase">Prossima</div>
+                                                    <div className="text-lg font-display font-bold text-white">Dom 15</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* ADMIN HEADER */
+                                    <div className="bg-slate-900 pt-14 px-6 pb-6 shrink-0 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                                            <Layout size={100} className="text-white" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Pannello di Controllo</div>
+                                            <h2 className="text-2xl font-display font-bold text-white mb-4">Admin Dashboard</h2>
+                                            <div className="flex gap-2">
+                                                <div className="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700">
+                                                    <div className="text-xs text-slate-400 mb-1">Utenti</div>
+                                                    <div className="text-xl font-bold text-white">1,240</div>
+                                                </div>
+                                                <div className="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700">
+                                                    <div className="text-xs text-slate-400 mb-1">Entrate</div>
+                                                    <div className="text-xl font-bold text-emerald-400">€4.2k</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+                            {/* Content Layer */}
+                            {/* Content Layer */}
+                            <div className={`flex-1 ${viewMode === 'USER' ? `${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'} -mt-6 rounded-t-[30px]` : `${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`} relative z-20 overflow-hidden flex flex-col transition-colors duration-500`}>
+
+                                <div className="flex-1 overflow-y-auto pb-24 pt-6 px-5 scroll-smooth">
+                                    <AnimatePresence mode="wait">
+                                        {viewMode === 'ADMIN' ? (
+                                            <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                                                {/* Admin Tools */}
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {[
+                                                        { label: 'Gestione Atleti', icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
+                                                        { label: 'Contabilità', icon: CreditCard, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+                                                        { label: 'Comunicazioni', icon: Bell, color: 'text-amber-600', bg: 'bg-amber-100' },
+                                                        { label: 'Impostazioni', icon: Settings, color: 'text-slate-600', bg: 'bg-slate-200' },
+                                                    ].map((tool, i) => (
+                                                        <div key={i} onClick={() => alert("Funzionalità disponibile nel pannello completo.")} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-2 hover:border-blue-300 transition-colors cursor-pointer text-center">
+                                                            <div className={`w-10 h-10 ${tool.bg} ${tool.color} rounded-lg flex items-center justify-center`}>
+                                                                <tool.icon size={20} />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-700">{tool.label}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                {/* ADMIN CLUB MANAGEMENT HUB */}
+                                                {userPersona === 'ADMIN' && (
+                                                    <div className="space-y-4">
+                                                        <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-5 rounded-2xl border shadow-sm transition-colors duration-300`}>
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Sponsor Gold</h3>
+                                                                <button onClick={() => alert("Gestione Sponsor")} className="text-xs font-bold text-blue-600 hover:text-blue-500 transition-colors">+ Aggiungi</button>
+                                                            </div>
+                                                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                                                                {[1, 2, 3].map(i => (
+                                                                    <div key={i} className={`min-w-[80px] h-16 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'} rounded-xl border border-dashed flex items-center justify-center grayscale opacity-50 hover:opacity-100 transition-all cursor-pointer`}>
+                                                                        <ImageIcon size={20} className={isDarkMode ? 'text-slate-500' : 'text-slate-300'} />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* MOCKUP PLACEHOLDER (Fixed) */}
+                                                        <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-5 rounded-2xl border shadow-sm transition-colors duration-300`}>
+                                                            <div className={`relative w-full h-[400px] ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'} rounded-3xl overflow-hidden flex items-center justify-center border-4`}>
+                                                                <div className="text-center p-6">
+                                                                    <Smartphone size={48} className="mx-auto text-slate-300 mb-2" />
+                                                                    <p className="text-slate-400 font-bold text-sm">Anteprima App Dashboard</p>
+                                                                    <p className="text-slate-400 text-xs mb-4">La simulazione completa è disponibile nella vista User.</p>
+                                                                    <button onClick={() => setViewMode('USER')} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-lg hover:bg-blue-700 transition-colors">
+                                                                        Passa alla vista User
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-5 rounded-2xl border shadow-sm transition-colors duration-300`}>
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Pagamenti Soci</h3>
+                                                                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">85% Completati</span>
+                                                            </div>
+                                                            <div className="space-y-3">
+                                                                <div className={`h-2 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'} rounded-full overflow-hidden`}>
+                                                                    <div className="h-full bg-emerald-500 w-[85%]"></div>
+                                                                </div>
+                                                                <div className={`flex justify-between text-[10px] font-bold ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                                                    <span>Inviati: 140</span>
+                                                                    <span>In Sospeso: 21</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Quick Actions List */}
+                                                <div>
+                                                    {/* COACH DASHBOARD */}
+                                                    {userPersona === 'COACH' && (
+                                                        <div className="mb-6">
+                                                            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+                                                                <div className="relative z-10">
+                                                                    <div className="flex items-center gap-2 mb-2 opacity-80">
+                                                                        <Activity size={16} />
+                                                                        <span className="text-xs font-bold uppercase tracking-wider">Mister's Hub</span>
+                                                                    </div>
+                                                                    <h2 className="text-2xl font-display font-bold mb-4">Prossima Partita</h2>
+                                                                    <div className="flex gap-3">
+                                                                        <button onClick={() => setActiveModal('NOTIFICATIONS')} className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-2 rounded-lg text-xs font-bold transition-colors">
+                                                                            Convocazioni
+                                                                        </button>
+                                                                        <button onClick={() => { setPreviewPage('tactics'); setViewMode('USER'); }} className="bg-white text-blue-600 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-50 transition-colors">
+                                                                            Tattica
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                {/* Decor */}
+                                                                <Trophy className="absolute -bottom-4 -right-4 text-white/10 w-32 h-32 rotate-[-15deg]" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'} mb-3 px-1`}>Ultime Attività</h3>
+                                                    <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} rounded-xl shadow-sm border divide-y ${isDarkMode ? 'divide-slate-800' : 'divide-slate-50'}`}>
+                                                        {[1, 2, 3].map(i => (
+                                                            <div key={i} className="p-3 flex items-center gap-3">
+                                                                <div className={`w-8 h-8 rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-xs`}>{i}</div>
+                                                                <div className="flex-1">
+                                                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>Nuova iscrizione</div>
+                                                                    <div className={`text-[10px] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>2 min fa • Mario Rossi</div>
+                                                                </div>
+                                                                <ChevronRight size={14} className={isDarkMode ? 'text-slate-600' : 'text-slate-300'} />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ) : (
+                                            /* USER VIEWS */
+                                            <>
+                                                {/* PAGE: HOME */}
+                                                {previewPage === 'home' && (
+                                                    <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+
+                                                        {/* FAN MERCH BOX */}
+                                                        {userPersona === 'FAN' && (
+                                                            <div onClick={() => setPreviewPage('shop')} className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 text-white shadow-lg cursor-pointer hover:shadow-xl transition-shadow relative overflow-hidden">
+                                                                <div className="relative z-10">
+                                                                    <div className="flex items-center gap-2 mb-2 opacity-80">
+                                                                        <ShoppingBag size={14} />
+                                                                        <span className="text-[10px] font-bold uppercase tracking-wider">Fan Shop</span>
+                                                                    </div>
+                                                                    <h2 className="text-xl font-display font-bold mb-1">Nuovo Kit {new Date().getFullYear()}</h2>
+                                                                    <p className="text-xs text-white/80">Supporta la tua squadra con lo stile ufficiale.</p>
+                                                                </div>
+                                                                <ImageIcon className="absolute -bottom-4 -right-4 w-24 h-24 text-white/10 rotate-12" />
+                                                            </div>
+                                                        )}
+
+                                                        {/* PLAYER LOCKER (Personalized Stats) */}
+                                                        {userPersona === 'PLAYER' && (
+                                                            <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} rounded-2xl p-5 shadow-sm border relative overflow-hidden`}>
+                                                                <div className="flex items-center gap-4 relative z-10">
+                                                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-display font-bold shadow-lg">
+                                                                        10
+                                                                    </div>
+                                                                    <div>
+                                                                        <h3 className={`font-display font-bold text-lg ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Bentornato, Bomber!</h3>
+                                                                        <div className="flex gap-3 mt-1">
+                                                                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Top Scorer</span>
+                                                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Prossima: Sabato</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid grid-cols-3 gap-3 mt-6 relative z-10">
+                                                                    {[
+                                                                        { label: 'Minuti', value: '450' },
+                                                                        { label: 'Goal', value: '12' },
+                                                                        { label: 'Rating', value: '8.4' }
+                                                                    ].map((s, i) => (
+                                                                        <div key={i} className={`text-center p-2 rounded-xl ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'} border`}>
+                                                                            <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{s.value}</div>
+                                                                            <div className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-400'} uppercase font-bold`}>{s.label}</div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Live Match Card */}
+                                                        {club.modules.liveScoring && (
+                                                            <div onClick={() => setActiveModal('LIVE_MATCH')} className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border overflow-hidden relative group cursor-pointer hover:shadow-lg transition-shadow`}>
+                                                                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-500 to-rose-500"></div>
+                                                                <div className="p-5">
+                                                                    <div className="flex justify-between items-center mb-4">
+                                                                        <span className="flex items-center gap-2 text-[10px] font-bold text-red-500 uppercase tracking-widest bg-red-50 px-2 py-1 rounded-full">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> Live
+                                                                        </span>
+                                                                        <span className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>{config.scoring.period}</span>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="text-center w-1/3">
+                                                                            <div className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'} mb-1 line-clamp-1`}>{club.name}</div>
+                                                                            <img src={`https://ui-avatars.com/api/?name=${club.name}&background=0D8ABC&color=fff`} className="w-10 h-10 rounded-full mx-auto shadow-sm" />
+                                                                        </div>
+                                                                        <div className="text-center w-1/3">
+                                                                            <div className={`text-3xl font-display font-black ${isDarkMode ? 'text-white' : 'text-slate-900'} tracking-tighter`}>{liveMatchData.score.home} - {liveMatchData.score.away}</div>
+
+                                                                            {/* FAN INTERACTION: CHEER */}
+                                                                            {userPersona === 'FAN' && (
+                                                                                <button onClick={(e) => { e.stopPropagation(); alert("Hai inviato il tifo alla squadra! 📣"); }} className="mt-4 px-4 py-1.5 bg-rose-500 text-white text-[10px] font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-1 mx-auto">
+                                                                                    <Star size={10} fill="currentColor" /> Tifa Ora
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="text-center w-1/3">
+                                                                            <div className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'} mb-1`}>Rival</div>
+                                                                            <div className={`w-10 h-10 rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-500'} mx-auto flex items-center justify-center text-xs font-bold`}>VS</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'} px-5 py-3 border-t flex justify-between items-center`}>
+                                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Ultima azione</span>
+                                                                    <span className={`text-xs font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Contropiede veloce</span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Quick Modules */}
+                                                        <div className="grid grid-cols-4 gap-3">
+                                                            {[
+                                                                { id: 'roster', label: 'Rosa', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+                                                                { id: 'tactics', label: 'Tattiche', icon: Layout, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                                                                { id: 'video', label: 'Video', icon: Video, color: 'text-orange-600', bg: 'bg-orange-50' },
+                                                                { id: 'shop', label: 'Shop', icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-50' }
+                                                            ].map((action, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    onClick={() => {
+                                                                        if (canAccess(action.id)) {
+                                                                            setPreviewPage(action.id);
+                                                                        } else {
+                                                                            setShowPaywall(true);
+                                                                        }
+                                                                    }}
+                                                                    className={`flex flex-col items-center gap-2 group cursor-pointer relative ${!canAccess(action.id) ? 'opacity-70' : ''}`}
+                                                                >
+                                                                    <div className={`w-14 h-14 rounded-2xl ${action.bg} ${action.color} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border ${isDarkMode ? 'border-transparent' : 'border-slate-100'}`}>
+                                                                        <action.icon size={22} />
+                                                                    </div>
+                                                                    <span className={`text-[10px] font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{action.label}</span>
+
+                                                                    {!canAccess(action.id) && (
+                                                                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center border-2 border-white shadow-sm z-10 animate-in zoom-in duration-300">
+                                                                            <Lock size={10} className="text-gold-400" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+
+                                                        {/* Highlights / News - PREMIUM LOCKED */}
+                                                        <div className="relative">
+                                                            {!canAccess('news') && (
+                                                                <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center text-center p-4 rounded-2xl border border-dashed border-slate-300">
+                                                                    <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white mb-2 shadow-lg">
+                                                                        <Lock size={16} fill="currentColor" />
+                                                                    </div>
+                                                                    <p className="text-xs font-bold text-slate-900">Sblocca le News</p>
+                                                                    <p className="text-[10px] text-slate-500 mb-3">Richiede {featureFlags.news.minTier}</p>
+                                                                    <button onClick={() => setAppTier(featureFlags.news.minTier)} className="px-4 py-1.5 bg-slate-900 text-white text-[10px] font-bold rounded-lg hover:bg-slate-800">Upgrade</button>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex justify-between items-center mb-4 blur-[0.5px]">
+                                                                <h3 className={`font-display font-bold text-lg ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>In Evidenza</h3>
+                                                                <button onClick={() => setActiveModal('NEWS')} className="text-xs font-bold text-blue-600">Vedi tutti</button>
+                                                            </div>
+                                                            <div className="space-y-4 blur-[0.5px]">
+                                                                <div onClick={() => setActiveModal('NEWS')} className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} rounded-2xl shadow-sm border overflow-hidden flex gap-0 cursor-pointer hover:shadow-md transition-shadow`}>
+                                                                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=300&q=80" className="w-24 h-full object-cover" />
+                                                                    <div className="p-4 flex-1">
+                                                                        <div className="text-[10px] font-bold text-blue-600 uppercase mb-1">Società</div>
+                                                                        <h4 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'} leading-tight mb-2`}>Aperte le iscrizioni per la scuola {club.sportType.toLowerCase()}</h4>
+                                                                        <button className={`text-[10px] font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-400'} flex items-center gap-1`}>Leggi <ChevronRight size={10} /></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </motion.div>
+                                                )}
+
+                                                {/* NEWS FEED MODAL */}
+                                                {/* SPONSOR SECTION */}
+                                                <div className="mt-8 mb-6">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h3 className={`text-sm font-bold uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>I Nostri Partner</h3>
+                                                        <span className="text-[10px] text-blue-500 font-bold uppercase">Sponsor Gold</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-3 gap-3">
+                                                        {sponsors.map(sponsor => (
+                                                            <div key={sponsor.id} className={`${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'} border rounded-2xl p-3 flex flex-col items-center gap-2 group cursor-pointer active:scale-95 transition-all`}>
+                                                                <div className={`p-2 rounded-xl bg-gradient-to-br ${sponsor.color} text-white shadow-lg shadow-current/20`}>
+                                                                    {sponsor.icon === 'Shield' && <Shield size={16} />}
+                                                                    {sponsor.icon === 'Zap' && <Zap size={16} />}
+                                                                    {sponsor.icon === 'Heart' && <Heart size={16} />}
+                                                                </div>
+                                                                <span className={`text-[9px] font-bold text-center leading-tight ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{sponsor.name}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* FAN MERCH BOX */}
+                                                {userPersona === 'FAN' && (
+                                                    <div className="mt-6 p-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl text-white shadow-xl">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <div className="text-[10px] font-bold uppercase tracking-widest opacity-80 decoration-teal-300 line-through">Out of stock</div>
+                                                                <div className="text-lg font-black italic">FAN SHOP LIVE</div>
+                                                            </div>
+                                                            <Zap size={20} className="text-teal-200 animate-pulse" />
+                                                        </div>
+                                                        <button onClick={() => setPreviewPage('shop')} className="w-full py-2 bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold uppercase hover:bg-white/30 transition-all">Sostieni il Club</button>
+                                                    </div>
+                                                )}
+
+                                                {/* PAGE: ROSTER */}
+                                                {previewPage === 'roster' && (
+                                                    <motion.div key="roster" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <h2 className="font-display font-bold text-2xl text-slate-900">La Rosa</h2>
+                                                            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{players.length} Atleti</span>
+                                                        </div>
+
+                                                        {/* Filters */}
+                                                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                                            {['Tutti', ...new Set(config.roles)].map((role, i) => (
+                                                                <button key={role} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${i === 0 ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                                                                    {role}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+
+                                                        <div className="grid gap-3">
+                                                            {players.map(p => (
+                                                                <div key={p.id} onClick={() => { setSelectedPlayer(p); setActiveModal('PLAYER_DETAIL'); }} className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-3 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.03)] border flex items-center gap-4 group hover:border-blue-200 transition-colors cursor-pointer`}>
+                                                                    <div className="relative">
+                                                                        <img src={p.image} className="w-14 h-14 rounded-full object-cover border-2 border-slate-100" />
+                                                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-white">
+                                                                            {p.number}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <div className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} text-sm`}>{p.name}</div>
+                                                                        <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-md inline-block mt-0.5">{p.role}</div>
+                                                                    </div>
+                                                                    <div className="text-right flex items-center gap-3">
+                                                                        <div className="hidden sm:block">
+                                                                            <div className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center justify-end gap-1`}>
+                                                                                {p.stats.performance} <Star size={10} className="fill-yellow-400 text-yellow-400" />
+                                                                            </div>
+                                                                            <div className="text-[10px] text-slate-400 font-medium">Rating</div>
+                                                                        </div>
+
+                                                                        {/* COACH CONTROLS */}
+                                                                        {userPersona === 'COACH' && (
+                                                                            <div className="flex gap-2 ml-2 border-l pl-3 border-slate-100">
+                                                                                <button onClick={(e) => { e.stopPropagation(); alert(`Editing ${p.name}`); }} className="p-2 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                                                                    <Settings size={14} />
+                                                                                </button>
+                                                                                <button onClick={(e) => { e.stopPropagation(); alert(`Toggled convocazione for ${p.name}`); }} className="p-2 bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
+                                                                                    <Check size={14} />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+
+                                                {/* PAGE: EVENTS */}
+                                                {previewPage === 'events' && (
+                                                    <motion.div key="events" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                                                        <h2 className="font-display font-bold text-2xl text-slate-900 mb-4">Prossimi Eventi</h2>
+
+                                                        <div className="relative border-l-2 border-slate-200 ml-3.5 space-y-8 pl-8 py-2">
+                                                            {events.map((evt, i) => (
+                                                                <div key={evt.id} className="relative group">
+                                                                    {/* Timeline Dot */}
+                                                                    <div className="absolute -left-[39px] top-4 w-4 h-4 rounded-full bg-slate-100 border-2 border-slate-300 group-hover:border-blue-500 group-hover:bg-blue-50 transition-colors z-10"></div>
+
+                                                                    <div className="text-[10px] font-bold text-slate-400 mb-1 tracking-wider uppercase">{evt.date}</div>
+                                                                    <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.05)] border group-hover:-translate-y-1 transition-transform`}>
+                                                                        <div className="flex justify-between items-start mb-3">
+                                                                            <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${evt.type === 'match' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                                                {evt.type}
+                                                                            </div>
+                                                                            {evt.type === 'match' && <img src={`https://ui-avatars.com/api/?name=${evt.opponent}&background=random`} className="w-6 h-6 rounded-full" />}
+                                                                        </div>
+                                                                        <div className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} text-lg leading-tight mb-2`}>{evt.title}</div>
+                                                                        <div className="grid grid-cols-2 gap-4">
+                                                                            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium bg-slate-50 p-2 rounded-lg">
+                                                                                <Clock size={14} className="text-slate-400" /> {evt.time}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium bg-slate-50 p-2 rounded-lg">
+                                                                                <MapPin size={14} className="text-slate-400" /> {evt.location}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+
+                                                {/* PAGE: TACTICS (New) */}
+                                                {previewPage === 'tactics' && (
+                                                    <motion.div key="tactics" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <h2 className={`font-display font-bold text-2xl ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Lavagna Tattica</h2>
+                                                            <button onClick={handleAddTactic} className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"><Plus size={16} /></button>
+                                                        </div>
+
+                                                        {/* TACTICS BOARD CONTAINER */}
+                                                        <div className={`h-64 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] border-[6px] relative overflow-hidden flex items-center justify-center group
+                                                            ${club.sportType === 'Basket' ? 'bg-[#d97736] border-slate-800' :
+                                                                club.sportType === 'Volley' ? 'bg-orange-100 border-blue-900' :
+                                                                    club.sportType === 'Tennis' ? 'bg-[#cc564b] border-white' :
+                                                                        club.sportType === 'Rugby' ? 'bg-emerald-700 border-white' :
+                                                                            'bg-emerald-600 border-white/20' // Soccer Default
+                                                            }`}>
+
+                                                            {/* --- SPORT SPECIFIC COURTS --- */}
+
+                                                            {/* 1. SOCCER PITCH */}
+                                                            {(club.sportType === 'Calcio') && (
+                                                                <div className="absolute inset-0 opacity-80">
+                                                                    {/* Striped Grass Pattern */}
+                                                                    <div className="absolute inset-0 flex flex-col">
+                                                                        {[...Array(8)].map((_, i) => (
+                                                                            <div key={i} className={`flex-1 ${i % 2 === 0 ? 'bg-black/5' : 'bg-transparent'}`}></div>
+                                                                        ))}
+                                                                    </div>
+                                                                    {/* Lines */}
+                                                                    <div className="absolute inset-4 border-2 border-white/60"></div>
+                                                                    <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-white/60 -translate-y-1/2"></div>
+                                                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white/60 rounded-full flex items-center justify-center">
+                                                                        <div className="w-1 h-1 bg-white rounded-full"></div>
+                                                                    </div>
+                                                                    {/* Penalty Areas */}
+                                                                    <div className="absolute top-[-2px] left-1/2 -translate-x-1/2 w-32 h-16 border-2 border-t-0 border-white/60 bg-white/5"></div>
+                                                                    <div className="absolute bottom-[-2px] left-1/2 -translate-x-1/2 w-32 h-16 border-2 border-b-0 border-white/60 bg-white/5"></div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* 2. BASKETBALL COURT */}
+                                                            {club.sportType === 'Basket' && (
+                                                                <div className="absolute inset-0">
+                                                                    {/* Wood Texture Mockup */}
+                                                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-30"></div>
+
+                                                                    {/* Court Lines */}
+                                                                    <div className="absolute inset-4 border-2 border-white/70"></div>
+                                                                    <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-white/70 -translate-y-1/2"></div>
+                                                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white/70 rounded-full flex items-center justify-center bg-[#d97736]">
+                                                                        <div className="text-[8px] font-bold text-white/50 tracking-widest">CLUB</div>
+                                                                    </div>
+
+                                                                    {/* Key & 3-Point */}
+                                                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 w-24 h-28 border-2 border-l-0 border-white/70 bg-blue-900/20"></div>
+                                                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-24 h-28 border-2 border-r-0 border-white/70 bg-blue-900/20"></div>
+
+                                                                    {/* Hoops */}
+                                                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 w-1 h-4 bg-orange-600 rounded-sm"></div>
+                                                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 w-1 h-4 bg-orange-600 rounded-sm"></div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* 3. VOLLEYBALL COURT */}
+                                                            {club.sportType === 'Volley' && (
+                                                                <div className="absolute inset-0 flex items-center justify-center p-4">
+                                                                    <div className="w-full h-full bg-blue-500 border-2 border-white relative shadow-lg">
+                                                                        {/* Center Line (Net) */}
+                                                                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-white shadow-sm z-10"></div>
+                                                                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-black/10 blur-[1px] translate-y-1"></div>
+
+                                                                        {/* Attack Lines (3m) */}
+                                                                        <div className="absolute top-[30%] left-0 right-0 h-0.5 bg-white/60"></div>
+                                                                        <div className="absolute bottom-[30%] left-0 right-0 h-0.5 bg-white/60"></div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* 4. RUGBY FIELD */}
+                                                            {club.sportType === 'Rugby' && (
+                                                                <div className="absolute inset-0 opacity-90">
+                                                                    <div className="absolute inset-4 border-2 border-white/70 flex flex-col justify-between">
+                                                                        {/* Try Areas */}
+                                                                        <div className="h-10 border-b border-white/70 bg-white/10 flex items-center justify-center text-[8px] text-white/50 font-bold tracking-[0.5em]">TRY ZONE</div>
+
+                                                                        {/* 22m Lines */}
+                                                                        <div className="h-0.5 bg-white/50 w-full"></div>
+
+                                                                        {/* Halfway */}
+                                                                        <div className="h-0.5 bg-white/80 w-full relative flex justify-center">
+                                                                            <div className="h-2 w-2 rounded-full bg-white absolute -top-[3px]"></div>
+                                                                        </div>
+
+                                                                        {/* 22m Lines */}
+                                                                        <div className="h-0.5 bg-white/50 w-full"></div>
+
+                                                                        <div className="h-10 border-t border-white/70 bg-white/10 flex items-center justify-center text-[8px] text-white/50 font-bold tracking-[0.5em]">TRY ZONE</div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* 5. TENNIS COURT */}
+                                                            {club.sportType === 'Tennis' && (
+                                                                <div className="absolute inset-6 border-2 border-white bg-[#b5463b] shadow-inner relative">
+                                                                    {/* Doubles Alleys (Visual only, container is singles for simplicity or full court) */}
+
+                                                                    {/* Net */}
+                                                                    <div className="absolute top-1/2 -left-2 -right-2 h-1 bg-white shadow z-10 flex items-center justify-center">
+                                                                        <div className="w-full h-px bg-black/20"></div>
+                                                                    </div>
+
+                                                                    {/* Service Box Lines */}
+                                                                    <div className="absolute top-[20%] bottom-[20%] left-1/2 w-0.5 bg-white/80 -translate-x-1/2"></div>
+                                                                    <div className="absolute top-[20%] left-0 right-0 h-0.5 bg-white/80"></div>
+                                                                    <div className="absolute bottom-[20%] left-0 right-0 h-0.5 bg-white/80"></div>
+                                                                </div>
+                                                            )}
+
+
+                                                            {/* --- PLAYERS & INTERACTION --- */}
+                                                            <div className="relative z-20 flex flex-col items-center gap-3 animate-in zoom-in duration-500">
+                                                                <div className="bg-slate-900/80 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white shadow-xl border border-white/10">
+                                                                    {club.sportType === 'Basket' ? 'Pick & Roll - Exit' :
+                                                                        club.sportType === 'Volley' ? 'Difesa 6-UP' :
+                                                                            club.sportType === 'Rugby' ? 'Formazione: Lineout' :
+                                                                                club.sportType === 'Tennis' ? 'Attacco a rete' :
+                                                                                    '4-3-3: Pressing Alto'}
+                                                                </div>
+
+                                                                <div className="flex items-center gap-6">
+                                                                    {/* Draggable-like Player Tokens */}
+                                                                    <div className="flex gap-4">
+                                                                        {[1, 2, 3].map(i => (
+                                                                            <div key={i} className={`w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-[10px] font-black text-white
+                                                                                ${club.sportType === 'Basket' ? 'bg-slate-900' :
+                                                                                    club.sportType === 'Volley' ? 'bg-yellow-400 text-blue-900' :
+                                                                                        club.sportType === 'Tennis' ? 'bg-lime-400 text-slate-900' :
+                                                                                            'bg-red-500' // Default / Rugby
+                                                                                } hover:scale-110 cursor-move transition-transform`}>
+                                                                                {i}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+
+                                                                    {/* Opponent Tokens (Ghost) */}
+                                                                    <div className="flex gap-4 opacity-50">
+                                                                        {[1, 2].map(i => (
+                                                                            <div key={`opp-${i}`} className="w-8 h-8 rounded-full border-2 border-white/50 bg-slate-400/50 shadow-sm"></div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        {/* SAVED TACTICS LIST */}
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            {tacticsList.map(t => (
+                                                                <div key={t} className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-3 rounded-xl border shadow-sm hover:border-blue-400 transition-colors cursor-pointer group`}>
+                                                                    <div className={`h-20 rounded-lg mb-2 overflow-hidden relative ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                                                                        {/* Mini-Preview generic */}
+                                                                        <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                                                                            <Activity size={32} />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'} flex justify-between items-center`}>
+                                                                        {t}
+                                                                        <ChevronRight size={12} className="text-slate-400 group-hover:text-blue-500" />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+
+                                                {/* PAGE: VIDEO (New) */}
+                                                {previewPage === 'video' && (
+                                                    <motion.div key="video" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                                                        <h2 className="font-display font-bold text-2xl text-slate-900 mb-4">Video Analisi</h2>
+                                                        <div onClick={() => alert("Riproduzione video mock...")} className="bg-slate-900 rounded-xl overflow-hidden aspect-video relative group cursor-pointer">
+                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                                    <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                                                                <div className="text-white font-bold text-sm">Analisi Match vs Real Rival</div>
+                                                                <div className="text-slate-300 text-[10px]">Caricato 2h fa</div>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+
+                                                {/* PAGE: SHOP (New) */}
+                                                {previewPage === 'shop' && (
+                                                    <motion.div key="shop" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <h2 className={`font-display font-bold text-2xl ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Official Shop</h2>
+                                                            <button onClick={() => setIsCheckoutOpen(true)} className="relative p-2 bg-slate-100 rounded-full text-slate-700 transition-transform active:scale-95">
+                                                                <ShoppingBag size={20} />
+                                                                {cart.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm">{cart.length}</span>}
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            {[{ n: 'Kit Home 24/25', p: 75, img: 'Maglia' }, { n: 'Sciarpa Club', p: 25, img: 'Sciarpa' }, { n: 'Tuta Allenamento', p: 90, img: 'Tuta' }, { n: 'Cappellino', p: 20, img: 'Hat' }].map((item, i) => (
+                                                                <div key={i} className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-3 rounded-xl border shadow-sm group relative overflow-hidden`}>
+                                                                    <div className="aspect-square bg-slate-50 rounded-lg mb-2 relative flex items-center justify-center overflow-hidden">
+                                                                        <img src={`https://placehold.co/200x200/f1f5f9/64748b?text=${item.img}`} className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-500" />
+                                                                        <button onClick={() => addToCart(item)} className="absolute bottom-2 right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg translate-y-10 group-hover:translate-y-0 transition-transform">
+                                                                            <Plus size={16} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'} mb-1 leading-tight`}>{item.n}</div>
+                                                                    <div className="text-sm font-bold text-blue-600">€{item.p}</div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+
+                                                        {/* Checkout Modal Overlay */}
+                                                        <AnimatePresence>
+                                                            {isCheckoutOpen && (
+                                                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
+                                                                    <motion.div initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+                                                                        <div className="flex justify-between items-center mb-6">
+                                                                            <h3 className="text-lg font-bold">Carrello ({cart.length})</h3>
+                                                                            <button onClick={() => setIsCheckoutOpen(false)} className="text-slate-400 hover:text-slate-600"><Plus size={24} className="rotate-45" /></button>
+                                                                        </div>
+                                                                        <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
+                                                                            {cart.length === 0 ? <p className="text-center text-slate-400 text-sm py-4">Il carrello è vuoto</p> : cart.map((c, i) => (
+                                                                                <div key={i} className="flex justify-between items-center py-2 border-b border-slate-50">
+                                                                                    <span className="text-sm font-medium">{c.n}</span>
+                                                                                    <span className="text-sm font-bold">€{c.p}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="flex justify-between items-center text-lg font-bold mb-6">
+                                                                            <span>Totale</span>
+                                                                            <span>€{cart.reduce((a, b) => a + b.p, 0)}</span>
+                                                                        </div>
+                                                                        <button onClick={() => { setIsCheckoutOpen(false); setCart([]); alert('Grazie per il tuo ordine!'); }} className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30">
+                                                                            Procedi al Checkout
+                                                                        </button>
+                                                                    </motion.div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </motion.div>
+                                                )}
+                                            </>
+
+
+                                        )}
+                                    </AnimatePresence>
+                                </div >
+                            </div>
+
+                            {/* --- MODALS OVERLAY --- */}
+                            < AnimatePresence >
+                                {activeModal && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex flex-col justify-end">
+
+                                        {/* CLOSE AREA */}
+                                        <div className="flex-1" onClick={() => setActiveModal(null)}></div>
+
+                                        {/* MODAL CONTENT */}
+                                        <motion.div initial={{ y: "100%" }} animate={{ y: "0%" }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className={`${isDarkMode ? 'bg-slate-900 border-t border-slate-800' : 'bg-slate-50'} rounded-t-[30px] p-6 pb-24 max-h-[85%] overflow-y-auto shadow-2xl relative`}>
+
+                                            <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-6"></div>
+
+                                            {/* NOTIFICATIONS MODAL */}
+                                            {activeModal === 'NOTIFICATIONS' && (
+                                                <>
+                                                    <h2 className="text-2xl font-bold font-display text-slate-900 mb-6 flex items-center gap-2">
+                                                        <Bell className="text-slate-900" /> Notifiche
+                                                    </h2>
+                                                    <div className="space-y-3">
+                                                        {notifications.map(n => (
+                                                            <div key={n.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4">
+                                                                <div className={`w-2 h-full rounded-full ${n.type === 'alert' ? 'bg-red-500' : n.type === 'success' ? 'bg-green-500' : 'bg-blue-500'}`}></div>
+                                                                <div>
+                                                                    <h4 className="font-bold text-slate-900">{n.title}</h4>
+                                                                    <p className="text-xs text-slate-500 leading-relaxed">{n.message}</p>
+                                                                    <span className="text-[10px] text-slate-400 mt-2 block">{n.time}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {/* NEWS FEED MODAL */}
+                                            {/* NEWS FEED MODAL */}
+                                            {activeModal === 'NEWS' && (
+                                                <>
+                                                    {!selectedNews ? (
+                                                        <>
+                                                            <h2 className="text-2xl font-bold font-display text-slate-900 mb-6">Ultime News</h2>
+                                                            <div className="space-y-6">
+                                                                {newsList.map(item => (
+                                                                    <div key={item.id} className="group cursor-pointer" onClick={() => setSelectedNews(item)}>
+                                                                        <div className="aspect-video rounded-xl bg-slate-200 overflow-hidden mb-3 relative">
+                                                                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                                            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider">{item.category}</div>
+                                                                        </div>
+                                                                        <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{item.title}</h3>
+                                                                        <p className="text-xs text-slate-500">{item.date} • 2 min lettura</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                                            <button onClick={() => setSelectedNews(null)} className="flex items-center gap-2 text-sm font-bold text-slate-500 mb-6 hover:text-slate-900 transition-colors">
+                                                                <ArrowLeft className="w-4 h-4" /> Torna alle News
+                                                            </button>
+
+                                                            <div className="aspect-video rounded-2xl bg-slate-200 overflow-hidden mb-6 relative shadow-lg">
+                                                                <img src={selectedNews.image} className="w-full h-full object-cover" />
+                                                                <div className="absolute bottom-4 left-4 bg-blue-600/90 backdrop-blur px-3 py-1 rounded-lg text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+                                                                    {selectedNews.category}
+                                                                </div>
+                                                            </div>
+
+                                                            <h2 className="text-2xl font-bold font-display text-slate-900 mb-2 leading-tight">{selectedNews.title}</h2>
+                                                            <p className="text-xs text-slate-500 font-medium mb-6 flex items-center gap-2">
+                                                                <Calendar className="w-3 h-3" /> {selectedNews.date}
+                                                                <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                                                <Clock className="w-3 h-3" /> 2 min lettura
+                                                            </p>
+
+                                                            <div className="prose prose-sm prose-slate max-w-none text-slate-600 leading-relaxed">
+                                                                <p className="mb-4">
+                                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                                                </p>
+                                                                <p className="mb-4">
+                                                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                                                </p>
+                                                                <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4 text-slate-800 font-medium bg-blue-50 py-2 pr-2 rounded-r-lg">
+                                                                    "È stata una prestazione incredibile da parte di tutta la squadra. Abbiamo lottato su ogni pallone e meritato questa vittoria."
+                                                                </blockquote>
+                                                                <p>
+                                                                    Il prossimo appuntamento è fissato per domenica prossima, dove la squadra cercherà di confermare questo ottimo momento di forma. I biglietti sono già disponibili presso la biglietteria dello stadio e online.
+                                                                </p>
+                                                            </div>
+
+                                                            <button className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                                                                <Share2 className="w-4 h-4" /> Condividi Articolo
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+
+                                            {/* PLAYER DETAIL MODAL */}
+                                            {activeModal === 'PLAYER_DETAIL' && selectedPlayer && (
+                                                <div className="text-center">
+                                                    <div className="relative inline-block mb-4">
+                                                        <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-blue-500 to-indigo-600">
+                                                            <img src={selectedPlayer.image} className="w-full h-full rounded-full object-cover border-4 border-white" />
+                                                        </div>
+                                                        <div className="absolute -bottom-2 -right-2 bg-slate-900 text-white text-xs font-bold w-8 h-8 flex items-center justify-center rounded-full border-2 border-white">{selectedPlayer.number}</div>
+                                                    </div>
+                                                    <h2 className="text-2xl font-bold font-display text-slate-900">{selectedPlayer.name}</h2>
+                                                    <p className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-6">{selectedPlayer.role}</p>
+
+                                                    <div className="grid grid-cols-3 gap-3 mb-8">
+                                                        <div className="bg-slate-100 p-3 rounded-xl">
+                                                            <div className="text-2xl font-bold text-slate-900">{selectedPlayer.stats.presenze}</div>
+                                                            <div className="text-[10px] text-slate-500 uppercase font-bold">Presenze</div>
+                                                        </div>
+                                                        <div className="bg-slate-100 p-3 rounded-xl">
+                                                            <div className="text-2xl font-bold text-slate-900">{selectedPlayer.stats.performance}</div>
+                                                            <div className="text-[10px] text-slate-500 uppercase font-bold">Media Voto</div>
+                                                        </div>
+                                                        <div className="bg-slate-100 p-3 rounded-xl">
+                                                            <div className="text-2xl font-bold text-slate-900">23</div>
+                                                            <div className="text-[10px] text-slate-500 uppercase font-bold">Età</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-colors">Visualizza Statistiche Complete</button>
+                                                </div>
+                                            )}
+
+                                            {/* LIVE MATCH MODAL */}
+                                            {activeModal === 'LIVE_MATCH' && (
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-8 bg-slate-900 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                                                        <div className="absolute inset-0 bg-blue-600/20 blur-xl"></div>
+                                                        <div className="text-center relative z-10">
+                                                            <div className="text-2xl font-bold">{liveMatchData.score.home}</div>
+                                                            <div className="text-xs opacity-70">{liveMatchData.home}</div>
+                                                        </div>
+                                                        <div className="text-center relative z-10">
+                                                            <div className="text-red-500 text-xs font-bold uppercase animate-pulse mb-1">Live</div>
+                                                            <div className="text-3xl font-display font-bold">{liveMatchData.time}</div>
+                                                        </div>
+                                                        <div className="text-center relative z-10">
+                                                            <div className="text-2xl font-bold">{liveMatchData.score.away}</div>
+                                                            <div className="text-xs opacity-70">{liveMatchData.away}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <h3 className="font-bold text-slate-900 mb-4 px-2">Cronaca Live</h3>
+                                                    <div className="space-y-4 relative pl-4 border-l-2 border-slate-200 ml-2">
+                                                        {liveMatchData.events.map(e => (
+                                                            <div key={e.id} className="relative pl-6">
+                                                                <div className={`absolute -left-[29px] top-0 w-4 h-4 rounded-full border-2 border-white shadow-sm ${e.type === 'goal' ? 'bg-green-500' : e.type === 'card' ? 'bg-yellow-500' : 'bg-slate-400'}`}></div>
+                                                                <div className="flex justify-between items-start">
+                                                                    <div>
+                                                                        <span className="font-bold text-slate-900 text-sm">{e.min}</span> <span className="text-slate-600 text-sm font-medium">{e.type === 'goal' ? 'GOAL!' : e.type === 'card' ? 'Cartellino' : 'Azione'}</span>
+                                                                        <div className="text-xs text-slate-500">{e.player} ({e.team === 'home' ? liveMatchData.home : liveMatchData.away})</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence >
+
+                            {/* BOTTOM NAVIGATION BAR */}
+                            {viewMode === 'USER' && (
+                                <div className={`absolute bottom-8 left-6 right-6 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-slate-200'} backdrop-blur-xl border px-2 py-3 rounded-2xl shadow-2xl flex justify-between items-center z-40 transition-colors duration-300`}>
+                                    {activeTabs.map(tab => (
+                                        <button
+                                            key={tab.id}
+                                            onClick={() => setPreviewPage(tab.id)}
+                                            className="flex flex-col items-center gap-1 group flex-1"
+                                        >
+                                            <div className={`${previewPage === tab.id ? `${isDarkMode ? 'text-white bg-slate-800' : 'text-slate-900 bg-slate-100'}` : 'text-slate-400 group-hover:text-slate-500'} p-2 rounded-xl transition-all`}>
+                                                <tab.icon size={22} strokeWidth={previewPage === tab.id ? 2.5 : 2} />
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+
+                            {
+                                activeChat && (
+                                    <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-end justify-center p-4">
+                                        <div className={`w-full max-w-sm rounded-[2rem] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-300 ${isDarkMode ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-slate-200'}`}>
+                                            <div className="p-4 bg-blue-600 text-white flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">C</div>
+                                                    <div>
+                                                        <div className="text-sm font-bold">{activeChat.name}</div>
+                                                        <div className="text-[10px] opacity-80">Supporto Tecnico Attivo</div>
+                                                    </div>
+                                                </div>
+                                                <button onClick={() => setActiveChat(null)} className="p-2 hover:bg-white/10 rounded-full">
+                                                    <X size={20} />
+                                                </button>
+                                            </div>
+                                            <div className="flex-1 p-4 space-y-4 max-h-[300px] overflow-y-auto">
+                                                {chatMessages.map(msg => (
+                                                    <div key={msg.id} className={`flex ${msg.sender === 'USER' ? 'justify-end' : 'justify-start'}`}>
+                                                        <div className={`max-w-[80%] p-3 rounded-2xl text-[11px] font-medium ${msg.sender === 'USER' ? 'bg-blue-600 text-white rounded-tr-none shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-200 rounded-tl-none' : 'bg-slate-100 text-slate-800 rounded-tl-none')}`}>
+                                                            {msg.text}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+                            {/* PAYWALL */}
+                            {
+                                showPaywall && (
+                                    <div className="fixed inset-0 z-[2000] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-300">
+                                        <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+
+                                            {/* Background Effects */}
+                                            <div className="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-blue-600/20 to-transparent"></div>
+                                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
+                                            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+                                            <div className="relative p-8 flex flex-col items-center text-center">
+
+                                                {/* Icon */}
+                                                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/40 rotate-12 mb-6">
+                                                    <Trophy size={40} className="text-white drop-shadow-md" />
+                                                </div>
+
+                                                <h2 className="text-3xl font-display font-black text-white mb-2">ClubForge <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">ELITE</span></h2>
+                                                <p className="text-slate-400 mb-8 max-w-[260px] leading-relaxed">Sblocca il potenziale illimitato del tuo club con funzionalità professionali.</p>
+
+                                                {/* Features */}
+                                                <div className="w-full space-y-3 mb-8 text-left">
+                                                    {[
+                                                        "Analisi Video Avanzata",
+                                                        "Shop Senza Commissioni",
+                                                        "Notifiche Push Illimitate",
+                                                        "Esportazione Codice Nativo"
+                                                    ].map((feat, i) => (
+                                                        <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                                                            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                                                <Check size={14} className="text-emerald-400" />
+                                                            </div>
+                                                            <span className="text-sm font-bold text-slate-200">{feat}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                {/* CTA */}
+                                                <button
+                                                    onClick={() => { setShowPaywall(false); setAppTier('PREMIUM'); }}
+                                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white font-bold text-lg shadow-xl shadow-blue-900/50 hover:scale-[1.02] active:scale-95 transition-all mb-4 relative overflow-hidden group"
+                                                >
+                                                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                                    <span className="relative">Sblocca Ora - €29/mese</span>
+                                                </button>
+
+                                                <button
+                                                    onClick={() => setShowPaywall(false)}
+                                                    className="text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest"
+                                                >
+                                                    Forse più tardi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+
+
+                        </div>
+
+
+                        <div className="absolute bottom-4 left-0 w-full text-center py-2 opacity-50 pointer-events-none">
+                            <p className="text-slate-500 text-[10px] font-mono tracking-widest uppercase">© 2024 ClubForge App Builder</p>
+                        </div>
+
+                    </div>
+                </div >
+            );
+        };
+        const root = createRoot(document.getElementById('root'));
+        root.render(<Main />);
+    </script>
+</body>
+
+</html>
