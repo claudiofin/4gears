@@ -436,7 +436,75 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         return renderAdminDashboard(topPaddingValue);
     }
 
+    const renderSplashScreen = () => {
+        const logoPosition = currentTeam.branding?.logoPosition || 'center';
+        const primaryColor = currentTeam.colors.primary;
+
+        const getLogoAlignment = () => {
+            switch (logoPosition) {
+                case 'top': return 'justify-start pt-20';
+                case 'bottom': return 'justify-end pb-20';
+                default: return 'justify-center';
+            }
+        };
+
+        return (
+            <div
+                className={`absolute inset-0 flex flex-col items-center ${getLogoAlignment()} px-8 text-center overflow-hidden h-full w-full`}
+                style={{
+                    background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)`,
+                }}
+            >
+                {/* Decorative Elements */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
+                    <div className="absolute -top-1/4 -left-1/4 w-full h-full bg-white/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute -bottom-1/4 -right-1/4 w-full h-full bg-black/20 rounded-full blur-3xl animate-pulse" />
+                </div>
+
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", duration: 1.2, bounce: 0.4 }}
+                    className="relative z-10"
+                >
+                    <div className="w-32 h-32 bg-white rounded-[32px] shadow-2xl flex items-center justify-center p-6 mb-6">
+                        <img src={currentTeam.logo} alt={currentTeam.name} className="w-full h-full object-contain" />
+                    </div>
+
+                    <h1 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">
+                        {currentTeam.name}
+                    </h1>
+                    <p className="text-white/60 text-sm font-medium tracking-widest uppercase">
+                        {currentTeam.sportType} Official App
+                    </p>
+                </motion.div>
+
+                <div className="absolute bottom-12 flex flex-col items-center gap-4">
+                    <div className="flex gap-1.5">
+                        {[0, 1, 2].map(i => (
+                            <motion.div
+                                key={i}
+                                animate={{
+                                    scale: [1, 1.5, 1],
+                                    opacity: [0.3, 1, 0.3]
+                                }}
+                                transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    delay: i * 0.2
+                                }}
+                                className="w-1.5 h-1.5 bg-white rounded-full"
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     switch (currentPage) {
+        case 'splash':
+            return renderSplashScreen();
         case 'home':
             return (
                 <div className={`${getSpacingClass()} px-4 pb-32`} style={{ paddingTop: `${topPaddingValue}px` }}>

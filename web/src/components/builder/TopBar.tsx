@@ -1,6 +1,6 @@
 import React from 'react';
 import { Smartphone, Moon, Sun, Monitor, User, Shield, Lock, Download } from 'lucide-react';
-import { AppTier, UserPersona, ViewMode, NotchStyle, DeviceType } from '@/types/builder';
+import { AppTier, UserPersona, ViewMode, NotchStyle, DeviceType, MockScenario } from '@/types/builder';
 
 interface TopBarProps {
     userPersona: UserPersona;
@@ -16,6 +16,8 @@ interface TopBarProps {
     isDarkMode: boolean;
     onDarkModeToggle: () => void;
     onExport: () => void;
+    mockScenario: MockScenario;
+    onMockScenarioChange: (scenario: MockScenario) => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -31,13 +33,15 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDeviceChange,
     isDarkMode,
     onDarkModeToggle,
-    onExport
+    onExport,
+    mockScenario,
+    onMockScenarioChange
 }) => {
     return (
         <div className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-40">
             <div className="flex items-center gap-4">
                 <div className="bg-slate-800 p-1 rounded-lg flex border border-slate-700">
-                    {['USER', 'ADMIN'].map((mode) => (
+                    {['USER', 'ADMIN', 'SPLASH'].map((mode) => (
                         <button
                             key={mode}
                             onClick={() => onViewModeChange(mode as ViewMode)}
@@ -46,7 +50,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
                         >
-                            {mode === 'USER' ? <User size={12} /> : <Shield size={12} />}
+                            {mode === 'USER' ? <User size={12} /> : mode === 'ADMIN' ? <Shield size={12} /> : <Smartphone size={12} />}
                             {mode}
                         </button>
                     ))}
@@ -129,6 +133,17 @@ export const TopBar: React.FC<TopBarProps> = ({
                     >
                         {isDarkMode ? <Moon size={14} /> : <Sun size={14} />}
                     </button>
+
+                    <div className="w-px h-3 bg-slate-800" />
+
+                    <select
+                        value={mockScenario}
+                        onChange={(e) => onMockScenarioChange(e.target.value as MockScenario)}
+                        className="bg-transparent text-[10px] text-slate-400 outline-none cursor-pointer hover:text-slate-200"
+                    >
+                        <option value="STANDARD">Normal Data</option>
+                        <option value="CROWDED">High Density</option>
+                    </select>
                 </div>
 
                 <div className="h-6 w-px bg-slate-800 mx-2" />

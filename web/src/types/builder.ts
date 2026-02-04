@@ -2,9 +2,10 @@ import { SportType } from "@/constants/sports";
 
 export type AppTier = 'FREE' | 'PREMIUM' | 'ELITE';
 export type UserPersona = 'ADMIN' | 'COACH' | 'PLAYER' | 'FAN';
-export type ViewMode = 'USER' | 'ADMIN';
+export type ViewMode = 'USER' | 'ADMIN' | 'SPLASH';
 export type NotchStyle = 'NONE' | 'STANDARD' | 'FLOATING';
 export type DeviceType = 'IPHONE' | 'ANDROID';
+export type MockScenario = 'STANDARD' | 'CROWDED';
 
 export interface FeatureFlag {
     id: string;
@@ -51,6 +52,7 @@ export type ThemeConfig = {
     spacingLevel: 'compact' | 'comfortable' | 'spacious';
     iconStyle: 'outline' | 'filled';
     navStyle: 'classic' | 'modern' | 'glass' | 'liquid';
+    glassIntensity?: number; // 0 to 20px
     navigationType?: 'tabbar' | 'burger' | 'header_tabs';
     header?: {
         showNotifications: boolean;

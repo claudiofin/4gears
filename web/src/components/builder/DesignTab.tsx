@@ -176,7 +176,7 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
 
                 <div>
                     <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 block">Card Material</label>
-                    <div className="grid grid-cols-3 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700/50">
+                    <div className="grid grid-cols-3 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700/50 mb-4">
                         {['minimal', 'bordered', 'glass'].map((style) => (
                             <button
                                 key={style}
@@ -190,6 +190,27 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                             </button>
                         ))}
                     </div>
+
+                    {config.cardStyle === 'glass' && (
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="flex justify-between items-center">
+                                <label htmlFor="glass-intensity-slider" className="text-[10px] text-slate-400 font-medium">Glass Blur Intensity</label>
+                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">
+                                    {config.glassIntensity || 10}px
+                                </span>
+                            </div>
+                            <input
+                                id="glass-intensity-slider"
+                                type="range"
+                                min="0"
+                                max="20"
+                                step="1"
+                                value={config.glassIntensity || 10}
+                                onChange={(e) => onUpdate({ ...config, glassIntensity: parseInt(e.target.value) })}
+                                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                            />
+                        </div>
+                    )}
                 </div>
             </section>
 

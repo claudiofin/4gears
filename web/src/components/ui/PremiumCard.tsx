@@ -76,18 +76,26 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
         const border = override?.borderColor ? '' : defaultBorder;
 
         // Glass Blur
-        const backdrop = effectiveVariant === 'glass' ? 'backdrop-blur-md' : '';
+        const blurAmount = themeConfig.glassIntensity !== undefined ? `${themeConfig.glassIntensity}px` : '12px'; // Default to 12px if not set
+        const backdrop = effectiveVariant === 'glass' ? '' : ''; // We'll apply this via style for dynamic intensity
 
         // Shadow
         const shadow = effectiveVariant === 'minimal' ? 'shadow-sm hover:shadow-md'
             : effectiveVariant === 'glass' ? 'shadow-lg hover:shadow-xl'
                 : 'shadow-sm';
 
-        return `${base} ${bg} border ${border} ${backdrop} ${shadow}`;
+        return `${base} ${bg} border ${border} ${shadow}`;
     };
 
     // Custom Style Object for Overrides
     const customStyle: React.CSSProperties = {};
+
+    // Apply dynamic glass blur if variant is glass
+    if (effectiveVariant === 'glass') {
+        const blurAmount = themeConfig.glassIntensity !== undefined ? `${themeConfig.glassIntensity}px` : '12px';
+        customStyle.backdropFilter = `blur(${blurAmount})`;
+        customStyle.WebkitBackdropFilter = `blur(${blurAmount})`;
+    }
     if (override?.backgroundColor) customStyle.backgroundColor = override.backgroundColor;
     if (override?.borderColor) {
         customStyle.borderColor = override.borderColor;

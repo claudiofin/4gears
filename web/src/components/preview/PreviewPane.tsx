@@ -151,39 +151,41 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     )
                 }
                 header={
-                    <SimulatorHeader
-                        themeConfig={themeConfig}
-                        currentTeam={currentTeam}
-                        sportConfig={sportConfig}
-                        isScrolled={isScrolled}
-                        isDarkMode={isDarkMode}
-                        isInspectorActive={isInspectorActive}
-                        activeSelectionId={activeSelectionId}
-                        onSelect={handleElementClick}
-                        getOverride={getOverride}
-                        featureFlags={allFeatures}
-                        activeFeatures={activeFeatures}
-                        onHeightChange={setHeaderHeight}
-                        onBurgerClick={() => setShowBurgerMenu(true)}
-                        onChatClick={() => setIsChatOpen(true)}
-                        onNotificationsClick={() => setIsNotificationsOpen(true)}
-                        onBackClick={() => setPreviewPage('home')}
-                        canGoBack={
-                            previewPage !== 'home' &&
-                            themeConfig.navigationType === 'header_tabs'
-                        }
-                        pageTitle={
-                            previewPage === 'home'
-                                ? 'Home'
-                                : previewPage.charAt(0).toUpperCase() + previewPage.slice(1)
-                        }
-                        viewMode={viewMode}
-                        previewPage={previewPage}
-                        setPreviewPage={setPreviewPage}
-                    />
+                    previewPage !== 'splash' && (
+                        <SimulatorHeader
+                            themeConfig={themeConfig}
+                            currentTeam={currentTeam}
+                            sportConfig={sportConfig}
+                            isScrolled={isScrolled}
+                            isDarkMode={isDarkMode}
+                            isInspectorActive={isInspectorActive}
+                            activeSelectionId={activeSelectionId}
+                            onSelect={handleElementClick}
+                            getOverride={getOverride}
+                            featureFlags={allFeatures}
+                            activeFeatures={activeFeatures}
+                            onHeightChange={setHeaderHeight}
+                            onBurgerClick={() => setShowBurgerMenu(true)}
+                            onChatClick={() => setIsChatOpen(true)}
+                            onNotificationsClick={() => setIsNotificationsOpen(true)}
+                            onBackClick={() => setPreviewPage('home')}
+                            canGoBack={
+                                previewPage !== 'home' &&
+                                themeConfig.navigationType === 'header_tabs'
+                            }
+                            pageTitle={
+                                previewPage === 'home'
+                                    ? 'Home'
+                                    : previewPage.charAt(0).toUpperCase() + previewPage.slice(1)
+                            }
+                            viewMode={viewMode}
+                            previewPage={previewPage}
+                            setPreviewPage={setPreviewPage}
+                        />
+                    )
                 }
                 bottomNav={
-                    (themeConfig.navigationType === 'tabbar' || !themeConfig.navigationType) && (
+                    previewPage !== 'splash' && (themeConfig.navigationType === 'tabbar' || !themeConfig.navigationType) && (
                         <SimulatorBottomNav
                             themeConfig={themeConfig}
                             currentTeam={currentTeam}

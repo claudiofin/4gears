@@ -133,7 +133,8 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
                                     overrides={getOverride(`nav_tab_${item.id}`)}
                                     traits={['content', 'interaction', 'icon']}
                                 >
-                                    <button
+                                    <motion.button
+                                        whileTap={{ scale: 0.9 }}
                                         onClick={() => setPreviewPage(item.id)}
                                         className={`relative flex flex-col items-center gap-0.5 z-10 transition-all duration-500 flex-1`}
                                     >
@@ -166,7 +167,7 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
                                                 {getOverride(`nav_tab_${item.id}`)?.text || item.label}
                                             </span>
                                         )}
-                                    </button>
+                                    </motion.button>
                                 </Selectable>
                             );
                         })}

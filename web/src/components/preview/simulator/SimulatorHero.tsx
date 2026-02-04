@@ -6,6 +6,8 @@ import { SportConfig } from '@/constants/sports';
 import { ComponentMetadata } from '@/types/inspector';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
 
+import { motion } from 'framer-motion';
+
 interface SimulatorHeroProps {
     themeConfig: ThemeConfig;
     currentTeam: TeamConfig;
@@ -34,7 +36,11 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
     const Icon = sportConfig.icon;
 
     return (
-        <div className="relative pt-12 pb-8 px-6 -mx-4 -mt-4 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate">
+        <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative pt-12 pb-8 px-6 -mx-4 -mt-4 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate"
+        >
 
             {/* Dynamic Gradient Background */}
             <div
@@ -61,12 +67,15 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                         traits={['content', 'typography', 'interaction']}
                     >
                         {(welcomeOverride?.visible !== false || isInspectorActive) && (
-                            <h2
+                            <motion.h2
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 }}
                                 className={`text-xs font-bold uppercase tracking-widest mb-1 ${welcomeOverride?.fontSize || ''} ${welcomeOverride?.visible === false ? 'opacity-30 grayscale' : 'opacity-90'}`}
                                 style={{ color: welcomeOverride?.textColor || 'rgba(255,255,255,0.8)' }}
                             >
                                 {welcomeOverride?.text || 'Benvenuto'}
-                            </h2>
+                            </motion.h2>
                         )}
                     </Selectable>
 
@@ -81,20 +90,27 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                         traits={['content', 'typography', 'interaction']}
                     >
                         {(teamNameOverride?.visible !== false || isInspectorActive) && (
-                            <h1
+                            <motion.h1
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2 }}
                                 className={`text-4xl font-black leading-tight tracking-tight ${teamNameOverride?.fontSize || ''} ${teamNameOverride?.visible === false ? 'opacity-30 grayscale' : ''}`}
                                 style={{ color: teamNameOverride?.textColor || '#ffffff' }}
                             >
                                 {teamNameOverride?.text || currentTeam.name}
-                            </h1>
+                            </motion.h1>
                         )}
                     </Selectable>
                 </div>
 
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner transform rotate-3 hover:rotate-6 transition-transform">
+                <motion.div
+                    whileHover={{ scale: 1.1, rotate: 6 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner transform rotate-3 transition-all cursor-pointer"
+                >
                     <Icon {...getIconProps(28, "text-white")} />
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 };

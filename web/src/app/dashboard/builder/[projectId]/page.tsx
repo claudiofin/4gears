@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Project } from '@/types/database';
 import { useProjectSave } from '@/hooks/useProjectSave';
-import { AppTier, UserPersona, ViewMode, NotchStyle, DeviceType, FeatureFlags, ThemeConfig, EditorSelection } from '@/types/builder';
+import { AppTier, UserPersona, ViewMode, NotchStyle, DeviceType, FeatureFlags, ThemeConfig, EditorSelection, MockScenario } from '@/types/builder';
 import { DEFAULT_TEAMS, TeamConfig } from '@/constants/teams';
 import { BuilderSidebar } from '@/components/builder/BuilderSidebar';
 import { TopBar } from '@/components/builder/TopBar';
@@ -50,6 +50,7 @@ export default function BuilderPage() {
     const [notchStyle, setNotchStyle] = useState<NotchStyle>('STANDARD');
     const [deviceType, setDeviceType] = useState<DeviceType>('IPHONE');
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [mockScenario, setMockScenario] = useState<MockScenario>('STANDARD');
 
     const [activeChat, setActiveChat] = useState<any>(null);
     const [cart, setCart] = useState<any[]>([]);
@@ -111,7 +112,7 @@ export default function BuilderPage() {
         team: currentTeam,
         theme: themeConfig,
         features: featureFlags,
-        simulator: { appTier, userPersona, viewMode, notchStyle, deviceType, isDarkMode }
+        simulator: { appTier, userPersona, viewMode, notchStyle, deviceType, isDarkMode, mockScenario }
     };
 
     // Use save hook
@@ -129,13 +130,23 @@ export default function BuilderPage() {
         }
     }, [projectId]);
 
-    // Regenerate mock data when sport changes
+    // Regenerate mock data when sport or scenario changes
     useEffect(() => {
-        setMockPlayers(generatePlayers(currentTeam.sportType));
-        setMockEvents(generateEvents(currentTeam.sportType));
-        setMockNotifications(generateNotifications(currentTeam.sportType));
+        const isCrowded = mockScenario === 'CROWDED';
+        setMockPlayers(generatePlayers(currentTeam.sportType, isCrowded));
+        setMockEvents(generateEvents(currentTeam.sportType, isCrowded));
+        setMockNotifications(generateNotifications(currentTeam.sportType, isCrowded));
         setMockConversations(generateConversations(currentTeam.sportType));
-    }, [currentTeam.sportType]);
+    }, [currentTeam.sportType, mockScenario]);
+
+    // Handle View Mode changes for special screens
+    useEffect(() => {
+        if (viewMode === 'SPLASH') {
+            setPreviewPage('splash');
+        } else if (previewPage === 'splash') {
+            setPreviewPage('home');
+        }
+    }, [viewMode]);
 
     const loadProject = async () => {
         if (!user) return;
@@ -173,6 +184,7 @@ export default function BuilderPage() {
                     if (sim.notchStyle) setNotchStyle(sim.notchStyle);
                     if (sim.deviceType) setDeviceType(sim.deviceType);
                     if (sim.isDarkMode !== undefined) setIsDarkMode(sim.isDarkMode);
+                    if (sim.mockScenario) setMockScenario(sim.mockScenario);
                 }
             }
         } catch (err: any) {
@@ -350,6 +362,8 @@ export default function BuilderPage() {
                     isDarkMode={isDarkMode}
                     onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
                     onExport={() => { }}
+                    mockScenario={mockScenario}
+                    onMockScenarioChange={setMockScenario}
                 />
 
                 <div className="flex flex-1 overflow-hidden">

@@ -1,7 +1,10 @@
 import React from 'react';
-import { Image as ImageIcon, Smartphone } from 'lucide-react';
+import { Image as ImageIcon, Smartphone, Palette } from 'lucide-react';
 import { TeamConfig, DEFAULT_TEAMS } from '@/constants/teams';
 import { ImageUploadControl } from '../inspector/controls/ImageUploadControl';
+
+import { ColorControl } from '../inspector/controls/ColorControl';
+import { ButtonGroupControl } from '../inspector/controls/ButtonGroupControl';
 
 interface IdentityTabProps {
     currentTeam: TeamConfig;
@@ -38,6 +41,30 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ currentTeam, onTeamCha
                             </div>
                         </button>
                     ))}
+                </div>
+            </section>
+
+            <div className="h-px bg-slate-800" />
+
+            {/* Team Colors */}
+            <section className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <Palette size={12} />
+                    Team Palette
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <ColorControl
+                        id="primary-color"
+                        label="Primary"
+                        value={currentTeam.colors.primary}
+                        onChange={(val) => onUpdate({ colors: { ...currentTeam.colors, primary: val } })}
+                    />
+                    <ColorControl
+                        id="secondary-color"
+                        label="Secondary"
+                        value={currentTeam.colors.secondary}
+                        onChange={(val) => onUpdate({ colors: { ...currentTeam.colors, secondary: val } })}
+                    />
                 </div>
             </section>
 
@@ -107,6 +134,16 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ currentTeam, onTeamCha
                         }}
                         placeholder="Vertical Splash"
                         aspectRatio="banner" // Using banner as proxy for custom ratio if needed, or stick to square/custom
+                    />
+
+                    <ButtonGroupControl
+                        label="Logo Position on Splash"
+                        value={currentTeam.branding?.logoPosition || 'center'}
+                        options={['top', 'center', 'bottom']}
+                        onChange={(val) => {
+                            const currentBranding = currentTeam.branding || {};
+                            onUpdate({ branding: { ...currentBranding, logoPosition: val as any } });
+                        }}
                     />
 
                     {/* UI Global Background */}

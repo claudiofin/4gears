@@ -149,9 +149,10 @@ export const SPORT_CONFIG: Record<string, SportConfigType> = {
 
 export type SportType = keyof typeof SPORT_CONFIG;
 
-export const generatePlayers = (sport: SportType) => {
+export const generatePlayers = (sport: SportType, isCrowded: boolean = false) => {
     const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
-    return Array.from({ length: 12 }).map((_, i) => {
+    const count = isCrowded ? 40 : 12;
+    return Array.from({ length: count }).map((_, i) => {
         const stats: Record<string, any> = {
             presenze: Math.floor(Math.random() * 20) + 1,
             performance: Math.floor(Math.random() * 10)
@@ -166,7 +167,7 @@ export const generatePlayers = (sport: SportType) => {
 
         return {
             id: i,
-            name: ['Alessandro Rossi', 'Marco Banchi', 'Luca Sarti', 'Davide Moro', 'Giuseppe Verdi', 'Andrea Conti', 'Matteo Longo', 'Francesco Totti', 'Luigi Riva', 'Paolo Maldini', 'Roberto Baggio', 'Filippo Inzaghi'][i],
+            name: i < 12 ? ['Alessandro Rossi', 'Marco Banchi', 'Luca Sarti', 'Davide Moro', 'Giuseppe Verdi', 'Andrea Conti', 'Matteo Longo', 'Francesco Totti', 'Luigi Riva', 'Paolo Maldini', 'Roberto Baggio', 'Filippo Inzaghi'][i] : `Giocatore ${i + 1}`,
             role: config.roles[i % config.roles.length],
             number: Math.floor(Math.random() * 99) + 1,
             stats,
@@ -175,14 +176,27 @@ export const generatePlayers = (sport: SportType) => {
     });
 };
 
-export const generateEvents = (sport: SportType) => {
+export const generateEvents = (sport: SportType, isCrowded: boolean = false) => {
     const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
-    return [
+    const standardEvents = [
         { id: 1, title: 'Big Match vs Rivali', type: 'match', date: 'Dom, 12 Mag', time: '15:00', location: 'Stadio Comunale', opponent: 'Real Rival' },
         { id: 2, title: config.events[1] || 'Allenamento', type: 'training', date: 'Mar, 14 Mag', time: '18:30', location: 'Centro Sportivo' },
         { id: 3, title: 'Evento Societario', type: 'event', date: 'Ven, 17 Mag', time: '20:00', location: 'Club House' },
         { id: 4, title: config.events[2] || 'Tattica', type: 'training', date: 'Lun, 20 Mag', time: '19:00', location: 'Palestra' }
     ];
+
+    if (!isCrowded) return standardEvents;
+
+    const extraEvents = Array.from({ length: 15 }).map((_, i) => ({
+        id: i + 5,
+        title: `Extra ${config.events[i % config.events.length] || 'Event'} ${i + 1}`,
+        type: i % 3 === 0 ? 'match' : i % 3 === 1 ? 'training' : 'event',
+        date: `Giu, ${i + 1}`,
+        time: '18:00',
+        location: 'Campo B'
+    }));
+
+    return [...standardEvents, ...extraEvents];
 };
 
 export const generateStaff = () => {
@@ -212,13 +226,25 @@ export const generateSponsors = () => {
     ];
 };
 
-export const generateNotifications = (sport: SportType) => {
+export const generateNotifications = (sport: SportType, isCrowded: boolean = false) => {
     const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
-    return [
+    const standardInfos = [
         { id: 1, title: 'Nuovo Risultato', message: `La squadra ha concluso il match con un ${config.scoring.format}.`, time: '2h fa', type: 'info' },
         { id: 2, title: 'Cambio Allenamento', message: `L'allenamento di ${config.events[1] || 'domani'} è stato posticipato alle 19:00.`, time: '5h fa', type: 'warning' },
         { id: 3, title: 'Nuovo Kit Disponibile', message: 'La nuova maglia è ora disponibile nello shop!', time: '1g fa', type: 'success' },
     ];
+
+    if (!isCrowded) return standardInfos;
+
+    const extraInfos = Array.from({ length: 10 }).map((_, i) => ({
+        id: i + 4,
+        title: `Notifica ${i + 1}`,
+        message: 'Questa è una notifica extra per testare la densità dei contenuti.',
+        time: `${i + 2}g fa`,
+        type: i % 2 === 0 ? 'info' : 'success'
+    }));
+
+    return [...standardInfos, ...extraInfos];
 };
 
 export const generateHistory = () => {

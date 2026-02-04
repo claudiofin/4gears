@@ -16,6 +16,8 @@ export type TeamConfig = {
         appIcon?: string;
         uiBackground?: string;
         watermark?: string;
+        logoPosition?: 'top' | 'center' | 'bottom';
+        glassIntensity?: number; // 0 to 20px
     };
     sportOverrides?: {
         roles?: string[];
