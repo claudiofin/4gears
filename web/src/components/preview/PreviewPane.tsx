@@ -152,7 +152,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         )
                     }
                     header={
-                        previewPage !== 'splash' && (
+                        previewPage !== 'splash' && previewPage !== 'login' && (
                             <SimulatorHeader
                                 themeConfig={themeConfig}
                                 currentTeam={currentTeam}
@@ -186,7 +186,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         )
                     }
                     bottomNav={
-                        previewPage !== 'splash' && (themeConfig.navigationType === 'tabbar' || !themeConfig.navigationType) && (
+                        previewPage !== 'splash' && previewPage !== 'login' && (themeConfig.navigationType === 'tabbar' || !themeConfig.navigationType) && (
                             <SimulatorBottomNav
                                 themeConfig={themeConfig}
                                 currentTeam={currentTeam}

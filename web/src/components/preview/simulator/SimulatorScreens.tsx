@@ -549,6 +549,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     </div>
 
                     <button
+                        onClick={() => {
+                            setPreviewPage('home');
+                            // Optional: You could also switch viewMode to 'USER' here if you had access to setViewMode,
+                            // but usually updating the page is enough for the simulator flow.
+                        }}
                         className="w-full py-4 rounded-xl font-bold text-white shadow-lg shadow-indigo-500/30 mt-4 transition-transform active:scale-95 text-sm"
                         style={{ backgroundColor: primaryColor }}
                     >
