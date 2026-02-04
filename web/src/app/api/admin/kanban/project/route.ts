@@ -88,10 +88,25 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        console.log('🚀 POST /api/admin/kanban/project - Starting...');
+
         const supabase = createClient<any>(supabaseUrl, supabaseServiceKey);
         const body = await request.json();
 
+        console.log('📦 Request body:', JSON.stringify(body, null, 2));
+
         const { submission_id, name, description, github_repo_url, github_repo_name } = body;
+
+        // Validate required fields
+        if (!name) {
+            console.error('❌ Validation failed: name is required');
+            return NextResponse.json(
+                { error: 'Project name is required' },
+                { status: 400 }
+            );
+        }
+
+        console.log('✅ Validation passed, creating project...');
 
         // Create project
         // @ts-ignore - Supabase type inference issue
@@ -108,7 +123,12 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (projectError) throw projectError;
+        if (projectError) {
+            console.error('❌ Project creation error:', projectError);
+            throw projectError;
+        }
+
+        console.log('✅ Project created:', project.id);
 
         // Create default columns
         const defaultColumns = [
@@ -117,6 +137,8 @@ export async function POST(request: NextRequest) {
             { name: 'Review', position: 2, color: '#f59e0b' },
             { name: 'Done', position: 3, color: '#10b981' },
         ];
+
+        console.log('📋 Creating default columns...');
 
         // @ts-ignore - Supabase type inference issue
         const { error: columnsError } = await supabase
@@ -129,13 +151,29 @@ export async function POST(request: NextRequest) {
                 }))
             );
 
-        if (columnsError) throw columnsError;
+        if (columnsError) {
+            console.error('❌ Columns creation error:', columnsError);
+            throw columnsError;
+        }
+
+        console.log('✅ Columns created successfully');
+        console.log('🎉 Project setup complete!');
 
         return NextResponse.json({ project }, { status: 201 });
     } catch (error: any) {
-        console.error('Error creating kanban project:', error);
+        console.error('💥 Error creating kanban project:', error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+        });
         return NextResponse.json(
-            { error: error.message || 'Failed to create project' },
+            {
+                error: error.message || 'Failed to create project',
+                details: error.details || 'Unknown error',
+                hint: error.hint || 'Check server logs for more information'
+            },
             { status: 500 }
         );
     }

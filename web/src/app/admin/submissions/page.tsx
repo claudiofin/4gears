@@ -92,7 +92,11 @@ export default function SubmissionsPage() {
                         });
 
                         if (!response.ok) {
-                            throw new Error('Failed to create Kanban project');
+                            const errorData = await response.json();
+                            console.error('API Error Response:', errorData);
+                            throw new Error(
+                                errorData.details || errorData.error || 'Failed to create Kanban project'
+                            );
                         }
 
                         const { project } = await response.json();
@@ -105,7 +109,7 @@ export default function SubmissionsPage() {
                         return; // Don't continue with normal flow
                     } catch (kanbanError: any) {
                         console.error('Error creating Kanban project:', kanbanError);
-                        alert(`⚠️ Progetto approvato, ma errore nella creazione della Kanban board:\n${kanbanError.message}\n\nPuoi crearla manualmente dalla sezione Kanban.`);
+                        alert(`⚠️ Progetto approvato, ma errore nella creazione della Kanban board:\n\n${kanbanError.message}\n\nPuoi crearla manualmente dalla sezione Kanban.`);
                     }
                 }
             }
