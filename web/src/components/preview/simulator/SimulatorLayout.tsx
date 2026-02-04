@@ -41,7 +41,7 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 pb-32 pt-[42px] relative isolate h-full w-full">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 pb-32 pt-[47px] relative isolate h-full w-full">
             {/* Background Noise/Gradient for the Workspace */}
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none -z-10"></div>
 
