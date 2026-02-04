@@ -259,7 +259,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
             {/* Inspector Panel */}
             <AnimatePresence>
                 {isInspectorActive && onInspectorClose && (
-                    <div className="fixed right-8 top-24 z-[100]">
+                    <div className="fixed right-8 top-[50%] -translate-y-[50%] z-[100]">
                         <FloatingInspectorPanel
                             metadata={selectedMetadata}
                             config={themeConfig}
