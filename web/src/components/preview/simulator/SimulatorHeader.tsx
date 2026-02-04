@@ -135,7 +135,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     height: targetHeight,
                     minHeight: targetHeight
                 }}
-                className="relative w-full pt-14 pb-3 px-6 flex flex-col overflow-hidden"
+                className="relative w-full pt-14 pb-3 px-6 flex flex-col overflow-hidden backdrop-blur-md"
                 style={{
                     borderRadius: themeConfig.borderRadius === 'full' ? '0 0 40px 40px' : '0'
                 }}
@@ -148,12 +148,12 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                         style={{
                             background: `linear-gradient(135deg, 
                                 ${headerOverride?.customGradientStart || themeConfig.header?.customGradientStart || currentTeam.colors.primary}, 
-                                ${headerOverride?.customGradientEnd || themeConfig.header?.customGradientEnd || currentTeam.colors.secondary || currentTeam.colors.primary}dd)`
+                                ${headerOverride?.customGradientEnd || themeConfig.header?.customGradientEnd || currentTeam.colors.secondary || currentTeam.colors.primary}${!!(headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage) ? 'dd' : ''})`
                         }}
                     />
 
                     {/* Gradient Mesh / Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
 
                     {/* Background Image Layer (Custom or Team) */}
                     {(headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage) && (
