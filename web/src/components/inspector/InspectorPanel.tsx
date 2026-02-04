@@ -23,7 +23,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className={`fixed right-0 top-0 h-full w-[320px] bg-slate-950 border-l border-slate-800 shadow-2xl z-[100] flex flex-col transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`absolute left-[calc(100%+12px)] top-0 h-[812px] w-[300px] bg-slate-950/95 border border-slate-800 shadow-2xl z-[100] flex flex-col transition-all duration-300 rounded-[32px] overflow-hidden backdrop-blur-xl ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
             {/* Header */}
             <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50 backdrop-blur-xl">
                 <div className="flex items-center gap-2">
