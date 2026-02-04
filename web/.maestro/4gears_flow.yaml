@@ -1,0 +1,40 @@
+appId: com.google.chrome.ios # Testing via Chrome on iOS simulator or similar web context
+---
+- launchApp:
+      url: "http://localhost:3000"
+
+# 1. Verify Home Screen & Initial State
+- assertVisible: "4Gears Visual Editor"
+- assertVisible: "Admin Dashboard" # Default view is Admin
+- assertVisible: "Identità & Accesso"
+
+# 2. Test Dark Mode Toggle
+# Note: Icons are harder to target by text, but we can try targeting the title if available or assume position
+# For now, let's skip the toggle tap as it's an icon button without text label and verify default elements
+
+# 3. Test View Mode Switching (To User View)
+- tapOn: "USER"
+- assertVisible: "Benvenuto"
+
+# 4. Return to Admin Mode
+- tapOn: "ADMIN"
+- assertVisible: "Admin Dashboard"
+
+# 5. Test Tab Navigation (In User View)
+- tapOn: "USER"
+- assertVisible: "Benvenuto"
+
+# Switch to Tactics
+- tapOn: "Tattiche" # Assuming the tab label is visible or using accessibility label
+# If tabs are icons, we might need to use point coordinates or accessibility labels if Maestro supports them on Web.
+# Since this is a YAML for Maestro which usually targets mobile apps, and we are on web,
+# we rely on text visibility.
+# The user asked to "update", so we make it consistent with current UI.
+- assertVisible: "Note Tattiche"
+
+# 6. Test Team Switching (Identity Tab)
+# This requires opening the sidebar tab "IDENTITY" first
+- tapOn: "IDENTITY"
+- tapOn: "Virtus Premium"
+- assertVisible: "Virtus Premium"
+- assertVisible: "Basket"
