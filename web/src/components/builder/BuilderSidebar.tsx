@@ -16,7 +16,7 @@ interface BuilderSidebarProps {
     editorSelection: EditorSelection;
     onSelectionChange: (selection: EditorSelection) => void;
     themeConfig: ThemeConfig;
-    onThemeUpdate: (config: ThemeConfig) => void;
+    onThemeUpdate: (config: ThemeConfig | ((prev: ThemeConfig) => ThemeConfig)) => void;
 
     featureFlags: FeatureFlags;
     onFeatureToggle: (id: string) => void;

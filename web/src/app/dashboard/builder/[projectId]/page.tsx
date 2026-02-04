@@ -84,7 +84,7 @@ export default function BuilderPage() {
         componentOverrides: {}
     });
 
-    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
+    const [featureFlags, setFeatureFlagsState] = useState<FeatureFlags>({
         news: { id: 'news', label: 'News Feed', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
         tactics: { id: 'tactics', label: 'Lavagna Tattica', enabled: true, minTier: 'PREMIUM', availableTo: ['COACH', 'PLAYER', 'ADMIN'] },
         video: { id: 'video', label: 'Video Analisi', enabled: true, minTier: 'FREE', availableTo: ['COACH', 'PLAYER', 'ADMIN'] },
@@ -167,15 +167,51 @@ export default function BuilderPage() {
 
             setProject(data);
 
-            // Load config
+            // Load config and merge with defaults
             const config = data.config as any;
             if (config) {
                 if (config.team) {
-                    setTeams([config.team]);
-                    setCurrentTeamId(config.team.id);
+                    // Update our DEFAULT_TEAMS local copy with saved data if it matches
+                    const savedTeam = config.team;
+                    setTeams(prev => prev.map(t => t.id === savedTeam.id ? { ...t, ...savedTeam } : t));
+                    setCurrentTeamId(savedTeam.id);
                 }
-                if (config.theme) setThemeConfigState(config.theme);
-                if (config.features) setFeatureFlags(config.features);
+
+                if (config.theme) {
+                    setThemeConfigState(prev => {
+                        const merged = {
+                            ...prev,
+                            ...config.theme,
+                            header: {
+                                ...prev.header,
+                                ...(config.theme.header || {})
+                            }
+                        };
+                        // Only use saved navigation if it's not empty, otherwise keep defaults
+                        if (config.theme.navigation && config.theme.navigation.length > 0) {
+                            merged.navigation = config.theme.navigation;
+                        } else {
+                            merged.navigation = prev.navigation;
+                        }
+                        return merged;
+                    });
+                }
+
+                if (config.features) {
+                    setFeatureFlagsState(prev => {
+                        const merged = { ...prev };
+                        Object.keys(config.features).forEach(key => {
+                            if (merged[key as keyof FeatureFlags]) {
+                                merged[key as keyof FeatureFlags] = {
+                                    ...merged[key as keyof FeatureFlags],
+                                    ...config.features[key]
+                                };
+                            }
+                        });
+                        return merged;
+                    });
+                }
+
                 if (config.simulator) {
                     const sim = config.simulator;
                     if (sim.appTier) setAppTier(sim.appTier);
@@ -201,7 +237,7 @@ export default function BuilderPage() {
     };
 
     const handleFeatureToggle = (flagId: string) => {
-        setFeatureFlags((prev: FeatureFlags) => {
+        setFeatureFlagsState((prev: FeatureFlags) => {
             const flag = prev[flagId as keyof FeatureFlags];
             return {
                 ...prev,
@@ -211,7 +247,7 @@ export default function BuilderPage() {
     };
 
     const handleFeatureUpdate = (flagId: string, updates: any) => {
-        setFeatureFlags((prev: FeatureFlags) => {
+        setFeatureFlagsState((prev: FeatureFlags) => {
             const flag = prev[flagId as keyof FeatureFlags];
             return {
                 ...prev,
@@ -225,8 +261,7 @@ export default function BuilderPage() {
     };
 
     const setThemeConfig = (newConfig: ThemeConfig | ((prev: ThemeConfig) => ThemeConfig)) => {
-        const resolvedConfig = typeof newConfig === 'function' ? newConfig(themeConfig) : newConfig;
-        setThemeConfigState(resolvedConfig);
+        setThemeConfigState(newConfig);
     };
 
     const canAccess = (featureId: string) => {

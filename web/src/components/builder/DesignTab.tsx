@@ -4,7 +4,7 @@ import { ThemeConfig, FeatureFlags } from '@/types/builder';
 
 interface DesignTabProps {
     config: ThemeConfig;
-    onUpdate: (config: ThemeConfig) => void;
+    onUpdate: (config: ThemeConfig | ((prev: ThemeConfig) => ThemeConfig)) => void;
     featureFlags: FeatureFlags;
 }
 
@@ -440,15 +440,13 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                     if (file) {
                                         const reader = new FileReader();
                                         reader.onloadend = () => {
-                                            onUpdate({
-                                                ...config,
+                                            onUpdate((prev: any) => ({
+                                                ...prev,
                                                 header: {
-                                                    ...config.header,
-                                                    showNotifications: config.header?.showNotifications ?? true,
-                                                    showSupport: config.header?.showSupport ?? true,
+                                                    ...(prev.header || {}),
                                                     backgroundImage: reader.result as string
                                                 }
-                                            });
+                                            }));
                                         };
                                         reader.readAsDataURL(file);
                                     }
@@ -769,9 +767,28 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
 
                     <div className="flex justify-between items-center mb-2">
                         <label className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Menu Items</label>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${(config.navigation || []).filter(n => n.enabled).length > 5 ? 'bg-red-500/10 text-red-500' : 'bg-indigo-500/10 text-indigo-400'}`}>
-                            {(config.navigation || []).filter(n => n.enabled).length}/5 Attivi
-                        </span>
+                        <div className="flex items-center justify-between">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${(config.navigation || []).filter(n => n.enabled).length > 5 ? 'bg-red-500/10 text-red-500' : 'bg-indigo-500/10 text-indigo-400'}`}>
+                                {(config.navigation || []).filter(n => n.enabled).length}/5 Attivi
+                            </span>
+                            <button
+                                onClick={() => {
+                                    onUpdate((prev: any) => ({
+                                        ...prev,
+                                        navigation: [
+                                            { id: 'home', label: 'Home', icon: 'Layout', enabled: true, order: 0 },
+                                            { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 1 },
+                                            { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 2 },
+                                            { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 3 },
+                                            { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 4 },
+                                        ]
+                                    }));
+                                }}
+                                className="text-[10px] text-slate-500 hover:text-indigo-400 transition-colors uppercase font-bold"
+                            >
+                                Ripristina Defaults
+                            </button>
+                        </div>
                     </div>
                     <div className="space-y-2">
                         {(config.navigation || [])
@@ -789,10 +806,12 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                                     alert("Puoi avere al massimo 5 elementi attivi nella barra di navigazione.");
                                                     return;
                                                 }
-                                                const newNav = config.navigation.map(n =>
-                                                    n.id === item.id ? { ...n, enabled: e.target.checked } : n
-                                                );
-                                                onUpdate({ ...config, navigation: newNav });
+                                                onUpdate((prev: any) => ({
+                                                    ...prev,
+                                                    navigation: (prev.navigation || []).map((n: any) =>
+                                                        n.id === item.id ? { ...n, enabled: e.target.checked } : n
+                                                    )
+                                                }));
                                             }}
                                             className="rounded border-slate-600 bg-slate-700 text-indigo-500 focus:ring-offset-slate-800"
                                         />
@@ -811,10 +830,12 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                                     if (file) {
                                                         const reader = new FileReader();
                                                         reader.onloadend = () => {
-                                                            const newNav = config.navigation.map(n =>
-                                                                n.id === item.id ? { ...n, customIconUrl: reader.result as string } : n
-                                                            );
-                                                            onUpdate({ ...config, navigation: newNav });
+                                                            onUpdate((prev: any) => ({
+                                                                ...prev,
+                                                                navigation: (prev.navigation || []).map((n: any) =>
+                                                                    n.id === item.id ? { ...n, customIconUrl: reader.result as string } : n
+                                                                )
+                                                            }));
                                                         };
                                                         reader.readAsDataURL(file);
                                                     }
