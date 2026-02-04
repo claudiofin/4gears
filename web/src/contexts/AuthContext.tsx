@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // 3. Mark invite code as used
             if (authData.user) {
                 // We use the same supabase instance which should have the session now
-                const { error: updateError } = await supabase
+                const { error: updateError } = await (supabase as any)
                     .from('invite_codes')
                     .update({
                         used: true,
