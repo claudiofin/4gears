@@ -54,17 +54,19 @@ export default function AnalyticsPage() {
             try {
                 // Real queries
                 const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-                const { data: submissions } = await supabase.from('submission_requests').select('status, data');
+                const { data: submissions } = await supabase.from('submission_requests').select('status, config');
 
-                const approvedCount = submissions?.filter(s => s.status === 'approved').length || 0;
-                const totalSubmissions = submissions?.length || 0;
-                const pendingCount = submissions?.filter(s => s.status === 'pending').length || 0;
+                const typedSubmissions = submissions as any[];
+
+                const approvedCount = typedSubmissions?.filter(s => s.status === 'completed' || s.status === 'in_progress').length || 0;
+                const totalSubmissions = typedSubmissions?.length || 0;
+                const pendingCount = typedSubmissions?.filter(s => s.status === 'pending').length || 0;
                 const rejectedCount = totalSubmissions - approvedCount - pendingCount;
 
                 // Mocking sports distribution from submission data if available
                 const sportsMap: Record<string, number> = {};
-                submissions?.forEach(s => {
-                    const sport = (s.data as any)?.sport || 'Inviato';
+                typedSubmissions?.forEach(s => {
+                    const sport = (s.config as any)?.team?.sport || 'Inviato';
                     sportsMap[sport] = (sportsMap[sport] || 0) + 1;
                 });
 

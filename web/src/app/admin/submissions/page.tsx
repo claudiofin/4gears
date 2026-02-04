@@ -7,9 +7,13 @@ import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { Check, X, FileText, Loader2 } from 'lucide-react';
 
-// Extend type to include joined profile email
-type ExtendedSubmission = SubmissionRequest & {
+// Extend type to include joined profile email and new contact fields
+export type ExtendedSubmission = SubmissionRequest & {
     profiles: { email: string | null } | null;
+    test_email?: string;
+    phone_number?: string;
+    github_repo_url?: string;
+    github_repo_name?: string;
 };
 
 export default function SubmissionsPage() {
@@ -17,17 +21,25 @@ export default function SubmissionsPage() {
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
+    const [error, setError] = useState<string | null>(null);
+
     const fetchSubmissions = async () => {
         try {
+            setError(null);
             const { data, error } = await supabase
                 .from('submission_requests')
-                .select('*, profiles(email)')
+                .select('*, profiles!user_id(email)')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Error fetching submissions:', error);
+                setError(error.message);
+                return;
+            }
             setSubmissions((data as unknown) as ExtendedSubmission[]);
-        } catch (error) {
-            console.error('Error fetching submissions:', error);
+        } catch (err: any) {
+            console.error('Error in fetchSubmissions:', err);
+            setError(err.message || 'Errore sconosciuto');
         } finally {
             setLoading(false);
         }
@@ -73,6 +85,11 @@ export default function SubmissionsPage() {
 
     return (
         <div className="space-y-6">
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
+                    Errore: {error}
+                </div>
+            )}
             <div>
                 <h2 className="text-2xl font-bold text-white tracking-tight">Richieste di Creazione</h2>
                 <p className="text-slate-400">Gestisci le richieste di deploy inviate dagli utenti.</p>
@@ -94,11 +111,12 @@ export default function SubmissionsPage() {
                             {submissions.map((sub) => (
                                 <tr key={sub.id} className="hover:bg-slate-800/30 transition-colors">
                                     <td className="p-4">
-                                        <div className="font-medium text-white">
-                                            {sub.profiles?.email || 'Email non disponibile'}
+                                        <div className="font-medium text-white truncate max-w-[200px]" title={sub.profiles?.email || ''}>
+                                            {sub.profiles?.email || 'N/A'}
                                         </div>
-                                        <div className="text-xs text-slate-500 font-mono">
-                                            {sub.user_id.substring(0, 8)}...
+                                        <div className="text-[10px] text-slate-400 space-y-0.5">
+                                            {sub.test_email && <div className="flex items-center gap-1"><span>Test:</span> <span className="text-blue-400">{sub.test_email}</span></div>}
+                                            {sub.phone_number && <div className="flex items-center gap-1"><span>Tel:</span> <span className="text-emerald-400">{sub.phone_number}</span></div>}
                                         </div>
                                     </td>
                                     <td className="p-4">

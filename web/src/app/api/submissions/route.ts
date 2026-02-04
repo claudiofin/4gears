@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { projectId, notes, config } = body;
+        const { projectId, notes, config, testEmail, phoneNumber } = body;
 
         // Validation
-        if (!projectId || !notes || !config) {
+        if (!projectId || !notes || !config || !testEmail || !phoneNumber) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
                 { status: 400 }
@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
                 project_id: projectId,
                 config,
                 notes: notes.trim(),
+                test_email: testEmail,
+                phone_number: phoneNumber,
                 status: 'pending'
             })
             .select()

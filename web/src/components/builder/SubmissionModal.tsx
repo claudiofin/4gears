@@ -16,6 +16,8 @@ interface SubmissionModalProps {
 export default function SubmissionModal({ isOpen, onClose, projectId, projectName, config }: SubmissionModalProps) {
     const { session } = useAuth();
     const [notes, setNotes] = useState('');
+    const [testEmail, setTestEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
@@ -39,6 +41,8 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                 body: JSON.stringify({
                     projectId,
                     notes,
+                    testEmail,
+                    phoneNumber: phone,
                     config
                 })
             });
@@ -53,6 +57,8 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                 onClose();
                 setSuccess(false);
                 setNotes('');
+                setTestEmail('');
+                setPhone('');
             }, 2000);
         } catch (err: any) {
             setError(err.message || 'Errore nell\'invio della richiesta');
@@ -134,6 +140,36 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                                     </p>
                                 </div>
 
+                                {/* Contact Information */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                                            Email per i test <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={testEmail}
+                                            onChange={(e) => setTestEmail(e.target.value)}
+                                            placeholder="la-tua-mail@test.it"
+                                            className="w-full px-4 py-2 bg-slate-950/50 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                                            Numero di Telefono <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            placeholder="+39 3XX XXXXXXX"
+                                            className="w-full px-4 py-2 bg-slate-950/50 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
                                 {/* Config Preview */}
                                 <div className="mb-6 p-4 bg-slate-950/50 border border-slate-800 rounded-2xl">
                                     <h3 className="text-sm font-semibold text-slate-300 mb-3">Configurazione Inclusa</h3>
@@ -170,7 +206,7 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                                     </button>
                                     <button
                                         onClick={handleSubmit}
-                                        disabled={submitting || !notes.trim()}
+                                        disabled={submitting || !notes.trim() || !testEmail.trim() || !phone.trim()}
                                         className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:shadow-lg hover:shadow-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
                                     >
                                         {submitting ? (

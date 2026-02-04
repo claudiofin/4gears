@@ -97,6 +97,10 @@ export interface Database {
                     config: Json
                     notes: string | null
                     status: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    test_email: string | null
+                    phone_number: string | null
+                    github_repo_url: string | null
+                    github_repo_name: string | null
                     created_at: string
                     updated_at: string
                 }
@@ -107,6 +111,10 @@ export interface Database {
                     config: Json
                     notes?: string | null
                     status?: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    test_email?: string | null
+                    phone_number?: string | null
+                    github_repo_url?: string | null
+                    github_repo_name?: string | null
                     created_at?: string
                     updated_at?: string
                 }
@@ -117,8 +125,55 @@ export interface Database {
                     config?: Json
                     notes?: string | null
                     status?: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    test_email?: string | null
+                    phone_number?: string | null
+                    github_repo_url?: string | null
+                    github_repo_name?: string | null
                     created_at?: string
                     updated_at?: string
+                }
+            }
+            admin_settings: {
+                Row: {
+                    id: string
+                    key: string
+                    value: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    key: string
+                    value: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    key?: string
+                    value?: string
+                    updated_at?: string
+                }
+            }
+            project_tasks: {
+                Row: {
+                    id: string
+                    submission_id: string
+                    title: string
+                    completed: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    submission_id: string
+                    title: string
+                    completed?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    submission_id?: string
+                    title?: string
+                    completed?: boolean
+                    created_at?: string
                 }
             }
         }
