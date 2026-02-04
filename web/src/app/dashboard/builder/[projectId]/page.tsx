@@ -414,6 +414,7 @@ export default function BuilderPage() {
                         featureFlags={featureFlags}
                         onFeatureToggle={handleFeatureToggle}
                         onFeatureUpdate={handleFeatureUpdate}
+                        viewMode={viewMode}
                     />
 
                     <div className="flex-1 flex overflow-hidden">

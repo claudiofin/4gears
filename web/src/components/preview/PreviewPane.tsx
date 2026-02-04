@@ -254,6 +254,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         sportConfig={sportConfig}
                         setMockData={setMockData}
                         headerHeight={headerHeight}
+                        deviceType={deviceType}
                     />
                 </SimulatorLayout>
 

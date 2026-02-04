@@ -6,6 +6,9 @@ import { IdentityTab } from './IdentityTab';
 import { DesignTab } from './DesignTab';
 import { FeaturesTab } from './FeaturesTab';
 import { SportTab } from './SportTab';
+import { SplashSettingsPanel } from './settings/SplashSettingsPanel';
+import { LoginSettingsPanel } from './settings/LoginSettingsPanel'; // Import fixed
+import { ViewMode } from '@/types/builder';
 
 interface BuilderSidebarProps {
     currentTeam: TeamConfig;
@@ -21,6 +24,7 @@ interface BuilderSidebarProps {
     featureFlags: FeatureFlags;
     onFeatureToggle: (id: string) => void;
     onFeatureUpdate: (id: string, updates: Partial<FeatureFlags[keyof FeatureFlags]>) => void;
+    viewMode?: ViewMode; // New Prop
 }
 
 export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
@@ -33,9 +37,54 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     onThemeUpdate,
     featureFlags,
     onFeatureToggle,
-    onFeatureUpdate
+    onFeatureUpdate,
+    viewMode = 'USER'
 }) => {
     const [activeTab, setActiveTab] = useState<'IDENTITY' | 'THEME' | 'CONTENT' | 'SPORT'>('THEME');
+
+    // Context-Aware Render: Splash
+    if (viewMode === 'SPLASH') {
+        return (
+            <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
+                <div className="p-4 border-b border-slate-800 bg-slate-950">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                            <Palette size={16} className="text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-base font-bold text-white tracking-tight leading-none">Splash Screen</h1>
+                            <span className="text-[10px] text-slate-500 font-medium">Configuration</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    <SplashSettingsPanel config={themeConfig} onUpdate={onThemeUpdate} />
+                </div>
+            </div>
+        );
+    }
+
+    // Context-Aware Render: Login
+    if (viewMode === 'LOGIN') {
+        return (
+            <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
+                <div className="p-4 border-b border-slate-800 bg-slate-950">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-pink-600 flex items-center justify-center">
+                            <Shield size={16} className="text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-base font-bold text-white tracking-tight leading-none">Login Screen</h1>
+                            <span className="text-[10px] text-slate-500 font-medium">Authentication UI</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    <LoginSettingsPanel config={themeConfig} onUpdate={onThemeUpdate} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">

@@ -40,6 +40,45 @@ export interface BurgerMenuConfig {
     backdropBlur?: string;
 }
 
+export interface SplashConfig {
+    style: 'minimal' | 'branded' | 'artistic';
+    backgroundType: 'solid' | 'gradient' | 'image';
+    backgroundColor?: string;
+    gradientStart?: string;
+    gradientEnd?: string;
+    backgroundImage?: string;
+    logoSize: 'small' | 'medium' | 'large' | 'huge'; // 64, 96, 128, 160 px
+    animationType: 'fade' | 'zoom' | 'slide_up' | 'bounce' | 'none';
+    showLoader: boolean;
+    loaderStyle: 'dots' | 'spinner' | 'lines';
+    customSubtitle?: string; // Overrides team sport type
+    poweredByVisible: boolean;
+}
+
+export interface LoginConfig {
+    viewType: 'classic' | 'modern_card' | 'split_screen';
+    heroStyle: 'none' | 'logo' | 'image' | 'illustration';
+    heroImageUrl?: string;
+    socialProviders: {
+        google: boolean;
+        apple: boolean;
+        facebook: boolean;
+        email: boolean;
+    };
+    formStyle: {
+        inputRadius: '0px' | '4px' | '8px' | '12px' | '24px';
+        buttonRadius: '0px' | '4px' | '8px' | '12px' | '24px';
+        inputBackground: 'white' | 'gray' | 'transparent';
+        shadowLevel: 'none' | 'soft' | 'hard';
+    };
+    texts: {
+        welcomeTitle?: string; // e.g. "Bentornato!"
+        welcomeSubtitle?: string;
+        actionButtonText?: string; // e.g. "ACCEDI"
+        forgotPasswordText?: string;
+    };
+}
+
 export type ThemeConfig = {
     fontFamily: string;
     bodyFont?: string; // New: Body font separate from headings
@@ -49,6 +88,8 @@ export type ThemeConfig = {
     supportDarkMode: boolean;
     buttonStyle: 'flat' | 'gradient' | 'outline';
     cardStyle: 'minimal' | 'bordered' | 'glass';
+    shadowStyle?: 'none' | 'soft' | 'crisp' | 'diffusion'; // New: Global shadow style
+    animationSpeed?: 'slow' | 'normal' | 'fast' | 'instant'; // New: Global transition speed
     spacingLevel: 'compact' | 'comfortable' | 'spacious';
     iconStyle: 'outline' | 'filled';
     navStyle: 'classic' | 'modern' | 'glass' | 'liquid';
@@ -70,6 +111,8 @@ export type ThemeConfig = {
         useTeamColorForActive?: boolean;
     };
     burgerMenuStyling?: BurgerMenuConfig;
+    splash?: SplashConfig; // New: Dedicated Splash Settings
+    login?: LoginConfig; // New: Dedicated Login Settings
     navigation: NavItem[];
     componentOverrides: Record<string, ComponentOverride>;
 };

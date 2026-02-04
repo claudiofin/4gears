@@ -1,5 +1,5 @@
 import React from 'react';
-import { Type, Layout, Grid, Moon, Sun, Upload, X, Palette } from 'lucide-react';
+import { Type, Layout, Grid, Moon, Sun, Upload, X, Palette, Sparkles } from 'lucide-react';
 import { ThemeConfig, FeatureFlags } from '@/types/builder';
 
 interface DesignTabProps {
@@ -211,6 +211,47 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                             />
                         </div>
                     )}
+                </div>
+            </section>
+
+            <div className="h-px bg-slate-800" />
+
+            {/* Effects & Motion */}
+            <section className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <Sparkles size={12} />
+                    Effects & Motion
+                </h3>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="shadow-style-select" className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 block">Shadow Depth</label>
+                        <select
+                            id="shadow-style-select"
+                            value={config.shadowStyle || 'soft'}
+                            onChange={(e) => onUpdate({ ...config, shadowStyle: e.target.value as any })}
+                            className="w-full bg-slate-900 text-xs text-slate-200 border border-slate-700/50 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all cursor-pointer"
+                        >
+                            <option value="none">None (Flat)</option>
+                            <option value="soft">Soft (Diffuse)</option>
+                            <option value="crisp">Crisp (Sharp)</option>
+                            <option value="diffusion">Diffusion (Glow)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="animation-speed-select" className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 block">Animation Speed</label>
+                        <select
+                            id="animation-speed-select"
+                            value={config.animationSpeed || 'normal'}
+                            onChange={(e) => onUpdate({ ...config, animationSpeed: e.target.value as any })}
+                            className="w-full bg-slate-900 text-xs text-slate-200 border border-slate-700/50 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all cursor-pointer"
+                        >
+                            <option value="slow">Relaxed (Slow)</option>
+                            <option value="normal">Balanced (Normal)</option>
+                            <option value="fast">Snappy (Fast)</option>
+                            <option value="instant">Instant (None)</option>
+                        </select>
+                    </div>
                 </div>
             </section>
 

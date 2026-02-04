@@ -47,18 +47,42 @@ export const useSimulatorStyles = (themeConfig: ThemeConfig, isDarkMode: boolean
         }
     };
 
+    const getShadowClass = (isInteractive: boolean = false) => {
+        const baseShadow = isInteractive ? 'hover:shadow-lg' : '';
+
+        switch (themeConfig.shadowStyle) {
+            case 'none': return 'shadow-none';
+            case 'crisp': return isDarkMode ? 'shadow-[4px_4px_0px_rgba(255,255,255,0.1)]' : 'shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
+            case 'diffusion': return isDarkMode ? 'shadow-[0_0_25px_rgba(255,255,255,0.05)]' : 'shadow-[0_0_25px_rgba(0,0,0,0.05)]';
+            case 'soft':
+            default: return isInteractive ? 'shadow-md hover:shadow-xl' : 'shadow-md';
+        }
+    };
+
+    const getAnimationDuration = () => {
+        switch (themeConfig.animationSpeed) {
+            case 'slow': return 'duration-700';
+            case 'fast': return 'duration-150';
+            case 'instant': return 'duration-0';
+            case 'normal':
+            default: return 'duration-300';
+        }
+    };
+
     const getCardClass = (isInteractive: boolean = false) => {
-        const base = `transition-all duration-300 ${getRadiusClass()}`;
-        const hover = isInteractive ? 'hover:shadow-lg hover:-translate-y-1 cursor-pointer' : '';
+        const duration = getAnimationDuration();
+        const shadow = getShadowClass(isInteractive);
+        const base = `transition-all ${duration} ${getRadiusClass()}`;
+        const hover = isInteractive ? 'hover:-translate-y-1 cursor-pointer' : '';
 
         if (themeConfig.cardStyle === 'bordered') {
-            return `${base} border ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} shadow-sm ${hover}`;
+            return `${base} border ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} ${shadow} ${hover}`;
         }
         if (themeConfig.cardStyle === 'glass') {
-            return `${base} backdrop-blur-md border ${isDarkMode ? 'bg-slate-900/60 border-white/10' : 'bg-white/60 border-white/40'} shadow-lg ${hover}`;
+            return `${base} backdrop-blur-md border ${isDarkMode ? 'bg-slate-900/60 border-white/10' : 'bg-white/60 border-white/40'} shadow-lg ${hover}`; // Glass always has some shadow/glow usually
         }
         // Minimal (Default)
-        return `${base} border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'} shadow-md ${hover}`;
+        return `${base} border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'} ${shadow} ${hover}`;
     };
 
     const getSpacingClass = () => {
@@ -80,6 +104,8 @@ export const useSimulatorStyles = (themeConfig: ThemeConfig, isDarkMode: boolean
         getIconProps,
         getRadiusClass,
         getCardClass,
+        getShadowClass,
+        getAnimationDuration,
         getSpacingClass,
         getOverride
     };
