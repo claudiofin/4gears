@@ -39,7 +39,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-40">
             <div className="flex items-center gap-4">
                 <div className="bg-slate-800 p-1 rounded-lg flex border border-slate-700">
-                    {['USER', 'ADMIN', 'SPLASH'].map((mode) => (
+                    {['USER', 'ADMIN', 'SPLASH', 'LOGIN'].map((mode) => (
                         <button
                             key={mode}
                             onClick={() => onViewModeChange(mode as ViewMode)}
@@ -48,7 +48,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
                         >
-                            {mode === 'USER' ? <User size={12} /> : mode === 'ADMIN' ? <Shield size={12} /> : <Smartphone size={12} />}
+                            {mode === 'USER' && <User size={12} />}
+                            {mode === 'ADMIN' && <Shield size={12} />}
+                            {mode === 'SPLASH' && <Smartphone size={12} />}
+                            {mode === 'LOGIN' && <Lock size={12} />}
                             {mode}
                         </button>
                     ))}

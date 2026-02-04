@@ -225,8 +225,8 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
 
                 <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl">
                     <div>
-                        <div className="text-xs font-bold text-slate-200 mb-0.5">Enable Header Menu</div>
-                        <div className="text-[9px] text-slate-500">Show quick access menu below header tagline</div>
+                        <div className="text-xs font-bold text-slate-200 mb-0.5">Abilita Menu Header</div>
+                        <div className="text-[9px] text-slate-500">Mostra menu di accesso rapido sotto la tagline</div>
                     </div>
                     <button
                         onClick={() => onUpdate({
@@ -536,14 +536,23 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                 {/* Team Color Toggle */}
                                 <div className="flex items-center justify-between bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-slate-300">Use Team Colors</span>
-                                        <span className="text-[9px] text-slate-500">Sync active state with team brand</span>
+                                        <span className="text-[10px] font-bold text-slate-300">Usa Colori Team</span>
+                                        <span className="text-[9px] text-slate-500">Sincronizza stato attivo con il brand</span>
                                     </div>
                                     <button
-                                        onClick={() => onUpdate({ ...config, tabBarStyling: { ...config.tabBarStyling, useTeamColorForActive: !(config.tabBarStyling?.useTeamColorForActive !== false) } })}
-                                        className={`w-8 h-4 rounded-full relative transition-colors ${config.tabBarStyling?.useTeamColorForActive !== false ? 'bg-indigo-500' : 'bg-slate-600'}`}
+                                        onClick={() => {
+                                            const currentValue = config.tabBarStyling?.useTeamColorForActive ?? true;
+                                            onUpdate({
+                                                ...config,
+                                                tabBarStyling: {
+                                                    ...config.tabBarStyling,
+                                                    useTeamColorForActive: !currentValue
+                                                }
+                                            });
+                                        }}
+                                        className={`w-8 h-4 rounded-full relative transition-colors ${(config.tabBarStyling?.useTeamColorForActive ?? true) ? 'bg-indigo-500' : 'bg-slate-600'}`}
                                     >
-                                        <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all ${config.tabBarStyling?.useTeamColorForActive !== false ? 'left-[calc(100%-14px)]' : 'left-0.5'}`} />
+                                        <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all ${(config.tabBarStyling?.useTeamColorForActive ?? true) ? 'left-[calc(100%-14px)]' : 'left-0.5'}`} />
                                     </button>
                                 </div>
 
@@ -569,7 +578,7 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                             />
                                         </div>
                                     </div>
-                                    <div className={config.tabBarStyling?.useTeamColorForActive !== false ? 'opacity-50 pointer-events-none' : ''}>
+                                    <div className={(config.tabBarStyling?.useTeamColorForActive ?? true) ? 'opacity-50 pointer-events-none' : ''}>
                                         <label htmlFor="tabbar-active-color" className="text-[10px] text-slate-400 font-medium mb-1.5 block">Active Color (Override)</label>
                                         <div className="flex items-center gap-2 bg-slate-800 rounded-lg p-1.5 border border-slate-700">
                                             <div className="relative w-5 h-5 rounded overflow-hidden shadow-sm shrink-0">

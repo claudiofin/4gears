@@ -143,7 +143,9 @@ export default function BuilderPage() {
     useEffect(() => {
         if (viewMode === 'SPLASH') {
             setPreviewPage('splash');
-        } else if (previewPage === 'splash') {
+        } else if (viewMode === 'LOGIN') {
+            setPreviewPage('login');
+        } else if (previewPage === 'splash' || previewPage === 'login') {
             setPreviewPage('home');
         }
     }, [viewMode]);

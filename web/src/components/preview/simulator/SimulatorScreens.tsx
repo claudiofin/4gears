@@ -468,7 +468,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     className="relative z-10"
                 >
                     <div className="w-32 h-32 bg-white rounded-[32px] shadow-2xl flex items-center justify-center p-6 mb-6">
-                        <img src={currentTeam.logo} alt={currentTeam.name} className="w-full h-full object-contain" />
+                        <img
+                            src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'}
+                            alt={currentTeam.name}
+                            className="w-full h-full object-contain"
+                        />
                     </div>
 
                     <h1 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">
@@ -502,9 +506,74 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         );
     };
 
+    const renderLoginScreen = () => {
+        const primaryColor = currentTeam.colors.primary;
+
+        return (
+            <div className={`h-full flex flex-col items-center justify-center p-8 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
+                {/* Logo & Brand */}
+                <div className="w-24 h-24 bg-slate-100 rounded-2xl mb-8 flex items-center justify-center shadow-xl p-4">
+                    <img
+                        src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'}
+                        alt="Logo"
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+
+                <h1 className={`text-2xl font-black mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Ciao!</h1>
+                <p className="text-sm text-slate-500 mb-8 text-center">Accedi per gestire il tuo team e restare aggiornato.</p>
+
+                {/* Form */}
+                <div className="w-full space-y-4">
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email</label>
+                        <input
+                            type="email"
+                            defaultValue="demo@4gears.it"
+                            className={`w-full px-4 py-3 rounded-xl border text-sm font-medium ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'} outline-none focus:border-indigo-500 transition-colors`}
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                        <input
+                            type="password"
+                            defaultValue="password"
+                            className={`w-full px-4 py-3 rounded-xl border text-sm font-medium ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'} outline-none focus:border-indigo-500 transition-colors`}
+                        />
+                    </div>
+
+                    <div className="flex justify-end">
+                        <button className="text-xs font-bold text-indigo-500 hover:text-indigo-400">
+                            Password dimenticata?
+                        </button>
+                    </div>
+
+                    <button
+                        className="w-full py-4 rounded-xl font-bold text-white shadow-lg shadow-indigo-500/30 mt-4 transition-transform active:scale-95 text-sm"
+                        style={{ backgroundColor: primaryColor }}
+                    >
+                        ACCEDI
+                    </button>
+
+                    <button className={`w-full py-3.5 rounded-xl font-bold border mt-2 transition-transform active:scale-95 text-sm ${isDarkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                        CREA UN ACCOUNT
+                    </button>
+                </div>
+
+                <div className="mt-8 text-center">
+                    <p className="text-[10px] text-slate-400">
+                        Continuando accetti i <span className="underline cursor-pointer">Termini di Servizio</span>
+                    </p>
+                </div>
+            </div>
+        );
+    };
+
     switch (currentPage) {
         case 'splash':
             return renderSplashScreen();
+        case 'login':
+            return renderLoginScreen();
         case 'home':
             return (
                 <div className={`${getSpacingClass()} px-4 pb-32`} style={{ paddingTop: `${topPaddingValue}px` }}>
