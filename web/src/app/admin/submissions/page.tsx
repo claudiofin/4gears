@@ -58,6 +58,7 @@ export default function SubmissionsPage() {
     const handleUpdateStatus = async (id: string, newStatus: 'completed' | 'rejected') => {
         setProcessingId(id);
         try {
+            // Update submission status
             const { error } = await (supabase as any)
                 .from('submission_requests')
                 .update({ status: newStatus })
@@ -68,7 +69,48 @@ export default function SubmissionsPage() {
                 throw error;
             }
 
-            // Refresh local state
+            // If approved, create Kanban project
+            if (newStatus === 'completed') {
+                const submission = submissions.find(s => s.id === id);
+                if (submission) {
+                    try {
+                        // Extract data from config
+                        const config = submission.config as any;
+                        const teamName = config?.identity?.teamName || config?.team_name || 'Nuovo Progetto';
+                        const sportType = config?.identity?.sportType || config?.sport_type || 'Sport';
+
+                        const response = await fetch('/api/admin/kanban/project', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                submission_id: id,
+                                name: teamName,
+                                description: `Progetto ${sportType} per ${teamName}`,
+                                github_repo_url: submission.github_repo_url,
+                                github_repo_name: submission.github_repo_name,
+                            }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to create Kanban project');
+                        }
+
+                        const { project } = await response.json();
+
+                        // Show success message and redirect
+                        alert(`✅ Progetto approvato!\n\nKanban board creata con successo.\nVerrai reindirizzato alla board del progetto.`);
+
+                        // Redirect to project board
+                        window.location.href = `/admin/kanban/${project.id}`;
+                        return; // Don't continue with normal flow
+                    } catch (kanbanError: any) {
+                        console.error('Error creating Kanban project:', kanbanError);
+                        alert(`⚠️ Progetto approvato, ma errore nella creazione della Kanban board:\n${kanbanError.message}\n\nPuoi crearla manualmente dalla sezione Kanban.`);
+                    }
+                }
+            }
+
+            // Refresh local state (only if not redirecting)
             setSubmissions((prev) =>
                 prev.map((sub) =>
                     sub.id === id ? { ...sub, status: newStatus } : sub

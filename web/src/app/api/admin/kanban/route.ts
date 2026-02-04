@@ -15,19 +15,29 @@ export async function GET(request: NextRequest) {
 
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
-        // Fetch columns
-        const { data: columns, error: columnsError } = await supabase
+        // Get project_id from query params
+        const { searchParams } = new URL(request.url);
+        const projectId = searchParams.get('project_id');
+
+        // Fetch columns (filtered by project if specified)
+        let columnsQuery = supabase
             .from('kanban_columns')
             .select('*')
             .order('position', { ascending: true });
+
+        if (projectId) {
+            columnsQuery = columnsQuery.eq('project_id', projectId);
+        }
+
+        const { data: columns, error: columnsError } = await columnsQuery;
 
         if (columnsError) {
             console.error('Error fetching columns:', columnsError);
             return NextResponse.json({ error: columnsError.message }, { status: 500 });
         }
 
-        // Fetch tasks with relations
-        const { data: tasks, error: tasksError } = await supabase
+        // Fetch tasks with relations (filtered by project if specified)
+        let tasksQuery = supabase
             .from('kanban_tasks')
             .select(`
                 *,
@@ -37,6 +47,12 @@ export async function GET(request: NextRequest) {
                 submission:submission_requests(*)
             `)
             .order('position', { ascending: true });
+
+        if (projectId) {
+            tasksQuery = tasksQuery.eq('project_id', projectId);
+        }
+
+        const { data: tasks, error: tasksError } = await tasksQuery;
 
         if (tasksError) {
             console.error('Error fetching tasks:', tasksError);

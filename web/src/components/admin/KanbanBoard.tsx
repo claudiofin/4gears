@@ -10,7 +10,7 @@ import { TaskDetailModal } from './kanban/TaskDetailModal';
 import type { KanbanColumn as ColumnType, KanbanTask, KanbanLabel } from '@/types/database';
 import { Plus, Loader2 } from 'lucide-react';
 
-export function KanbanBoard() {
+export function KanbanBoard({ projectId }: { projectId?: string }) {
     const [columns, setColumns] = useState<ColumnType[]>([]);
     const [tasks, setTasks] = useState<KanbanTask[]>([]);
     const [labels, setLabels] = useState<KanbanLabel[]>([]);
@@ -30,7 +30,11 @@ export function KanbanBoard() {
     const fetchKanbanData = async () => {
         try {
             const token = localStorage.getItem('supabase.auth.token');
-            const response = await fetch('/api/admin/kanban', {
+            const url = projectId
+                ? `/api/admin/kanban?project_id=${projectId}`
+                : '/api/admin/kanban';
+
+            const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
