@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Ticket, LogOut, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, FileText, Ticket, LogOut, TrendingUp, KanbanSquare, Settings } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { user, profile, loading, signOut } = useAuth();
@@ -37,7 +37,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
         { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
         { name: 'Richieste', href: '/admin/submissions', icon: FileText },
+        { name: 'Kanban', href: '/admin/kanban', icon: KanbanSquare },
         { name: 'Codici Invito', href: '/admin/invites', icon: Ticket },
+        { name: 'Settings', href: '/admin/settings', icon: Settings },
     ];
 
     return (
@@ -46,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col fixed h-full z-10">
                 <div className="p-6 border-b border-slate-800">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">4G</span>
                         </div>
                         <h1 className="text-xl font-bold text-white tracking-tight">Admin</h1>
@@ -61,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-indigo-600 text-white'
                                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                                     }`}
                             >
