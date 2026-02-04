@@ -136,9 +136,45 @@ export interface Database {
                     updated_at?: string
                 }
             }
+            kanban_projects: {
+                Row: {
+                    id: string
+                    submission_id: string | null
+                    name: string
+                    description: string | null
+                    github_repo_url: string | null
+                    github_repo_name: string | null
+                    status: 'active' | 'archived' | 'completed'
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    submission_id?: string | null
+                    name: string
+                    description?: string | null
+                    github_repo_url?: string | null
+                    github_repo_name?: string | null
+                    status?: 'active' | 'archived' | 'completed'
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    submission_id?: string | null
+                    name?: string
+                    description?: string | null
+                    github_repo_url?: string | null
+                    github_repo_name?: string | null
+                    status?: 'active' | 'archived' | 'completed'
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
             kanban_columns: {
                 Row: {
                     id: string
+                    project_id: string | null
                     name: string
                     position: number
                     color: string
@@ -147,6 +183,7 @@ export interface Database {
                 }
                 Insert: {
                     id?: string
+                    project_id?: string | null
                     name: string
                     position: number
                     color?: string
@@ -155,6 +192,7 @@ export interface Database {
                 }
                 Update: {
                     id?: string
+                    project_id?: string | null
                     name?: string
                     position?: number
                     color?: string
@@ -185,6 +223,7 @@ export interface Database {
             kanban_tasks: {
                 Row: {
                     id: string
+                    project_id: string | null
                     title: string
                     description: string | null
                     column_id: string | null
@@ -205,6 +244,7 @@ export interface Database {
                 }
                 Insert: {
                     id?: string
+                    project_id?: string | null
                     title: string
                     description?: string | null
                     column_id?: string | null
@@ -225,6 +265,7 @@ export interface Database {
                 }
                 Update: {
                     id?: string
+                    project_id?: string | null
                     title?: string
                     description?: string | null
                     column_id?: string | null
@@ -310,6 +351,7 @@ export type Project = Database['public']['Tables']['projects']['Row'];
 export type InviteCode = Database['public']['Tables']['invite_codes']['Row'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type SubmissionRequest = Database['public']['Tables']['submission_requests']['Row'];
+export type KanbanProject = Database['public']['Tables']['kanban_projects']['Row'];
 export type KanbanColumn = Database['public']['Tables']['kanban_columns']['Row'];
 export type KanbanLabel = Database['public']['Tables']['kanban_labels']['Row'];
 export type KanbanTask = Database['public']['Tables']['kanban_tasks']['Row'];
