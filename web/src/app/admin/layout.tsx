@@ -21,12 +21,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     }, [user, profile, loading, router]);
 
-    if (loading || !profile || profile.role !== 'admin') {
+    if (loading) {
         return (
             <div className="min-h-screen bg-slate-950 flex items-center justify-center">
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
+    }
+
+    if (!user || !profile || profile.role !== 'admin') {
+        return null; // Will be handled by the useEffect redirect
     }
 
     const navigation = [
@@ -56,8 +60,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                                     }`}
                             >
                                 <item.icon className="w-5 h-5" />

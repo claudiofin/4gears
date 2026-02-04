@@ -24,45 +24,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchProfile = async (userId: string) => {
-        try {
-            const { data } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
-            setProfile(data);
-        } catch (error) {
-            console.error('Error fetching profile:', error);
-        }
-    };
-
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                await fetchProfile(session.user.id);
-            }
-            setLoading(false);
-        });
+        let mounted = true;
 
-        // Listen for auth changes
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const syncAuth = async (event: string, session: Session | null) => {
+            if (!mounted) return;
+
+            console.log('Syncing auth:', event, session?.user?.id);
             setSession(session);
             setUser(session?.user ?? null);
+
             if (session?.user) {
-                await fetchProfile(session.user.id);
+                setLoading(true);
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (mounted) {
+                        if (error) {
+                            console.error('Profile fetch error:', error);
+                            setProfile(null);
+                        } else {
+                            setProfile(data);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Panic in syncAuth:', err);
+                    if (mounted) setProfile(null);
+                } finally {
+                    if (mounted) setLoading(false);
+                }
             } else {
                 setProfile(null);
+                setLoading(false);
             }
-            setLoading(false);
+        };
+
+        // Initial check
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            syncAuth('INITIAL_SESSION', session);
         });
 
-        return () => subscription.unsubscribe();
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            syncAuth(event, session);
+        });
+
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signUp = async (email: string, password: string, inviteCode: string) => {
