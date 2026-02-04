@@ -92,32 +92,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return { error: { message: 'Codice invito non valido o già utilizzato' } as AuthError };
             }
 
-            // 2. Sign up the user
+            // 2. Sign up the user (pass invite_code in metadata for trigger to handle)
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: {
+                        invite_code: inviteCode
+                    }
+                }
             });
 
             if (authError) return { error: authError };
-
-            // 3. Mark invite code as used
-            if (authData.user) {
-                // We use the same supabase instance which should have the session now
-                const { error: updateError } = await (supabase as any)
-                    .from('invite_codes')
-                    .update({
-                        used: true,
-                        used_by: authData.user.id,
-                        used_at: new Date().toISOString(),
-                    })
-                    .eq('code', inviteCode);
-
-                if (updateError) {
-                    console.error('Error marking invite code as used:', updateError);
-                    // We don't return error here because the user is already created
-                    // but we log it for debugging.
-                }
-            }
 
             return { error: null };
         } catch (error) {

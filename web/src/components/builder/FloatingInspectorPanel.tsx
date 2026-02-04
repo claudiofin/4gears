@@ -24,7 +24,7 @@ export const FloatingInspectorPanel: React.FC<FloatingInspectorPanelProps> = ({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="h-full w-80 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-2xl overflow-hidden flex flex-col rounded-2xl"
+                className="max-h-[812px] w-80 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-2xl overflow-hidden flex flex-col rounded-2xl"
             >
                 {/* Header */}
                 <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">

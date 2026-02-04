@@ -15,7 +15,6 @@ interface TopBarProps {
     onDeviceChange: (type: 'IPHONE' | 'ANDROID') => void;
     isDarkMode: boolean;
     onDarkModeToggle: () => void;
-    onExport: () => void;
     mockScenario: MockScenario;
     onMockScenarioChange: (scenario: MockScenario) => void;
 }
@@ -33,7 +32,6 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDeviceChange,
     isDarkMode,
     onDarkModeToggle,
-    onExport,
     mockScenario,
     onMockScenarioChange
 }) => {
@@ -145,17 +143,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                         <option value="CROWDED">High Density</option>
                     </select>
                 </div>
-
-                <div className="h-6 w-px bg-slate-800 mx-2" />
-
-                {/* Export Button */}
-                <button
-                    onClick={onExport}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
-                >
-                    <Download size={14} />
-                    Export
-                </button>
             </div>
         </div>
     );

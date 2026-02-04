@@ -20,6 +20,7 @@ export const ImageUploadControl: React.FC<ImageUploadControlProps> = ({
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -28,16 +29,20 @@ export const ImageUploadControl: React.FC<ImageUploadControlProps> = ({
         }
     };
 
-    const processFile = (file: File) => {
+    const processFile = async (file: File) => {
         if (!file.type.startsWith('image/')) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            if (e.target?.result) {
-                onChange(e.target.result as string);
-            }
-        };
-        reader.readAsDataURL(file);
+        setUploading(true);
+        try {
+            const { uploadBuilderAsset } = await import('@/lib/storage');
+            const url = await uploadBuilderAsset(file, 'custom-assets');
+            onChange(url);
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+            alert('Errore durante il caricamento dell\'immagine. Riprova.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -78,7 +83,7 @@ export const ImageUploadControl: React.FC<ImageUploadControlProps> = ({
             <label className="text-[10px] text-slate-400 font-medium">{label}</label>
 
             <div
-                onClick={() => inputRef.current?.click()}
+                onClick={() => !uploading && inputRef.current?.click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -89,6 +94,7 @@ export const ImageUploadControl: React.FC<ImageUploadControlProps> = ({
                         ? 'border-2 border-indigo-500 bg-indigo-500/10'
                         : 'border border-slate-700 bg-slate-800 hover:border-indigo-500 hover:bg-slate-800/80'
                     }
+                    ${uploading ? 'cursor-wait opacity-80' : ''}
                 `}
             >
                 <input
@@ -98,6 +104,13 @@ export const ImageUploadControl: React.FC<ImageUploadControlProps> = ({
                     onChange={handleFileChange}
                     className="hidden"
                 />
+
+                {uploading && (
+                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm">
+                        <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin mb-2" />
+                        <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Caricamento...</span>
+                    </div>
+                )}
 
                 {value ? (
                     <>

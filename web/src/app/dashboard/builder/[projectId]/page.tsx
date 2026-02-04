@@ -396,7 +396,6 @@ export default function BuilderPage() {
                     onDeviceChange={setDeviceType}
                     isDarkMode={isDarkMode}
                     onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
-                    onExport={() => { }}
                     mockScenario={mockScenario}
                     onMockScenarioChange={setMockScenario}
                 />
