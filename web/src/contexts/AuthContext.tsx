@@ -4,9 +4,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
+import { Profile } from '@/types/database';
+
 interface AuthContextType {
     user: User | null;
     session: Session | null;
+    profile: Profile | null;
     loading: boolean;
     signUp: (email: string, password: string, inviteCode: string) => Promise<{ error: AuthError | null }>;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
@@ -18,22 +21,44 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const fetchProfile = async (userId: string) => {
+        try {
+            const { data } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+            setProfile(data);
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+        }
+    };
 
     useEffect(() => {
         // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then(async ({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
+            if (session?.user) {
+                await fetchProfile(session.user.id);
+            }
             setLoading(false);
         });
 
         // Listen for auth changes
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
+            if (session?.user) {
+                await fetchProfile(session.user.id);
+            } else {
+                setProfile(null);
+            }
             setLoading(false);
         });
 
@@ -64,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // 3. Mark invite code as used
             if (authData.user) {
-                await supabase
+                await (supabase as any)
                     .from('invite_codes')
                     .update({
                         used: true,
@@ -95,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const value = {
         user,
         session,
+        profile,
         loading,
         signUp,
         signIn,

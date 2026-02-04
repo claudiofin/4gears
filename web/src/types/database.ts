@@ -35,6 +35,34 @@ export interface Database {
                     used_at?: string | null
                 }
             }
+            profiles: {
+                Row: {
+                    id: string
+                    role: 'admin' | 'user'
+                    email: string | null
+                    created_at: string
+                }
+                Insert: {
+                    id: string
+                    role?: 'admin' | 'user'
+                    email?: string | null
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    role?: 'admin' | 'user'
+                    email?: string | null
+                    created_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "profiles_id_fkey"
+                        columns: ["id"]
+                        referencedRelation: "users"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
             projects: {
                 Row: {
                     id: string
@@ -100,4 +128,5 @@ export interface Database {
 // Helper types for convenience
 export type Project = Database['public']['Tables']['projects']['Row'];
 export type InviteCode = Database['public']['Tables']['invite_codes']['Row'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type SubmissionRequest = Database['public']['Tables']['submission_requests']['Row'];

@@ -32,7 +32,7 @@ export function useProjectSave({ projectId, config }: UseProjectSaveProps) {
             setSaving(true);
             setError(null);
 
-            const { error: saveError } = await supabase
+            const { error: saveError } = await (supabase as any)
                 .from('projects')
                 .update({
                     config,

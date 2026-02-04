@@ -13,6 +13,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const config = project.config as any;
 
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('it-IT', {
@@ -71,17 +72,17 @@ export default function ProjectCard({ project, onOpen, onDelete }: ProjectCardPr
                             <div
                                 className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold"
                                 style={{
-                                    background: `linear-gradient(135deg, ${project.config?.team?.colors?.primary || '#3b82f6'}, ${project.config?.team?.colors?.secondary || '#1e40af'})`
+                                    background: `linear-gradient(135deg, ${config?.team?.colors?.primary || '#3b82f6'}, ${config?.team?.colors?.secondary || '#1e40af'})`
                                 }}
                             >
-                                {project.config?.team?.name?.charAt(0) || 'T'}
+                                {config?.team?.name?.charAt(0) || 'T'}
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-white">
-                                    {project.config?.team?.name || 'Team'}
+                                    {config?.team?.name || 'Team'}
                                 </p>
                                 <p className="text-xs text-slate-400">
-                                    {project.config?.team?.sportType || 'Sport'}
+                                    {config?.team?.sportType || 'Sport'}
                                 </p>
                             </div>
                         </div>

@@ -23,16 +23,18 @@ export default function DashboardPage() {
     }, [user]);
 
     const loadProjects = async () => {
+        if (!user) return;
+
         try {
             setLoading(true);
             const { data, error } = await supabase
                 .from('projects')
                 .select('*')
-                .eq('user_id', user?.id)
+                .eq('user_id', user.id)
                 .order('updated_at', { ascending: false });
 
             if (error) throw error;
-            setProjects(data || []);
+            setProjects(data as Project[] || []);
         } catch (err: any) {
             setError(err.message || 'Errore nel caricamento dei progetti');
         } finally {
@@ -41,9 +43,11 @@ export default function DashboardPage() {
     };
 
     const handleCreateProject = async () => {
+        if (!user) return;
+
         try {
             const newProject = {
-                user_id: user?.id,
+                user_id: user.id,
                 name: `Nuovo Progetto ${projects.length + 1}`,
                 config: {
                     team: {
@@ -62,13 +66,15 @@ export default function DashboardPage() {
                 }
             };
 
-            const { data, error } = await supabase
+            const { data: rawData, error } = await supabase
                 .from('projects')
-                .insert([newProject])
+                .insert([newProject] as any)
                 .select()
                 .single();
 
             if (error) throw error;
+
+            const data = rawData as any;
 
             // Navigate to builder
             router.push(`/dashboard/builder/${data.id}`);

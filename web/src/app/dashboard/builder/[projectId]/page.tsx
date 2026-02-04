@@ -138,29 +138,35 @@ export default function BuilderPage() {
     }, [currentTeam.sportType]);
 
     const loadProject = async () => {
+        if (!user) return;
+
         try {
             setLoading(true);
-            const { data, error } = await supabase
+            const { data: rawData, error } = await supabase
                 .from('projects')
                 .select('*')
                 .eq('id', projectId)
-                .eq('user_id', user?.id)
+                .eq('user_id', user.id)
                 .single();
 
             if (error) throw error;
 
+            const data = rawData as unknown as Project;
+            if (!data) return;
+
             setProject(data);
 
             // Load config
-            if (data.config) {
-                if (data.config.team) {
-                    setTeams([data.config.team]);
-                    setCurrentTeamId(data.config.team.id);
+            const config = data.config as any;
+            if (config) {
+                if (config.team) {
+                    setTeams([config.team]);
+                    setCurrentTeamId(config.team.id);
                 }
-                if (data.config.theme) setThemeConfigState(data.config.theme);
-                if (data.config.features) setFeatureFlags(data.config.features);
-                if (data.config.simulator) {
-                    const sim = data.config.simulator;
+                if (config.theme) setThemeConfigState(config.theme);
+                if (config.features) setFeatureFlags(config.features);
+                if (config.simulator) {
+                    const sim = config.simulator;
                     if (sim.appTier) setAppTier(sim.appTier);
                     if (sim.userPersona) setUserPersona(sim.userPersona);
                     if (sim.viewMode) setViewMode(sim.viewMode);

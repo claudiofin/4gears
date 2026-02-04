@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SubmissionModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface SubmissionModalProps {
 }
 
 export default function SubmissionModal({ isOpen, onClose, projectId, projectName, config }: SubmissionModalProps) {
+    const { session } = useAuth();
     const [notes, setNotes] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -30,7 +32,10 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
 
             const response = await fetch('/api/submissions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}`
+                },
                 body: JSON.stringify({
                     projectId,
                     notes,
