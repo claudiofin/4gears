@@ -5,18 +5,22 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function LandingPage() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading) {
       if (user) {
-        router.push('/dashboard');
+        if (profile?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         router.push('/login');
       }
     }
-  }, [user, loading, router]);
+  }, [user, profile, loading, router]);
 
   // Loading state
   return (

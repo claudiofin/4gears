@@ -89,7 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // 3. Mark invite code as used
             if (authData.user) {
-                await (supabase as any)
+                // We use the same supabase instance which should have the session now
+                const { error: updateError } = await supabase
                     .from('invite_codes')
                     .update({
                         used: true,
@@ -97,6 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         used_at: new Date().toISOString(),
                     })
                     .eq('code', inviteCode);
+
+                if (updateError) {
+                    console.error('Error marking invite code as used:', updateError);
+                    // We don't return error here because the user is already created
+                    // but we log it for debugging.
+                }
             }
 
             return { error: null };

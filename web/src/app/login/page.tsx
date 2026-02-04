@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -14,8 +14,18 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { signIn, signUp } = useAuth();
+    const { user, profile, loading: authLoading, signIn, signUp } = useAuth();
     const router = useRouter();
+
+    useEffect(() => {
+        if (!authLoading && user && profile) {
+            if (profile.role === 'admin') {
+                router.push('/admin');
+            } else {
+                router.push('/dashboard');
+            }
+        }
+    }, [user, profile, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,9 +49,8 @@ export default function LoginPage() {
                 const { error } = await signIn(email, password);
                 if (error) {
                     setError(error.message || 'Credenziali non valide');
-                } else {
-                    router.push('/dashboard');
                 }
+                // Redirect will be handled by useEffect
             }
         } catch (err) {
             setError('Si è verificato un errore. Riprova.');
@@ -91,8 +100,8 @@ export default function LoginPage() {
                                 setInviteCode('');
                             }}
                             className={`flex-1 py-3 rounded-xl font-medium transition-all ${!isSignUp
-                                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
-                                    : 'text-slate-400 hover:text-white'
+                                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
+                                : 'text-slate-400 hover:text-white'
                                 }`}
                         >
                             Accedi
@@ -103,8 +112,8 @@ export default function LoginPage() {
                                 setError('');
                             }}
                             className={`flex-1 py-3 rounded-xl font-medium transition-all ${isSignUp
-                                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
-                                    : 'text-slate-400 hover:text-white'
+                                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
+                                : 'text-slate-400 hover:text-white'
                                 }`}
                         >
                             Registrati
