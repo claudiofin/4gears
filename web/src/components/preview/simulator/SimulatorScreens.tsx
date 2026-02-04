@@ -1668,7 +1668,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         }
     };
 
-    const showNavigation = previewPage !== 'intro' && previewPage !== 'auth';
+    const showNavigation = previewPage !== 'intro' && previewPage !== 'auth' && previewPage !== 'splash' && previewPage !== 'login';
     const isBurger = themeConfig.navigationType === 'burger';
     const activeColor = themeConfig.tabBarStyling?.useTeamColorForActive ? (currentTeam.colors?.primary || '#4f46e5') : (themeConfig.tabBarStyling?.labelActiveColor || '#000');
     const inactiveColor = themeConfig.tabBarStyling?.labelColor || '#94a3b8';
@@ -1685,8 +1685,8 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
             {/* Main Content */}
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden scrollbar-hide">
-                {previewPage === 'intro' ? renderSplashScreen() :
-                    previewPage === 'auth' ? renderLoginScreen() :
+                {(previewPage === 'intro' || previewPage === 'splash') ? renderSplashScreen() :
+                    (previewPage === 'auth' || previewPage === 'login') ? renderLoginScreen() :
                         renderContent()}
             </div>
 
