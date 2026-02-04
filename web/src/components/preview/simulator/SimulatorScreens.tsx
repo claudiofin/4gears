@@ -1039,33 +1039,53 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <div className="grid grid-cols-2 gap-4">
                         {(themeConfig.navigation || [])
                             .filter(item => item.id !== 'home' && item.id !== 'menu')
-                            .map((item) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setPreviewPage(item.id)}
-                                    className="relative group h-32 text-left"
-                                >
-                                    <PremiumCard
-                                        themeConfig={themeConfig}
-                                        isDarkMode={isDarkMode}
-                                        className="h-full flex flex-col items-center justify-center gap-3 p-4 group-hover:scale-[1.02] transition-transform"
-                                        id={`menu_card_${item.id}`}
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === `menu_card_${item.id}`}
-                                        onElementSelect={onSelect}
+                            .map((item) => {
+                                const isEnabled = item.enabled;
+                                const primaryColor = currentTeam.colors.primary;
+
+                                return (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setPreviewPage(item.id)}
+                                        className="relative group h-32 text-left"
                                     >
-                                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                                            {renderIcon(item, false, item.enabled ? (isDarkMode ? '#818cf8' : '#4f46e5') : '#475569', 24)}
-                                        </div>
-                                        <span className="text-xs font-bold uppercase tracking-wider">{item.label}</span>
-                                        {!item.enabled && (
-                                            <div className="absolute top-2 right-2">
-                                                <Lock size={10} className="text-slate-500" />
+                                        <PremiumCard
+                                            themeConfig={themeConfig}
+                                            isDarkMode={isDarkMode}
+                                            className={`h-full flex flex-col items-center justify-center gap-3 p-4 transition-all duration-300 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50'} ${!isEnabled ? 'opacity-60' : ''}`}
+                                            id={`menu_card_${item.id}`}
+                                            isInspectorActive={isInspectorActive}
+                                            isSelected={activeSelectionId === `menu_card_${item.id}`}
+                                            onElementSelect={onSelect}
+                                        >
+                                            <div
+                                                className={`w-14 h-14 rounded-[20px] flex items-center justify-center transition-all duration-500 group-hover:scale-110`}
+                                                style={{
+                                                    backgroundColor: `${primaryColor}${isEnabled ? '15' : '10'}`,
+                                                    border: `1px solid ${primaryColor}${isEnabled ? '20' : '10'}`
+                                                }}
+                                            >
+                                                {renderIcon(item, false, isEnabled ? primaryColor : (isDarkMode ? '#475569' : '#94a3b8'), 24)}
                                             </div>
-                                        )}
-                                    </PremiumCard>
-                                </button>
-                            ))}
+                                            <div className="flex flex-col items-center gap-0.5">
+                                                <span
+                                                    className={`text-[10px] font-black uppercase tracking-[0.1em] transition-colors duration-300 ${isDarkMode ? 'text-slate-200' : 'text-slate-900'} ${!isEnabled ? 'text-slate-400' : ''}`}
+                                                >
+                                                    {getOverride(`menu_card_${item.id}`)?.text || item.label}
+                                                </span>
+                                                <span className={`text-[8px] font-bold uppercase tracking-widest opacity-40 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                                    {isEnabled ? 'Accedi' : 'Bloccato'}
+                                                </span>
+                                            </div>
+                                            {!isEnabled && (
+                                                <div className="absolute top-3 right-3 p-1 rounded-full bg-slate-100 dark:bg-slate-800">
+                                                    <Lock size={8} className="text-slate-500" />
+                                                </div>
+                                            )}
+                                        </PremiumCard>
+                                    </button>
+                                );
+                            })}
                     </div>
 
                     {/* Additional Quick Cards */}
