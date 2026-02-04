@@ -13,7 +13,7 @@ export const ToggleControl: React.FC<ToggleControlProps> = ({ id, label, value, 
         <button
             id={id}
             onClick={() => onChange(!value)}
-            className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${value ? 'bg-blue-600' : 'bg-slate-700'
+            className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${value ? 'bg-indigo-600' : 'bg-slate-700'
                 }`}
         >
             <span

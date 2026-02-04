@@ -23,8 +23,8 @@ export const SliderControl: React.FC<SliderControlProps> = ({
 }) => (
     <div className="space-y-1.5">
         <div className="flex justify-between items-center">
-            <label htmlFor={id} className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{label}</label>
-            <span className="text-[10px] text-blue-400 font-mono font-bold bg-blue-500/10 px-1.5 py-0.5 rounded">
+            <label htmlFor={id} className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{label}</label>
+            <span className="text-[10px] text-indigo-400 font-mono font-bold bg-indigo-500/10 px-1.5 py-0.5 rounded">
                 {value}{unit}
             </span>
         </div>
@@ -36,7 +36,7 @@ export const SliderControl: React.FC<SliderControlProps> = ({
             step={step}
             value={value}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 transition-all hover:accent-blue-400"
+            className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 transition-all hover:accent-indigo-400"
         />
     </div>
 );

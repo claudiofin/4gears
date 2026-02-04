@@ -9,9 +9,9 @@ interface ColorControlProps {
 
 export const ColorControl: React.FC<ColorControlProps> = ({ id, label, value, onChange }) => (
     <div className="space-y-1.5">
-        <label htmlFor={id} className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{label}</label>
-        <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
-            <div className="relative w-6 h-6 rounded overflow-hidden shadow-sm shrink-0 border border-white/10">
+        <label htmlFor={id} className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{label}</label>
+        <div className="flex items-center gap-2 bg-slate-800 p-1.5 rounded-lg border border-slate-700">
+            <div className="relative w-5 h-5 rounded overflow-hidden shadow-sm shrink-0">
                 <input
                     id={id}
                     type="color"
@@ -26,7 +26,7 @@ export const ColorControl: React.FC<ColorControlProps> = ({ id, label, value, on
                 value={value || ''}
                 placeholder="#HEX"
                 onChange={(e) => onChange(e.target.value)}
-                className="bg-transparent text-xs text-white w-full outline-none font-mono uppercase"
+                className="bg-transparent text-[10px] text-slate-300 w-full outline-none font-mono uppercase"
             />
         </div>
     </div>

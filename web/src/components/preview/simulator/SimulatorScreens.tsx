@@ -557,22 +557,51 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
             <div className={`h-full w-full flex ${isSplitScreen ? 'flex-row' : 'flex-col'} overflow-hidden ${containerBg}`}>
                 {/* Split Screen Left Panel (Hero) */}
                 {isSplitScreen && (
-                    <div className="w-1/2 bg-gradient-to-br from-indigo-600 to-cyan-500 flex flex-col items-center justify-center p-8 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-black/10" />
-                        <div className="relative z-10 text-center">
-                            {(login.heroStyle === 'logo' || login.heroStyle === 'none') && (
-                                <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6 p-6">
-                                    <img src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'} className="w-full h-full object-contain" alt="App Logo" />
+                    <div
+                        className="w-2/5 flex flex-col items-center justify-center p-12 relative overflow-hidden"
+                        style={{
+                            background: `linear-gradient(135deg, ${primaryColor}, ${currentTeam.colors?.secondary || '#06b6d4'})`
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+                        <div className="absolute inset-0" style={{
+                            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)',
+                        }} />
+
+                        <div className="relative z-10 text-center space-y-8">
+                            <div className="w-28 h-28 bg-white/95 backdrop-blur-xl rounded-[28px] shadow-2xl flex items-center justify-center mx-auto p-6 ring-1 ring-white/20">
+                                <img
+                                    src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'}
+                                    className="w-full h-full object-contain"
+                                    alt="App Logo"
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <h1 className="text-4xl font-black text-white tracking-tight drop-shadow-lg">
+                                    {currentTeam.name}
+                                </h1>
+                                <p className="text-white/90 text-base font-semibold tracking-wide">
+                                    La tua passione, ovunque.
+                                </p>
+                            </div>
+
+                            <div className="pt-8 space-y-2">
+                                <div className="flex items-center justify-center gap-2 text-white/70 text-xs">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/70" />
+                                    <span className="font-medium">Accesso sicuro</span>
                                 </div>
-                            )}
-                            <h1 className="text-4xl font-black text-white mb-3">{currentTeam.name}</h1>
-                            <p className="text-white/80 text-lg font-medium">La tua passione, ovunque.</p>
+                                <div className="flex items-center justify-center gap-2 text-white/70 text-xs">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/70" />
+                                    <span className="font-medium">Sempre aggiornato</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* Form Container */}
-                <div className={`${isSplitScreen ? 'w-1/2' : 'w-full'} flex flex-col p-6 overflow-y-auto`}>
+                <div className={`${isSplitScreen ? 'w-3/5' : 'w-full'} flex flex-col p-6 overflow-y-auto`}>
                     {/* Hero / Logo Area (non-split) */}
                     {!isSplitScreen && (
                         <div className="mt-8 mb-8 text-center flex-shrink-0">
