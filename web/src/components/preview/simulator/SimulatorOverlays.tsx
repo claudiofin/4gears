@@ -94,7 +94,23 @@ export const BurgerMenuOverlay: React.FC<BurgerMenuOverlayProps> = ({
                         <div className="pt-14 pb-6 px-8 flex justify-between items-center" style={{ color: styling.textColor }}>
                             <div>
                                 <div className="text-[10px] font-bold uppercase tracking-widest opacity-50">Menu</div>
-                                <h2 className="text-2xl font-black">Esplora</h2>
+                                <Selectable
+                                    id="burger_title"
+                                    type="text"
+                                    label="Titolo Menu"
+                                    isInspectorActive={isInspectorActive}
+                                    isSelected={activeSelectionId === 'burger_title'}
+                                    onSelect={onSelect}
+                                    overrides={getOverride('burger_title')}
+                                    traits={['content', 'typography', 'interaction']}
+                                >
+                                    <h2
+                                        className={`text-2xl font-black ${getOverride('burger_title')?.fontSize || ''}`}
+                                        style={{ color: getOverride('burger_title')?.textColor }}
+                                    >
+                                        {getOverride('burger_title')?.text || "Esplora"}
+                                    </h2>
+                                </Selectable>
                             </div>
                             {styling.style === 'fullscreen' && (
                                 <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5">
@@ -116,6 +132,7 @@ export const BurgerMenuOverlay: React.FC<BurgerMenuOverlayProps> = ({
                                         isSelected={activeSelectionId === `burger_nav_${item.id}`}
                                         onSelect={onSelect}
                                         overrides={getOverride(`burger_nav_${item.id}`)}
+                                        traits={['content', 'interaction', 'icon']}
                                     >
                                         <motion.button
                                             initial={{ opacity: 0, y: 20 }}
@@ -415,6 +432,48 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conve
                             </div>
                         </>
                     )}
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};
+// --- Floating Shop Cart Button ---
+
+interface FloatingCartButtonProps {
+    count: number;
+    onClick: () => void;
+    isVisible: boolean;
+    currentTeam: TeamConfig;
+}
+
+export const FloatingCartButton: React.FC<FloatingCartButtonProps> = ({
+    count, onClick, isVisible, currentTeam
+}) => {
+    return (
+        <AnimatePresence>
+            {isVisible && count > 0 && (
+                <motion.div
+                    initial={{ scale: 0, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0, opacity: 0, y: 20 }}
+                    className="absolute bottom-24 right-6 z-50"
+                >
+                    <button
+                        onClick={onClick}
+                        className="relative p-4 text-white rounded-full shadow-2xl transition-all active:scale-95 group overflow-hidden"
+                        style={{
+                            backgroundColor: currentTeam.colors.primary,
+                            boxShadow: `0 10px 25px -5px ${currentTeam.colors.primary}40`
+                        }}
+                    >
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                        <ShoppingBag size={24} />
+                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center animate-bounce shadow-lg">
+                            {count}
+                        </span>
+                    </button>
                 </motion.div>
             )}
         </AnimatePresence>

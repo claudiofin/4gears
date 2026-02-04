@@ -66,14 +66,17 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
             isSelected={activeSelectionId === id}
             onSelect={onSelect}
             overrides={getOverride(id)}
+            traits={['content', 'typography', 'interaction']}
             className={`${isFirst ? 'mt-0' : 'mt-6'} mb-3 px-1`}
         >
-            <h3
-                className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'} ${getOverride(id)?.fontSize || ''}`}
-                style={{ color: getOverride(id)?.textColor }}
-            >
-                {getOverride(id)?.text || title}
-            </h3>
+            {(getOverride(id)?.visible !== false || isInspectorActive) && (
+                <h3
+                    className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'} ${getOverride(id)?.fontSize || ''} ${getOverride(id)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                    style={{ color: getOverride(id)?.textColor }}
+                >
+                    {getOverride(id)?.text || title}
+                </h3>
+            )}
         </Selectable>
     );
 
@@ -116,207 +119,284 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         );
     };
 
-    const renderAdminDashboard = (padding: number) => (
-        <div className={`p-4 pb-32 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500`} style={{ paddingTop: `${padding}px` }}>
-            <SectionHeader id="admin_header" label="Titolo Dashboard" title="Statistiche Generali" isFirst={true} />
+    const renderAdminDashboard = (padding: number) => {
+        const primaryColor = currentTeam.colors.primary;
+        const secondaryColor = currentTeam.colors.secondary;
 
-            {/* KPI Stats Grid */}
-            <div className="grid grid-cols-2 gap-3">
+        return (
+
+            <div className={`p-4 pb-32 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500`} style={{ paddingTop: `${padding}px` }}>
+                <SectionHeader id="admin_header" label="Titolo Dashboard" title="Statistiche Generali" isFirst={true} />
+
+                {/* KPI Stats Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                    <PremiumCard
+                        themeConfig={themeConfig}
+                        isDarkMode={isDarkMode}
+                        id="admin_kpi_fans"
+                        isInspectorActive={isInspectorActive}
+                        isSelected={activeSelectionId === 'admin_kpi_fans'}
+                        onElementSelect={onSelect}
+                        className="p-4"
+                    >
+                        <div className="flex items-center gap-2 mb-2">
+                            <div
+                                className="p-1.5 rounded-lg w-fit"
+                                style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}
+                            >
+                                <Users size={14} />
+                            </div>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Fan Coin</span>
+                        </div>
+                        <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{getOverride('admin_kpi_fans')?.text || '45.2K'}</div>
+                        <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
+                            <Plus size={10} /> +12% VS IERI
+                        </div>
+                    </PremiumCard>
+
+
+                    <PremiumCard
+                        themeConfig={themeConfig}
+                        isDarkMode={isDarkMode}
+                        id="admin_kpi_revenue"
+                        isInspectorActive={isInspectorActive}
+                        isSelected={activeSelectionId === 'admin_kpi_revenue'}
+                        onElementSelect={onSelect}
+                        className="p-4"
+                    >
+                        <div className="flex items-center gap-2 mb-2">
+                            <div
+                                className="p-1.5 rounded-lg w-fit"
+                                style={{ backgroundColor: `${secondaryColor}20`, color: secondaryColor }}
+                            >
+                                <ShoppingBag size={14} />
+                            </div>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Entrate</span>
+                        </div>
+                        <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{getOverride('admin_kpi_revenue')?.text || '€8.2K'}</div>
+                        <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
+                            <Plus size={10} /> +5% VS TARGET
+                        </div>
+                    </PremiumCard>
+                </div>
+
+                {/* Team Health / Status */}
                 <Selectable
-                    id="admin_kpi_fans"
+                    id="admin_team_status"
                     type="card"
-                    label="KPI Fan Coin"
+                    label="Status Team"
                     isInspectorActive={isInspectorActive}
-                    isSelected={activeSelectionId === 'admin_kpi_fans'}
+                    isSelected={activeSelectionId === 'admin_team_status'}
                     onSelect={onSelect}
-                    overrides={getOverride('admin_kpi_fans')}
-                    className={`p-4 ${getCardClass(true)}`}
+                    overrides={getOverride('admin_team_status')}
+                    traits={['background', 'border', 'spacing', 'interaction']}
+                    className={`p-4 ${getCardClass(true)} ${getOverride('admin_team_status')?.visible === false ? 'opacity-30 grayscale border-dashed' : ''}`}
                 >
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500">
-                            <Users size={14} />
-                        </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Fan Coin</span>
-                    </div>
-                    <div className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>45.2K</div>
-                    <div className="text-emerald-500 text-[10px] font-bold flex items-center gap-1 mt-2">
-                        <Plus size={10} /> +12% rispetto a ieri
-                    </div>
-                </Selectable>
-
-                <Selectable
-                    id="admin_kpi_revenue"
-                    type="card"
-                    label="KPI Entrate"
-                    isInspectorActive={isInspectorActive}
-                    isSelected={activeSelectionId === 'admin_kpi_revenue'}
-                    onSelect={onSelect}
-                    overrides={getOverride('admin_kpi_revenue')}
-                    className={`p-4 ${getCardClass(true)}`}
-                >
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">
-                            <ShoppingBag size={14} />
-                        </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Entrate</span>
-                    </div>
-                    <div className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€8.2K</div>
-                    <div className="text-emerald-500 text-[10px] font-bold flex items-center gap-1 mt-2">
-                        <Plus size={10} /> +5% vs target
-                    </div>
-                </Selectable>
-            </div>
-
-            {/* Team Health / Status */}
-            <Selectable
-                id="admin_team_status"
-                type="card"
-                label="Status Team"
-                isInspectorActive={isInspectorActive}
-                isSelected={activeSelectionId === 'admin_team_status'}
-                onSelect={onSelect}
-                overrides={getOverride('admin_team_status')}
-                className={`p-4 ${getCardClass(true)}`}
-            >
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Stato del Team</h3>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[9px] font-bold border border-emerald-500/20">OPERATIVO</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center">
-                        <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{mockData.players.length}</div>
-                        <div className="text-[9px] text-slate-500 uppercase font-medium">Atleti</div>
-                    </div>
-                    <div className="text-center border-x border-slate-700/30">
-                        <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>2</div>
-                        <div className="text-[9px] text-slate-500 uppercase font-medium">Infortunati</div>
-                    </div>
-                    <div className="text-center">
-                        <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>5</div>
-                        <div className="text-[9px] text-slate-500 uppercase font-medium">Eventi Mese</div>
-                    </div>
-                </div>
-            </Selectable>
-
-            {/* Quick Management Actions */}
-            <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                    <h3 className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Manutenzione Rapida</h3>
-                    <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
-                        <span className="text-[8px] font-bold text-slate-500">SYSTEM LIVE</span>
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <button className={`flex flex-col gap-2 p-3 rounded-2xl border text-[10px] font-bold transition-all text-left ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                        <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 w-fit">
-                            <Plus size={14} />
-                        </div>
-                        AGGIUNGI ATLETA
-                    </button>
-                    <button className={`flex flex-col gap-2 p-3 rounded-2xl border text-[10px] font-bold transition-all text-left ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                        <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-500 w-fit">
-                            <Calendar size={14} />
-                        </div>
-                        CREA EVENTO
-                    </button>
-                    <button className={`flex flex-col gap-2 p-3 rounded-2xl border text-[10px] font-bold transition-all text-left ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                        <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-500 w-fit">
-                            <Package size={14} />
-                        </div>
-                        NUOVO PRODOTTO
-                    </button>
-                    <button className={`flex flex-col gap-2 p-3 rounded-2xl border text-[10px] font-bold transition-all text-left ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                        <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-500 w-fit">
-                            <Send size={14} />
-                        </div>
-                        NOTIFICA PUSH
-                    </button>
-                </div>
-            </div>
-
-            {/* Shop Orders List */}
-            <Selectable
-                id="admin_orders_list"
-                type="card"
-                label="Lista Ordini"
-                isInspectorActive={isInspectorActive}
-                isSelected={activeSelectionId === 'admin_orders_list'}
-                onSelect={onSelect}
-                overrides={getOverride('admin_orders_list')}
-                className={`p-4 ${getCardClass(true)}`}
-            >
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Gestione Ordini</h3>
-                    <button className="text-indigo-500 text-[10px] font-extrabold hover:underline flex items-center gap-1">
-                        VEDI TUTTI <ChevronRight size={10} />
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isDarkMode ? 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'}`}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">
-                                    #{1000 + i}
+                    {(getOverride('admin_team_status')?.visible !== false || isInspectorActive) && (
+                        <>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Stato del Team</h3>
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[9px] font-bold border border-emerald-500/20">OPERATIVO</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="text-center">
+                                    <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{mockData.players.length}</div>
+                                    <div className="text-[9px] text-slate-500 uppercase font-medium">Atleti</div>
                                 </div>
-                                <div>
-                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Cliente #{i}</div>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">In elaborazione</span>
+                                <div className="text-center border-x border-slate-700/30">
+                                    <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>2</div>
+                                    <div className="text-[9px] text-slate-500 uppercase font-medium">Infortunati</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>5</div>
+                                    <div className="text-[9px] text-slate-500 uppercase font-medium">Eventi Mese</div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </Selectable>
+
+                {/* Quick Management Actions */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                        <h3 className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Manutenzione Rapida</h3>
+                        <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+                            <span className="text-[8px] font-bold text-slate-500">SYSTEM LIVE</span>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <PremiumCard
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            id="admin_action_athlete"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'admin_action_athlete'}
+                            onElementSelect={onSelect}
+                            className="p-4 group cursor-pointer hover:scale-[1.02] transition-transform"
+                        >
+                            <div
+                                className="p-2 rounded-xl w-fit mb-3 transition-colors group-hover:brightness-110"
+                                style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
+                            >
+                                <Plus size={16} />
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                                {getOverride('admin_action_athlete')?.text || 'Aggiungi Atleta'}
+                            </div>
+                        </PremiumCard>
+
+                        <PremiumCard
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            id="admin_action_event"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'admin_action_event'}
+                            onElementSelect={onSelect}
+                            className="p-4 group cursor-pointer hover:scale-[1.02] transition-transform"
+                        >
+                            <div
+                                className="p-2 rounded-xl w-fit mb-3 transition-colors group-hover:brightness-110"
+                                style={{ backgroundColor: `${secondaryColor}15`, color: secondaryColor }}
+                            >
+                                <Calendar size={16} />
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                                {getOverride('admin_action_event')?.text || 'Crea Evento'}
+                            </div>
+                        </PremiumCard>
+
+                        <PremiumCard
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            id="admin_action_product"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'admin_action_product'}
+                            onElementSelect={onSelect}
+                            className="p-4 group cursor-pointer hover:scale-[1.02] transition-transform"
+                        >
+                            <div
+                                className="p-2 rounded-xl w-fit mb-3 transition-colors group-hover:brightness-110"
+                                style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
+                            >
+                                <Package size={16} />
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                                {getOverride('admin_action_product')?.text || 'Nuovo Prodotto'}
+                            </div>
+                        </PremiumCard>
+
+                        <PremiumCard
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            id="admin_action_push"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'admin_action_push'}
+                            onElementSelect={onSelect}
+                            className="p-4 group cursor-pointer hover:scale-[1.02] transition-transform"
+                        >
+                            <div
+                                className="p-2 rounded-xl w-fit mb-3 transition-colors group-hover:brightness-110"
+                                style={{ backgroundColor: `${secondaryColor}15`, color: secondaryColor }}
+                            >
+                                <Send size={16} />
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                                {getOverride('admin_action_push')?.text || 'Notifica Push'}
+                            </div>
+                        </PremiumCard>
+                    </div>
+
+                </div>
+
+                {/* Shop Orders List */}
+                <Selectable
+                    id="admin_orders_list"
+                    type="card"
+                    label="Lista Ordini"
+                    isInspectorActive={isInspectorActive}
+                    isSelected={activeSelectionId === 'admin_orders_list'}
+                    onSelect={onSelect}
+                    overrides={getOverride('admin_orders_list')}
+                    traits={['background', 'border', 'spacing', 'interaction']}
+                    className={`p-4 ${getCardClass(true)}`}
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Gestione Ordini</h3>
+                        <button className="text-indigo-500 text-[10px] font-extrabold hover:underline flex items-center gap-1">
+                            VEDI TUTTI <ChevronRight size={10} />
+                        </button>
+                    </div>
+                    <div className="space-y-2">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isDarkMode ? 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'}`}>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">
+                                        #{1000 + i}
+                                    </div>
+                                    <div>
+                                        <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Cliente #{i}</div>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">In elaborazione</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="text-right">
+                                    <div className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€{(45.50 * i).toFixed(2)}</div>
+                                    <div className="text-[8px] text-slate-500 font-medium">Oggi, 12:45</div>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <div className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€{(45.50 * i).toFixed(2)}</div>
-                                <div className="text-[8px] text-slate-500 font-medium">Oggi, 12:45</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </Selectable>
+                        ))}
+                    </div>
+                </Selectable>
 
-            {/* Sponsor Management */}
-            <Selectable
-                id="admin_sponsor_mgmt"
-                type="card"
-                label="Gestione Sponsor"
-                isInspectorActive={isInspectorActive}
-                isSelected={activeSelectionId === 'admin_sponsor_mgmt'}
-                onSelect={onSelect}
-                overrides={getOverride('admin_sponsor_mgmt')}
-                className={`p-4 ${getCardClass(true)}`}
-            >
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Gestione Sponsor</h3>
-                    <button className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500">
-                        <Plus size={14} />
-                    </button>
-                </div>
-                <div className="space-y-3">
-                    {mockData.sponsors.slice(0, 3).map((s: any) => (
-                        <div key={s.id} className="flex items-center gap-3 p-2 rounded-xl bg-slate-100/10 border border-white/5">
-                            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1">
-                                <img src={s.image} alt={s.name} className="max-h-full max-w-full grayscale" />
+                {/* Sponsor Management */}
+                <Selectable
+                    id="admin_sponsor_mgmt"
+                    type="card"
+                    label="Gestione Sponsor"
+                    isInspectorActive={isInspectorActive}
+                    isSelected={activeSelectionId === 'admin_sponsor_mgmt'}
+                    onSelect={onSelect}
+                    overrides={getOverride('admin_sponsor_mgmt')}
+                    traits={['background', 'border', 'spacing', 'interaction']}
+                    className={`p-4 ${getCardClass(true)}`}
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Gestione Sponsor</h3>
+                        <button
+                            className="p-2 rounded-lg transition-colors hover:brightness-110"
+                            style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
+                        >
+                            <Plus size={14} />
+                        </button>
+                    </div>
+                    <div className="space-y-3">
+                        {mockData.sponsors.slice(0, 3).map((s: any) => (
+                            <div key={s.id} className="flex items-center gap-3 p-2 rounded-xl bg-slate-100/10 border border-white/5">
+                                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1">
+                                    <img src={s.image} alt={s.name} className="max-h-full max-w-full grayscale" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-xs font-bold">{s.name}</div>
+                                    <div className="text-[9px] text-blue-500 font-bold uppercase">{s.tier}</div>
+                                </div>
+                                <div className="flex gap-1">
+                                    <button className="p-1.5 rounded-md hover:bg-white/10 text-slate-400">
+                                        <Edit2 size={12} />
+                                    </button>
+                                    <button className="p-1.5 rounded-md hover:bg-rose-500/10 text-rose-500">
+                                        <Trash2 size={12} />
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex-1">
-                                <div className="text-xs font-bold">{s.name}</div>
-                                <div className="text-[9px] text-blue-500 font-bold uppercase">{s.tier}</div>
-                            </div>
-                            <div className="flex gap-1">
-                                <button className="p-1.5 rounded-md hover:bg-white/10 text-slate-400">
-                                    <Edit2 size={12} />
-                                </button>
-                                <button className="p-1.5 rounded-md hover:bg-rose-500/10 text-rose-500">
-                                    <Trash2 size={12} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </Selectable>
-        </div>
-    );
+                        ))}
+                    </div>
+                </Selectable>
+            </div>
+        );
+    };
 
     const currentPage = previewPage;
     const showHeaderTabs = themeConfig.navigationType === 'header_tabs';
@@ -370,6 +450,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         onSelect={onSelect}
                         className={`p-5 ${getCardClass(true)}`}
                         overrides={getOverride('next_match_card')}
+                        traits={['background', 'border', 'spacing', 'interaction']}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <span className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>Prossimo {sportConfig.scoring.term === 'Goal' ? 'Match' : 'Evento'}</span>
@@ -387,6 +468,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'home_team_logo'}
                                     onSelect={onSelect}
                                     overrides={getOverride('home_team_logo')}
+                                    traits={['icon', 'interaction']}
                                 >
                                     <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center">
                                         <sportConfig.icon {...getIconProps(20, "text-slate-400")} />
@@ -400,13 +482,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'home_team_label'}
                                     onSelect={onSelect}
                                     overrides={getOverride('home_team_label')}
+                                    traits={['content', 'typography', 'interaction']}
                                 >
-                                    <span
-                                        className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('home_team_label')?.fontSize || ''}`}
-                                        style={{ color: getOverride('home_team_label')?.textColor }}
-                                    >
-                                        {getOverride('home_team_label')?.text || 'CASA'}
-                                    </span>
+                                    {(getOverride('home_team_label')?.visible !== false || isInspectorActive) && (
+                                        <span
+                                            className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('home_team_label')?.fontSize || ''} ${getOverride('home_team_label')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            style={{ color: getOverride('home_team_label')?.textColor }}
+                                        >
+                                            {getOverride('home_team_label')?.text || 'CASA'}
+                                        </span>
+                                    )}
                                 </Selectable>
                             </div>
                             <div className="text-center px-4">
@@ -418,13 +503,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'match_vs_text'}
                                     onSelect={onSelect}
                                     overrides={getOverride('match_vs_text')}
+                                    traits={['content', 'typography', 'interaction']}
                                 >
-                                    <span
-                                        className={`text-3xl font-black block tracking-tighter w-full ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('match_vs_text')?.fontSize || ''}`}
-                                        style={{ color: getOverride('match_vs_text')?.textColor }}
-                                    >
-                                        {getOverride('match_vs_text')?.text || 'VS'}
-                                    </span>
+                                    {(getOverride('match_vs_text')?.visible !== false || isInspectorActive) && (
+                                        <span
+                                            className={`text-3xl font-black block tracking-tighter w-full ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('match_vs_text')?.fontSize || ''} ${getOverride('match_vs_text')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            style={{ color: getOverride('match_vs_text')?.textColor }}
+                                        >
+                                            {getOverride('match_vs_text')?.text || 'VS'}
+                                        </span>
+                                    )}
                                 </Selectable>
                                 <Selectable
                                     id="match_time_text"
@@ -434,13 +522,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'match_time_text'}
                                     onSelect={onSelect}
                                     overrides={getOverride('match_time_text')}
+                                    traits={['content', 'typography', 'interaction']}
                                 >
-                                    <span
-                                        className={`text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full mt-1 inline-block ${getOverride('match_time_text')?.fontSize || ''}`}
-                                        style={{ color: getOverride('match_time_text')?.textColor }}
-                                    >
-                                        {getOverride('match_time_text')?.text || '15:00'}
-                                    </span>
+                                    {(getOverride('match_time_text')?.visible !== false || isInspectorActive) && (
+                                        <span
+                                            className={`text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full mt-1 inline-block ${getOverride('match_time_text')?.fontSize || ''} ${getOverride('match_time_text')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            style={{ color: getOverride('match_time_text')?.textColor }}
+                                        >
+                                            {getOverride('match_time_text')?.text || '15:00'}
+                                        </span>
+                                    )}
                                 </Selectable>
                             </div>
                             <div className="text-center flex flex-col items-center">
@@ -452,6 +543,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'away_team_logo'}
                                     onSelect={onSelect}
                                     overrides={getOverride('away_team_logo')}
+                                    traits={['icon', 'interaction']}
                                 >
                                     <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center">
                                         <Shield {...getIconProps(20, "text-slate-400")} />
@@ -465,13 +557,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     isSelected={activeSelectionId === 'away_team_label'}
                                     onSelect={onSelect}
                                     overrides={getOverride('away_team_label')}
+                                    traits={['content', 'typography', 'interaction']}
                                 >
-                                    <span
-                                        className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('away_team_label')?.fontSize || ''}`}
-                                        style={{ color: getOverride('away_team_label')?.textColor }}
-                                    >
-                                        {getOverride('away_team_label')?.text || 'TRASFERTA'}
-                                    </span>
+                                    {(getOverride('away_team_label')?.visible !== false || isInspectorActive) && (
+                                        <span
+                                            className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('away_team_label')?.fontSize || ''} ${getOverride('away_team_label')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            style={{ color: getOverride('away_team_label')?.textColor }}
+                                        >
+                                            {getOverride('away_team_label')?.text || 'TRASFERTA'}
+                                        </span>
+                                    )}
                                 </Selectable>
                             </div>
                         </div>
@@ -494,13 +589,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                         isSelected={activeSelectionId === `home_quick_${item.id}`}
                                         onSelect={onSelect}
                                         overrides={getOverride(`home_quick_${item.id}`)}
+                                        traits={['content', 'typography', 'interaction']}
                                     >
-                                        <span
-                                            className={`text-xs font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-600'} ${getOverride(`home_quick_${item.id}`)?.fontSize || ''}`}
-                                            style={{ color: getOverride(`home_quick_${item.id}`)?.textColor }}
-                                        >
-                                            {getOverride(`home_quick_${item.id}`)?.text || item.label}
-                                        </span>
+                                        {(getOverride(`home_quick_${item.id}`)?.visible !== false || isInspectorActive) && (
+                                            <span
+                                                className={`text-xs font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-600'} ${getOverride(`home_quick_${item.id}`)?.fontSize || ''} ${getOverride(`home_quick_${item.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                                style={{ color: getOverride(`home_quick_${item.id}`)?.textColor }}
+                                            >
+                                                {getOverride(`home_quick_${item.id}`)?.text || item.label}
+                                            </span>
+                                        )}
                                     </Selectable>
                                 </div>
                             ))}
@@ -512,7 +610,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                             <SectionHeader id="home_video_section" label="Sezione Video Home" title="Focus Video" />
                             <PremiumCard themeConfig={themeConfig} isDarkMode={isDarkMode} className="p-0 overflow-hidden" id="home_video_widget" isInspectorActive={isInspectorActive} isSelected={activeSelectionId === 'home_video_widget'} onElementSelect={onSelect}>
                                 <div className="relative aspect-video">
-                                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=400&q=80" className="w-full h-full object-cover" />
+                                    <img
+                                        src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=400&q=80"
+                                        className="w-full h-full object-cover"
+                                        alt="Ultimi Risultati"
+                                    />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
                                         <div className="text-[10px] font-bold text-blue-400 uppercase mb-1">Highlight Match</div>
                                         <div className="text-sm font-bold text-white leading-tight">Rivivi le emozioni dell'ultima vittoria</div>
@@ -583,7 +685,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     <PremiumCard key={i} themeConfig={themeConfig} isDarkMode={isDarkMode} className="p-3" id={`home_news_card_${i}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `home_news_card_${i}`} onElementSelect={onSelect}>
                                         <div className="flex gap-3 text-left">
                                             <div className="w-16 h-16 rounded-xl bg-slate-200 overflow-hidden shrink-0">
-                                                <img src={`https://images.unsplash.com/photo-${i === 1 ? '1508098682722-e99c43a406b2' : '1552667466-07f70cdba9f3'}?w=200&h=200&fit=crop`} className="w-full h-full object-cover" />
+                                                <img
+                                                    src={`https://images.unsplash.com/photo-${i === 1 ? '1508098682722-e99c43a406b2' : '1552667466-07f70cdba9f3'}?w=200&h=200&fit=crop`}
+                                                    className="w-full h-full object-cover"
+                                                    alt={i === 1 ? "Evento 1" : "Evento 2"}
+                                                />
                                             </div>
                                             <div className="flex-1">
                                                 <div className="text-[10px] text-blue-500 font-bold uppercase mb-1">Società</div>
@@ -665,9 +771,40 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1">
-                                            <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{player.name}</div>
+                                            <Selectable
+                                                id={`player_name_${player.id}`}
+                                                type="text"
+                                                label={`Nome ${player.name}`}
+                                                isInspectorActive={isInspectorActive}
+                                                isSelected={activeSelectionId === `player_name_${player.id}`}
+                                                onSelect={onSelect}
+                                                overrides={getOverride(`player_name_${player.id}`)}
+                                                traits={['content', 'typography', 'interaction']}
+                                            >
+                                                {(getOverride(`player_name_${player.id}`)?.visible !== false || isInspectorActive) && (
+                                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride(`player_name_${player.id}`)?.fontSize || ''} ${getOverride(`player_name_${player.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`player_name_${player.id}`)?.textColor }}>
+                                                        {getOverride(`player_name_${player.id}`)?.text || player.name}
+                                                    </div>
+                                                )}
+                                            </Selectable>
+
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">{player.role}</div>
+                                                <Selectable
+                                                    id={`player_role_${player.id}`}
+                                                    type="text"
+                                                    label={`Ruolo ${player.role}`}
+                                                    isInspectorActive={isInspectorActive}
+                                                    isSelected={activeSelectionId === `player_role_${player.id}`}
+                                                    onSelect={onSelect}
+                                                    overrides={getOverride(`player_role_${player.id}`)}
+                                                    traits={['content', 'typography', 'interaction']}
+                                                >
+                                                    {(getOverride(`player_role_${player.id}`)?.visible !== false || isInspectorActive) && (
+                                                        <div className={`text-[10px] text-slate-500 font-bold uppercase tracking-tight ${getOverride(`player_role_${player.id}`)?.fontSize || ''} ${getOverride(`player_role_${player.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`player_role_${player.id}`)?.textColor }}>
+                                                            {getOverride(`player_role_${player.id}`)?.text || player.role}
+                                                        </div>
+                                                    )}
+                                                </Selectable>
                                                 {Object.entries(player.stats).filter(([key]) => key !== 'performance' && key !== 'presenze').slice(0, 1).map(([key, val]) => (
                                                     <div key={key} className="text-[10px] font-black text-blue-500 uppercase flex items-center gap-1">
                                                         <div className="w-1 h-1 rounded-full bg-slate-300" />
@@ -710,13 +847,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                             isSelected={activeSelectionId === 'upcoming_events_title'}
                             onSelect={onSelect}
                             overrides={getOverride('upcoming_events_title')}
+                            traits={['content', 'typography', 'interaction']}
                         >
-                            <h3
-                                className={`text-sm font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('upcoming_events_title')?.fontSize || ''}`}
-                                style={{ color: getOverride('upcoming_events_title')?.textColor }}
-                            >
-                                {getOverride('upcoming_events_title')?.text || 'Prossimi Eventi'}
-                            </h3>
+                            {(getOverride('upcoming_events_title')?.visible !== false || isInspectorActive) && (
+                                <h3
+                                    className={`text-sm font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('upcoming_events_title')?.fontSize || ''} ${getOverride('upcoming_events_title')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                    style={{ color: getOverride('upcoming_events_title')?.textColor }}
+                                >
+                                    {getOverride('upcoming_events_title')?.text || 'Prossimi Eventi'}
+                                </h3>
+                            )}
                         </Selectable>
                         {mockData.events.map((event: any) => (
                             <motion.div
@@ -740,7 +880,22 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             <span className="text-lg leading-none">{event.date.split(' ')[1]}</span>
                                         </div>
                                         <div className="flex-1">
-                                            <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{event.title}</div>
+                                            <Selectable
+                                                id={`event_title_${event.id}`}
+                                                type="text"
+                                                label={`Titolo ${event.title}`}
+                                                isInspectorActive={isInspectorActive}
+                                                isSelected={activeSelectionId === `event_title_${event.id}`}
+                                                onSelect={onSelect}
+                                                overrides={getOverride(`event_title_${event.id}`)}
+                                                traits={['content', 'typography', 'interaction']}
+                                            >
+                                                {(getOverride(`event_title_${event.id}`)?.visible !== false || isInspectorActive) && (
+                                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride(`event_title_${event.id}`)?.fontSize || ''} ${getOverride(`event_title_${event.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`event_title_${event.id}`)?.textColor }}>
+                                                        {getOverride(`event_title_${event.id}`)?.text || event.title}
+                                                    </div>
+                                                )}
+                                            </Selectable>
                                             <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
                                                 <div className="flex items-center gap-1">
                                                     <Clock {...getIconProps(12)} /> {event.time}
@@ -833,18 +988,22 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             isSelected={activeSelectionId === `shop_add_${i}`}
                                             onSelect={onSelect}
                                             overrides={getOverride(`shop_add_${i}`)}
+                                            traits={['interaction', 'icon']}
                                         >
-                                            <button
-                                                onClick={() => handleAddToCart(product)}
-                                                className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300
-                                                    ${isInCart ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-900 group-hover:bg-blue-600 group-hover:text-white'}`}
-                                                style={{
-                                                    backgroundColor: isInCart ? undefined : getOverride(`shop_add_${i}`)?.backgroundColor,
-                                                    color: isInCart ? undefined : getOverride(`shop_add_${i}`)?.textColor
-                                                }}
-                                            >
-                                                {isInCart ? <CheckCheck size={16} /> : <Plus size={16} />}
-                                            </button>
+                                            {(getOverride(`shop_add_${i}`)?.visible !== false || isInspectorActive) && (
+                                                <button
+                                                    onClick={() => handleAddToCart(product)}
+                                                    className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300
+                                                        ${isInCart ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-900 group-hover:bg-blue-600 group-hover:text-white'}
+                                                        ${getOverride(`shop_add_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                                    style={{
+                                                        backgroundColor: isInCart ? undefined : getOverride(`shop_add_${i}`)?.backgroundColor,
+                                                        color: isInCart ? undefined : getOverride(`shop_add_${i}`)?.textColor
+                                                    }}
+                                                >
+                                                    {isInCart ? <CheckCheck size={16} /> : <Plus size={16} />}
+                                                </button>
+                                            )}
                                         </Selectable>
                                     </div>
                                     <div className="p-3">
@@ -856,13 +1015,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             isSelected={activeSelectionId === `shop_title_${i}`}
                                             onSelect={onSelect}
                                             overrides={getOverride(`shop_title_${i}`)}
+                                            traits={['content', 'typography', 'interaction']}
                                         >
-                                            <div
-                                                className={`text-xs font-bold leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride(`shop_title_${i}`)?.fontSize || ''}`}
-                                                style={{ color: getOverride(`shop_title_${i}`)?.textColor }}
-                                            >
-                                                {getOverride(`shop_title_${i}`)?.text || product.name}
-                                            </div>
+                                            {(getOverride(`shop_title_${i}`)?.visible !== false || isInspectorActive) && (
+                                                <div
+                                                    className={`text-xs font-bold leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride(`shop_title_${i}`)?.fontSize || ''} ${getOverride(`shop_title_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                                    style={{ color: getOverride(`shop_title_${i}`)?.textColor }}
+                                                >
+                                                    {getOverride(`shop_title_${i}`)?.text || product.name}
+                                                </div>
+                                            )}
                                         </Selectable>
                                         <Selectable
                                             id={`shop_suffix_${i}`}
@@ -872,13 +1034,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             isSelected={activeSelectionId === `shop_suffix_${i}`}
                                             onSelect={onSelect}
                                             overrides={getOverride(`shop_suffix_${i}`)}
+                                            traits={['content', 'typography', 'interaction']}
                                         >
-                                            <div
-                                                className={`text-[9px] mt-0.5 font-medium tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} ${getOverride(`shop_suffix_${i}`)?.fontSize || ''}`}
-                                                style={{ color: getOverride(`shop_suffix_${i}`)?.textColor }}
-                                            >
-                                                {getOverride(`shop_suffix_${i}`)?.text || 'Official Merchandise'}
-                                            </div>
+                                            {(getOverride(`shop_suffix_${i}`)?.visible !== false || isInspectorActive) && (
+                                                <div
+                                                    className={`text-[9px] mt-0.5 font-medium tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} ${getOverride(`shop_suffix_${i}`)?.fontSize || ''} ${getOverride(`shop_suffix_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                                    style={{ color: getOverride(`shop_suffix_${i}`)?.textColor }}
+                                                >
+                                                    {getOverride(`shop_suffix_${i}`)?.text || 'Official Merchandise'}
+                                                </div>
+                                            )}
                                         </Selectable>
                                         <Selectable
                                             id={`shop_price_${i}`}
@@ -888,13 +1053,16 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                             isSelected={activeSelectionId === `shop_price_${i}`}
                                             onSelect={onSelect}
                                             overrides={getOverride(`shop_price_${i}`)}
+                                            traits={['content', 'typography', 'interaction']}
                                         >
-                                            <div
-                                                className={`mt-2 font-black text-blue-600 ${getOverride(`shop_price_${i}`)?.fontSize || ''}`}
-                                                style={{ color: getOverride(`shop_price_${i}`)?.textColor }}
-                                            >
-                                                {getOverride(`shop_price_${i}`)?.text || product.price}
-                                            </div>
+                                            {(getOverride(`shop_price_${i}`)?.visible !== false || isInspectorActive) && (
+                                                <div
+                                                    className={`mt-2 font-black text-blue-600 ${getOverride(`shop_price_${i}`)?.fontSize || ''} ${getOverride(`shop_price_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                                    style={{ color: getOverride(`shop_price_${i}`)?.textColor }}
+                                                >
+                                                    {getOverride(`shop_price_${i}`)?.text || product.price}
+                                                </div>
+                                            )}
                                         </Selectable>
                                     </div>
                                 </PremiumCard>
@@ -902,21 +1070,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         })}
                     </div>
 
-                    {/* Cart Tooltip/Button if items exist */}
-                    {cartCount > 0 && (
-                        <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="fixed bottom-24 right-8 z-[60]"
-                        >
-                            <button className="relative p-4 bg-blue-600 text-white rounded-full shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:scale-110 transition-all group">
-                                <ShoppingBag size={24} />
-                                <span className="absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center animate-bounce">
-                                    {cartCount}
-                                </span>
-                            </button>
-                        </motion.div>
-                    )}
+
                 </div>
             );
 
@@ -931,8 +1085,38 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex-1">
-                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
-                                    <div className="text-[10px] font-bold uppercase tracking-wider text-blue-500">{s.role}</div>
+                                    <Selectable
+                                        id={`staff_name_${s.id}`}
+                                        type="text"
+                                        label={`Nome ${s.name}`}
+                                        isInspectorActive={isInspectorActive}
+                                        isSelected={activeSelectionId === `staff_name_${s.id}`}
+                                        onSelect={onSelect}
+                                        overrides={getOverride(`staff_name_${s.id}`)}
+                                        traits={['content', 'typography', 'interaction']}
+                                    >
+                                        {(getOverride(`staff_name_${s.id}`)?.visible !== false || isInspectorActive) && (
+                                            <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride(`staff_name_${s.id}`)?.fontSize || ''} ${getOverride(`staff_name_${s.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`staff_name_${s.id}`)?.textColor }}>
+                                                {getOverride(`staff_name_${s.id}`)?.text || s.name}
+                                            </div>
+                                        )}
+                                    </Selectable>
+                                    <Selectable
+                                        id={`staff_role_${s.id}`}
+                                        type="text"
+                                        label={`Ruolo ${s.name}`}
+                                        isInspectorActive={isInspectorActive}
+                                        isSelected={activeSelectionId === `staff_role_${s.id}`}
+                                        onSelect={onSelect}
+                                        overrides={getOverride(`staff_role_${s.id}`)}
+                                        traits={['content', 'typography', 'interaction']}
+                                    >
+                                        {(getOverride(`staff_role_${s.id}`)?.visible !== false || isInspectorActive) && (
+                                            <div className={`text-[10px] font-bold uppercase tracking-wider text-blue-500 ${getOverride(`staff_role_${s.id}`)?.fontSize || ''} ${getOverride(`staff_role_${s.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`staff_role_${s.id}`)?.textColor }}>
+                                                {getOverride(`staff_role_${s.id}`)?.text || s.role}
+                                            </div>
+                                        )}
+                                    </Selectable>
                                 </div>
                                 <button className="p-2 rounded-full bg-slate-100/10 text-slate-500">
                                     <MessageSquare size={14} />
@@ -947,7 +1131,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
             return (
                 <div className="px-4 pb-24 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
                     <div className="relative aspect-video rounded-3xl overflow-hidden mb-4 border border-white/10">
-                        <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80" className="w-full h-full object-cover" />
+                        <img
+                            src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80"
+                            className="w-full h-full object-cover"
+                            alt="Live Match"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
                         <div className="absolute bottom-4 left-4">
                             <span className="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold">DAL {mockData.history.founded}</span>
@@ -960,15 +1148,31 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <SectionHeader id="history_achievements" label="Titolo Successi" title="Palmarès" />
                     <div className="space-y-3">
                         {mockData.history.achievements.map((item: any, i: number) => (
-                            <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl border ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
-                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-inner">
-                                    <Trophy size={18} />
-                                </div>
-                                <div>
-                                    <div className={`text-[10px] font-black ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>{item.year}</div>
-                                    <div className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{item.title}</div>
-                                </div>
-                            </div>
+                            <Selectable
+                                key={i}
+                                id={`achievement_${i}`}
+                                type="text"
+                                label={`Achievement ${item.year}`}
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === `achievement_${i}`}
+                                onSelect={onSelect}
+                                overrides={getOverride(`achievement_${i}`)}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                {(getOverride(`achievement_${i}`)?.visible !== false || isInspectorActive) && (
+                                    <div className={`flex items-center gap-4 p-3 rounded-2xl border ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-100'} ${getOverride(`achievement_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`}>
+                                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-inner">
+                                            <Trophy size={18} />
+                                        </div>
+                                        <div>
+                                            <div className={`text-[10px] font-black ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>{item.year}</div>
+                                            <div className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`} style={{ color: getOverride(`achievement_${i}`)?.textColor }}>
+                                                {getOverride(`achievement_${i}`)?.text || item.title}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </Selectable>
                         ))}
                     </div>
                 </div>
@@ -991,13 +1195,41 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                         <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
                                             <Music size={18} />
                                         </div>
-                                        <div className="font-bold text-sm">{chant.title}</div>
+                                        <Selectable
+                                            id={`chant_title_${chant.id}`}
+                                            type="text"
+                                            label={`Titolo ${chant.title}`}
+                                            isInspectorActive={isInspectorActive}
+                                            isSelected={activeSelectionId === `chant_title_${chant.id}`}
+                                            onSelect={onSelect}
+                                            overrides={getOverride(`chant_title_${chant.id}`)}
+                                            traits={['content', 'typography', 'interaction']}
+                                        >
+                                            {(getOverride(`chant_title_${chant.id}`)?.visible !== false || isInspectorActive) && (
+                                                <div className={`font-bold text-sm ${getOverride(`chant_title_${chant.id}`)?.fontSize || ''} ${getOverride(`chant_title_${chant.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`chant_title_${chant.id}`)?.textColor }}>
+                                                    {getOverride(`chant_title_${chant.id}`)?.text || chant.title}
+                                                </div>
+                                            )}
+                                        </Selectable>
                                     </div>
                                     <span className="text-[10px] font-mono text-slate-500">{chant.duration}</span>
                                 </div>
-                                <div className="p-3 bg-slate-950/30 rounded-xl border border-white/5 text-[11px] italic text-slate-400 leading-relaxed">
-                                    "{chant.lyric}"
-                                </div>
+                                <Selectable
+                                    id={`chant_lyric_${chant.id}`}
+                                    type="text"
+                                    label={`Testo ${chant.title}`}
+                                    isInspectorActive={isInspectorActive}
+                                    isSelected={activeSelectionId === `chant_lyric_${chant.id}`}
+                                    onSelect={onSelect}
+                                    overrides={getOverride(`chant_lyric_${chant.id}`)}
+                                    traits={['content', 'typography', 'interaction']}
+                                >
+                                    {(getOverride(`chant_lyric_${chant.id}`)?.visible !== false || isInspectorActive) && (
+                                        <div className={`p-3 bg-slate-950/30 rounded-xl border border-white/5 text-[11px] italic text-slate-400 leading-relaxed ${getOverride(`chant_lyric_${chant.id}`)?.fontSize || ''} ${getOverride(`chant_lyric_${chant.id}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`chant_lyric_${chant.id}`)?.textColor }}>
+                                            "{getOverride(`chant_lyric_${chant.id}`)?.text || chant.lyric}"
+                                        </div>
+                                    )}
+                                </Selectable>
                                 <div className="flex gap-2 mt-4">
                                     <button className="flex-1 py-2 bg-blue-600 rounded-lg text-white text-[10px] font-bold">RIPRODUCI</button>
                                     <button className="px-4 py-2 bg-slate-800 rounded-lg text-slate-300 text-[10px] font-bold text-white">TESTO</button>
@@ -1014,9 +1246,23 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <SectionHeader id="sponsors_header_main" label="Titolo Sponsor Main" title="Main Sponsors" isFirst={true} />
                     <div className="grid grid-cols-1 gap-3">
                         {mockData.sponsors.filter((s: any) => s.tier === 'Gold').map((s: any) => (
-                            <div key={s.id} className={`p-6 rounded-3xl border border-dashed flex items-center justify-center min-h-[140px] ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                                <img src={s.image} alt={s.name} className="max-h-16 opacity-80 grayscale hover:grayscale-0 transition-all cursor-pointer" />
-                            </div>
+                            <Selectable
+                                key={s.id}
+                                id={`sponsor_${s.id}`}
+                                type="container"
+                                label={`Sponsor ${s.name}`}
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === `sponsor_${s.id}`}
+                                onSelect={onSelect}
+                                overrides={getOverride(`sponsor_${s.id}`)}
+                                traits={['background', 'border', 'spacing']}
+                            >
+                                {(getOverride(`sponsor_${s.id}`)?.visible !== false || isInspectorActive) && (
+                                    <div className={`p-6 rounded-3xl border border-dashed flex items-center justify-center min-h-[140px] ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'} ${getOverride(`sponsor_${s.id}`)?.visible === false ? 'opacity-30 grayscale border-dashed' : ''}`}>
+                                        <img src={s.image} alt={s.name} className="max-h-16 opacity-80 grayscale hover:grayscale-0 transition-all cursor-pointer" />
+                                    </div>
+                                )}
+                            </Selectable>
                         ))}
                     </div>
                     <SectionHeader id="sponsors_header_partners" label="Titolo Sponsor Partner" title="Official Partners" />
@@ -1119,7 +1365,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <SectionHeader id="video_header" label="Titolo Video" title="Analisi Video" isFirst={true} />
 
                     <div className="relative aspect-video rounded-3xl overflow-hidden bg-black flex items-center justify-center group cursor-pointer border border-white/10 shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80" className="w-full h-full object-cover opacity-60" />
+                        <img
+                            src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80"
+                            className="w-full h-full object-cover opacity-60"
+                            alt="Video Analysis Background"
+                        />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all" />
                         <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-inner group-hover:scale-110 transition-transform">
                             <Play className="text-white ml-1" size={32} fill="white" />
@@ -1145,14 +1395,48 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     {[1, 2].map(i => (
                         <PremiumCard key={i} themeConfig={themeConfig} isDarkMode={isDarkMode} className="flex gap-4 p-3" id={`video_item_${i}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `video_item_${i}`} onElementSelect={onSelect}>
                             <div className="w-24 aspect-video rounded-xl bg-slate-200 overflow-hidden relative">
-                                <img src={`https://images.unsplash.com/photo-1522778119026-d647f0565c6d?auto=format&fit=crop&w=200&q=80&sig=${i}`} className="w-full h-full object-cover" />
+                                <img
+                                    src={`https://images.unsplash.com/photo-1522778119026-d647f0565c6d?auto=format&fit=crop&w=200&q=80&sig=${i}`}
+                                    className="w-full h-full object-cover"
+                                    alt={`Video thumbnail ${i}`}
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <Play size={16} className="text-white" fill="white" />
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <div className="text-[10px] font-bold text-blue-500 mb-1 uppercase">Allenamento</div>
-                                <div className="text-xs font-bold leading-tight">Analisi Tattica Fase Difensiva</div>
+                                <Selectable
+                                    id={`video_category_${i}`}
+                                    type="text"
+                                    label="Categoria Video"
+                                    isInspectorActive={isInspectorActive}
+                                    isSelected={activeSelectionId === `video_category_${i}`}
+                                    onSelect={onSelect}
+                                    overrides={getOverride(`video_category_${i}`)}
+                                    traits={['content', 'typography', 'interaction']}
+                                >
+                                    {(getOverride(`video_category_${i}`)?.visible !== false || isInspectorActive) && (
+                                        <div className={`text-[10px] font-bold text-blue-500 mb-1 uppercase ${getOverride(`video_category_${i}`)?.fontSize || ''} ${getOverride(`video_category_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`video_category_${i}`)?.textColor }}>
+                                            {getOverride(`video_category_${i}`)?.text || 'Allenamento'}
+                                        </div>
+                                    )}
+                                </Selectable>
+                                <Selectable
+                                    id={`video_title_${i}`}
+                                    type="text"
+                                    label="Titolo Video"
+                                    isInspectorActive={isInspectorActive}
+                                    isSelected={activeSelectionId === `video_title_${i}`}
+                                    onSelect={onSelect}
+                                    overrides={getOverride(`video_title_${i}`)}
+                                    traits={['content', 'typography', 'interaction']}
+                                >
+                                    {(getOverride(`video_title_${i}`)?.visible !== false || isInspectorActive) && (
+                                        <div className={`text-xs font-bold leading-tight ${getOverride(`video_title_${i}`)?.fontSize || ''} ${getOverride(`video_title_${i}`)?.visible === false ? 'opacity-30 grayscale' : ''}`} style={{ color: getOverride(`video_title_${i}`)?.textColor }}>
+                                            {getOverride(`video_title_${i}`)?.text || 'Analisi Tattica Fase Difensiva'}
+                                        </div>
+                                    )}
+                                </Selectable>
                                 <div className="text-[9px] text-slate-500 mt-2">2 GG FA • 12:45</div>
                             </div>
                         </PremiumCard>

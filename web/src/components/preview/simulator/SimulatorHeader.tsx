@@ -127,6 +127,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             onSelect={onSelect}
             className="absolute top-0 left-0 right-0 z-40 overflow-hidden shadow-2xl"
             overrides={headerOverride}
+            traits={['background', 'layout']}
         >
             <motion.header
                 ref={headerRef}
@@ -136,47 +137,39 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                 }}
                 className="relative w-full pt-14 pb-3 px-6 flex flex-col overflow-hidden"
                 style={{
-                    background: themeConfig.header?.customGradientStart && themeConfig.header?.customGradientEnd
-                        ? `linear-gradient(135deg, ${themeConfig.header.customGradientStart}, ${themeConfig.header.customGradientEnd})`
-                        : `linear-gradient(135deg, ${currentTeam.colors.primary}, ${currentTeam.colors.secondary}dd)`,
+                    borderRadius: themeConfig.borderRadius === 'full' ? '0 0 40px 40px' : '0'
                 }}
-            >
-                {/* Background Image Overlay */}
-                {themeConfig.header?.backgroundImage && (
-                    <div
-                        className="absolute inset-0 bg-cover bg-center opacity-20"
-                        style={{ backgroundImage: `url(${themeConfig.header.backgroundImage})` }}
-                    />
-                )}
 
-                {/* Gradient Overlay for better text contrast */}
-                <div
-                    className="absolute inset-0 z-0"
-                    style={{
-                        background: `linear-gradient(180deg, transparent 0%, ${themeConfig.header?.customGradientEnd || currentTeam.colors.primary
-                            }40 100%)`
-                    }}
-                />
-                {/* Branded Background */}
+            >
                 <div className="absolute inset-0 z-0">
+                    {/* Primary Gradient Layer */}
                     <div
-                        className="absolute inset-0 opacity-90"
+                        className="absolute inset-0 transition-colors duration-500"
                         style={{
-                            background: `linear-gradient(135deg, ${currentTeam.colors.primary}, ${currentTeam.colors.secondary}dd)`
+                            background: `linear-gradient(135deg, 
+                                ${headerOverride?.customGradientStart || themeConfig.header?.customGradientStart || currentTeam.colors.primary}, 
+                                ${headerOverride?.customGradientEnd || themeConfig.header?.customGradientEnd || currentTeam.colors.secondary || currentTeam.colors.primary}dd)`
                         }}
                     />
-                    {currentTeam.branding?.customHeroImage && (
+
+                    {/* Gradient Mesh / Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+
+                    {/* Background Image Layer (Custom or Team) */}
+                    {(headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage) && (
                         <motion.img
-                            initial={{ scale: 1.1 }}
-                            animate={{ scale: 1 }}
-                            src={currentTeam.branding.customHeroImage}
-                            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
-                            alt="Branding"
+                            initial={{ scale: 1.1, opacity: 0 }}
+                            animate={{ scale: 1, opacity: (headerOverride?.backgroundImage || themeConfig.header?.backgroundImage) ? 0.6 : 0.5 }}
+                            src={headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage}
+                            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay brightness-110"
+                            alt="Header Background"
                         />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
+
+                    {/* Texture / Noise Layer */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light" />
                 </div>
+
 
                 {/* Top Row: Brand & Actions */}
                 <div className="relative z-10 flex items-center justify-between mb-4">
@@ -213,10 +206,47 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                             </div>
                         </div>
                         <div>
-                            <h1 className="text-sm font-black text-white tracking-tight leading-none uppercase">{currentTeam.name}</h1>
+                            <Selectable
+                                id="header_team_name"
+                                type="text"
+                                label="Nome Team (Header)"
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'header_team_name'}
+                                onSelect={onSelect}
+                                overrides={getOverride('header_team_name')}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                {(getOverride('header_team_name')?.visible !== false || isInspectorActive) && (
+                                    <h1
+                                        className={`text-sm font-black text-white tracking-tight leading-none uppercase ${getOverride('header_team_name')?.fontSize || ''} ${getOverride('header_team_name')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                        style={{ color: getOverride('header_team_name')?.textColor }}
+                                    >
+                                        {getOverride('header_team_name')?.text || currentTeam.name}
+                                    </h1>
+                                )}
+                            </Selectable>
+
                             <div className="flex items-center gap-1.5 mt-0.5">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
-                                <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">{currentTeam.sportType}</p>
+                                <Selectable
+                                    id="header_sport_type"
+                                    type="text"
+                                    label="Tipo Sport (Header)"
+                                    isInspectorActive={isInspectorActive}
+                                    isSelected={activeSelectionId === 'header_sport_type'}
+                                    onSelect={onSelect}
+                                    overrides={getOverride('header_sport_type')}
+                                    traits={['content', 'typography', 'interaction']}
+                                >
+                                    {(getOverride('header_sport_type')?.visible !== false || isInspectorActive) && (
+                                        <p
+                                            className={`text-[10px] font-bold text-white/70 uppercase tracking-widest ${getOverride('header_sport_type')?.fontSize || ''} ${getOverride('header_sport_type')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            style={{ color: getOverride('header_sport_type')?.textColor }}
+                                        >
+                                            {getOverride('header_sport_type')?.text || currentTeam.sportType}
+                                        </p>
+                                    )}
+                                </Selectable>
                             </div>
                         </div>
                     </div>
@@ -244,11 +274,45 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                             exit={{ opacity: 0, y: -10 }}
                             className="relative z-10 mb-2 mt-2"
                         >
-                            <h2 className="text-2xl font-black text-white leading-tight">
-                                Benvenuto nel <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">Digital Club</span>
-                            </h2>
-                            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mt-2 mb-4">La tua passione, ovunque.</p>
+                            <Selectable
+                                id="header_welcome_title"
+                                type="text"
+                                label="Titolo Benvenuto"
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'header_welcome_title'}
+                                onSelect={onSelect}
+                                overrides={getOverride('header_welcome_title')}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                {(getOverride('header_welcome_title')?.visible !== false || isInspectorActive) && (
+                                    <h2
+                                        className={`text-2xl font-black text-white leading-tight ${getOverride('header_welcome_title')?.fontSize || ''} ${getOverride('header_welcome_title')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                        style={{ color: getOverride('header_welcome_title')?.textColor }}
+                                    >
+                                        {getOverride('header_welcome_title')?.text || "Benvenuto nel Club Digital"}
+                                    </h2>
+                                )}
+                            </Selectable>
+
+                            <Selectable
+                                id="header_welcome_subtitle"
+                                type="text"
+                                label="Sottotitolo Benvenuto"
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'header_welcome_subtitle'}
+                                onSelect={onSelect}
+                                overrides={getOverride('header_welcome_subtitle')}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                {(getOverride('header_welcome_subtitle')?.visible !== false || isInspectorActive) && (
+                                    <p
+                                        className={`text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mt-2 mb-4 ${getOverride('header_welcome_subtitle')?.fontSize || ''} ${getOverride('header_welcome_subtitle')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                        style={{ color: getOverride('header_welcome_subtitle')?.textColor }}
+                                    >
+                                        {getOverride('header_welcome_subtitle')?.text || "La tua passione, ovunque."}
+                                    </p>
+                                )}
+                            </Selectable>
                         </motion.div>
                     )}
                 </AnimatePresence>

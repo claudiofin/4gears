@@ -58,10 +58,11 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                         isSelected={activeSelectionId === 'welcome_text'}
                         onSelect={onSelect}
                         overrides={welcomeOverride}
+                        traits={['content', 'typography', 'interaction']}
                     >
-                        {(welcomeOverride?.visible !== false) && (
+                        {(welcomeOverride?.visible !== false || isInspectorActive) && (
                             <h2
-                                className={`text-xs font-bold uppercase tracking-widest mb-1 opacity-90 ${welcomeOverride?.fontSize || ''}`}
+                                className={`text-xs font-bold uppercase tracking-widest mb-1 ${welcomeOverride?.fontSize || ''} ${welcomeOverride?.visible === false ? 'opacity-30 grayscale' : 'opacity-90'}`}
                                 style={{ color: welcomeOverride?.textColor || 'rgba(255,255,255,0.8)' }}
                             >
                                 {welcomeOverride?.text || 'Benvenuto'}
@@ -77,10 +78,11 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                         isSelected={activeSelectionId === 'team_name'}
                         onSelect={onSelect}
                         overrides={teamNameOverride}
+                        traits={['content', 'typography', 'interaction']}
                     >
-                        {(teamNameOverride?.visible !== false) && (
+                        {(teamNameOverride?.visible !== false || isInspectorActive) && (
                             <h1
-                                className={`text-4xl font-black leading-tight tracking-tight ${teamNameOverride?.fontSize || ''}`}
+                                className={`text-4xl font-black leading-tight tracking-tight ${teamNameOverride?.fontSize || ''} ${teamNameOverride?.visible === false ? 'opacity-30 grayscale' : ''}`}
                                 style={{ color: teamNameOverride?.textColor || '#ffffff' }}
                             >
                                 {teamNameOverride?.text || currentTeam.name}

@@ -5,6 +5,7 @@ import { ColorControl } from './controls/ColorControl';
 import { SliderControl } from './controls/SliderControl';
 import { SelectControl } from './controls/SelectControl';
 import { ToggleControl } from './controls/ToggleControl';
+import { ImageUploadControl } from './controls/ImageUploadControl';
 
 interface PropertyEditorProps {
     properties: EditableProperty[];
@@ -60,6 +61,15 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({ properties, onUp
                                 label={prop.label}
                                 value={prop.value}
                                 options={prop.options || []}
+                                onChange={(val) => onUpdate(prop.key, val)}
+                            />
+                        );
+                    case 'image-upload':
+                        return (
+                            <ImageUploadControl
+                                key={prop.key}
+                                label={prop.label}
+                                value={prop.value}
                                 onChange={(val) => onUpdate(prop.key, val)}
                             />
                         );

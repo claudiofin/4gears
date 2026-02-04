@@ -37,7 +37,7 @@ export const VisualInspector: React.FC<VisualInspectorProps> = ({
 };
 
 // Wrapper component to make elements selectable
-import { ComponentType, ComponentMetadata, EditableProperty, COMPONENT_PROPERTY_CONFIGS } from '@/types/inspector';
+import { ComponentType, ComponentMetadata, EditableProperty, COMPONENT_PROPERTY_CONFIGS, PropertyTrait, TRAIT_CONFIGS } from '@/types/inspector';
 
 interface SelectableProps {
     id: string;
@@ -51,6 +51,7 @@ interface SelectableProps {
     style?: React.CSSProperties;
     path?: string;
     overrides?: Record<string, any>; // Current values that override defaults
+    traits?: PropertyTrait[]; // New: Specific traits for this instance
 }
 
 export const Selectable = React.forwardRef<HTMLDivElement, SelectableProps>(({
@@ -64,7 +65,8 @@ export const Selectable = React.forwardRef<HTMLDivElement, SelectableProps>(({
     className = "",
     style = {},
     path,
-    overrides = {}
+    overrides = {},
+    traits = []
 }, ref) => {
     if (!isInspectorActive) return <div ref={ref} className={className} style={style}>{children}</div>;
 
@@ -79,8 +81,17 @@ export const Selectable = React.forwardRef<HTMLDivElement, SelectableProps>(({
         e.stopPropagation();
 
         // Construct metadata with current values
-        const defaultProps = COMPONENT_PROPERTY_CONFIGS[type] || [];
-        const editableProps = defaultProps.map(prop => ({
+        // 1. Get base props from type (legacy)
+        const baseProps = COMPONENT_PROPERTY_CONFIGS[type] || [];
+
+        // 2. Get props from traits (new system)
+        const traitProps = traits.flatMap(trait => TRAIT_CONFIGS[trait] || []);
+
+        // 3. Merge and deduplicate (last one wins)
+        const allConfigs = [...baseProps, ...traitProps];
+        const uniqueConfigs = Array.from(new Map(allConfigs.map(item => [item.key, item])).values());
+
+        const editableProps = uniqueConfigs.map(prop => ({
             ...prop,
             value: overrides[prop.key] !== undefined ? overrides[prop.key] : ''
         })) as EditableProperty[];
@@ -90,7 +101,8 @@ export const Selectable = React.forwardRef<HTMLDivElement, SelectableProps>(({
             type,
             label,
             path,
-            editableProps
+            editableProps,
+            traits
         });
     };
 
@@ -109,16 +121,19 @@ export const Selectable = React.forwardRef<HTMLDivElement, SelectableProps>(({
             <div className={`absolute inset-0 z-[60] rounded-[inherit] pointer-events-none transition-all duration-200 border-2
                 ${isSelected
                     ? 'border-indigo-500 bg-indigo-500/10'
-                    : 'border-transparent group-hover:border-indigo-400/50 group-hover:bg-indigo-400/5'
+                    : overrides.visible === false
+                        ? 'border-rose-500/50 border-dashed bg-rose-500/5'
+                        : 'border-transparent group-hover:border-indigo-400/50 group-hover:bg-indigo-400/5'
                 }
             `} />
 
             {/* Label Tag (Visible on Hover/Select) */}
-            <div className={`absolute -top-5 left-0 z-[70] px-1.5 py-0.5 bg-indigo-500 text-white text-[9px] rounded font-mono pointer-events-none transition-opacity duration-200 shadow-lg shadow-indigo-500/20
+            <div className={`absolute -top-5 left-0 z-[70] px-1.5 py-0.5 ${overrides.visible === false ? 'bg-rose-500' : 'bg-indigo-500'} text-white text-[9px] rounded font-mono pointer-events-none transition-opacity duration-200 shadow-lg shadow-indigo-500/20
                 ${isSelected || 'opacity-0 group-hover:opacity-100'}
             `}>
                 <span className="opacity-70 mr-1">{type}:</span>
                 {label}
+                {overrides.visible === false && <span className="ml-1 px-1 bg-white/20 rounded-sm font-black">HIDDEN</span>}
             </div>
 
             {children}

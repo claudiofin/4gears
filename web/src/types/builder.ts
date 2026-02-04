@@ -82,6 +82,18 @@ export type ComponentOverride = {
     visible?: boolean;
     icon?: string; // Icon override
     customIconUrl?: string; // New: Custom asset override
+    borderRadius?: string;
+    // Advanced Styles
+    customGradientStart?: string;
+    customGradientEnd?: string;
+    backgroundImage?: string;
+    backdropBlur?: string;
+    opacity?: number;
+    // Spacing & Layout
+    padding?: string;
+    margin?: string;
+    width?: string;
+    height?: string;
 };
 
 export type NavItem = {

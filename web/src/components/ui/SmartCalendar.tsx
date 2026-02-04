@@ -76,6 +76,7 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
             style={{
                 fontFamily: themeConfig.fontFamily
             }}
+            traits={['background', 'border', 'spacing', 'glass']}
         >
             {/* Header */}
             <div className="flex justify-between items-center mb-6 px-2">
@@ -86,13 +87,18 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
                     isInspectorActive={isInspectorActive}
                     isSelected={activeSelectionId === 'calendar_prev_month'}
                     onSelect={onElementSelect || (() => { })}
+                    overrides={themeConfig.componentOverrides?.['calendar_prev_month']}
+                    traits={['interaction', 'icon']}
                 >
-                    <button
-                        onClick={(e) => { e.stopPropagation(); changeMonth(-1); }}
-                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                        <ChevronLeft size={20} color={tokens.colors.text} />
-                    </button>
+                    {(themeConfig.componentOverrides?.['calendar_prev_month']?.visible !== false || isInspectorActive) && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); changeMonth(-1); }}
+                            className={`p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${themeConfig.componentOverrides?.['calendar_prev_month']?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                            style={{ color: themeConfig.componentOverrides?.['calendar_prev_month']?.textColor || tokens.colors.text }}
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                    )}
                 </Selectable>
 
                 <Selectable
@@ -102,10 +108,17 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
                     isInspectorActive={isInspectorActive}
                     isSelected={activeSelectionId === 'calendar_month_title'}
                     onSelect={onElementSelect || (() => { })}
+                    overrides={themeConfig.componentOverrides?.['calendar_month_title']}
+                    traits={['content', 'typography', 'interaction']}
                 >
-                    <h3 className="text-lg font-bold capitalize" style={{ color: tokens.colors.text }}>
-                        {format(currentMonth, 'MMMM yyyy', { locale: it })}
-                    </h3>
+                    {(themeConfig.componentOverrides?.['calendar_month_title']?.visible !== false || isInspectorActive) && (
+                        <h3
+                            className={`text-lg font-bold capitalize ${themeConfig.componentOverrides?.['calendar_month_title']?.fontSize || ''} ${themeConfig.componentOverrides?.['calendar_month_title']?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                            style={{ color: themeConfig.componentOverrides?.['calendar_month_title']?.textColor || tokens.colors.text }}
+                        >
+                            {themeConfig.componentOverrides?.['calendar_month_title']?.text || format(currentMonth, 'MMMM yyyy', { locale: it })}
+                        </h3>
+                    )}
                 </Selectable>
 
                 <Selectable
@@ -115,20 +128,25 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
                     isInspectorActive={isInspectorActive}
                     isSelected={activeSelectionId === 'calendar_next_month'}
                     onSelect={onElementSelect || (() => { })}
+                    overrides={themeConfig.componentOverrides?.['calendar_next_month']}
+                    traits={['interaction', 'icon']}
                 >
-                    <button
-                        onClick={(e) => { e.stopPropagation(); changeMonth(1); }}
-                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                        <ChevronRight size={20} color={tokens.colors.text} />
-                    </button>
+                    {(themeConfig.componentOverrides?.['calendar_next_month']?.visible !== false || isInspectorActive) && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); changeMonth(1); }}
+                            className={`p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${themeConfig.componentOverrides?.['calendar_next_month']?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                            style={{ color: themeConfig.componentOverrides?.['calendar_next_month']?.textColor || tokens.colors.text }}
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    )}
                 </Selectable>
             </div>
 
             {/* Week Days */}
             <div className="flex mb-4">
                 {['LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB', 'DOM'].map((day) => (
-                    <div key={day} className="flex-1 text-center text-[10px] font-bold tracking-wider" style={{ color: tokens.colors.textSecondary }}>
+                    <div key={day} className="flex-1 text-center text-[10px] font-bold tracking-wider">
                         <Selectable
                             id={`calendar_day_label_${day}`}
                             type="text"
@@ -136,8 +154,17 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
                             isInspectorActive={isInspectorActive}
                             isSelected={activeSelectionId === `calendar_day_label_${day}`}
                             onSelect={onElementSelect || (() => { })}
+                            overrides={themeConfig.componentOverrides?.[`calendar_day_label_${day}`]}
+                            traits={['content', 'typography', 'interaction']}
                         >
-                            <span>{day}</span>
+                            {(themeConfig.componentOverrides?.[`calendar_day_label_${day}`]?.visible !== false || isInspectorActive) && (
+                                <span
+                                    className={`${themeConfig.componentOverrides?.[`calendar_day_label_${day}`]?.fontSize || ''} ${themeConfig.componentOverrides?.[`calendar_day_label_${day}`]?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                    style={{ color: themeConfig.componentOverrides?.[`calendar_day_label_${day}`]?.textColor || tokens.colors.textSecondary }}
+                                >
+                                    {themeConfig.componentOverrides?.[`calendar_day_label_${day}`]?.text || day}
+                                </span>
+                            )}
                         </Selectable>
                     </div>
                 ))}

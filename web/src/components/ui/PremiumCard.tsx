@@ -35,7 +35,8 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
     const override = id && themeConfig.componentOverrides ? themeConfig.componentOverrides[id] : undefined;
 
     // 2. Visibility Check
-    if (override?.visible === false) return null;
+    const isVisible = override?.visible !== false;
+    if (!isVisible && !isInspectorActive) return null;
 
     // Determine effective variant from themeConfig if 'minimal' (default) is passed, 
     // OR allow explicit override via prop.
@@ -93,6 +94,12 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
         customStyle.borderWidth = '2px';
         customStyle.borderStyle = 'solid';
     }
+    if (override?.opacity !== undefined) customStyle.opacity = override.opacity;
+    if (override?.padding) customStyle.padding = override.padding;
+    if (override?.margin) customStyle.margin = override.margin;
+    if (override?.width) customStyle.width = override.width;
+    if (override?.height) customStyle.height = override.height;
+    if (override?.borderRadius) customStyle.borderRadius = override.borderRadius === 'rounded-full' ? '9999px' : override.borderRadius === 'rounded-none' ? '0px' : '';
 
     return (
         <Selectable
@@ -104,12 +111,13 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
             onSelect={onElementSelect || (() => { })}
             className="block h-full"
             overrides={override}
+            traits={['background', 'border', 'spacing', 'glass']}
         >
             <motion.div
                 whileHover={isInteractive ? { y: -2, scale: 1.01 } : {}}
                 whileTap={isInteractive ? { scale: 0.98 } : {}}
                 onClick={onClick}
-                className={`${getVariantStyles()} ${radiusClass} ${isInteractive ? 'cursor-pointer' : ''} h-full ${className}`}
+                className={`${getVariantStyles()} ${radiusClass} ${isInteractive ? 'cursor-pointer' : ''} h-full ${className} ${override?.backdropBlur || ''} ${!isVisible ? 'opacity-30 grayscale-[0.8] border-dashed' : ''}`}
                 style={customStyle}
             >
                 {/* Optional: Add a subtle gradient overlay for "Premium" feel if Glass */}

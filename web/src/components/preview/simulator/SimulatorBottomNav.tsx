@@ -131,6 +131,7 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
                                     isSelected={activeSelectionId === `nav_tab_${item.id}`}
                                     onSelect={onSelect}
                                     overrides={getOverride(`nav_tab_${item.id}`)}
+                                    traits={['content', 'interaction', 'icon']}
                                 >
                                     <button
                                         onClick={() => setPreviewPage(item.id)}

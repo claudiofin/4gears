@@ -13,7 +13,7 @@ import { SimulatorHeader } from './simulator/SimulatorHeader';
 import { SimulatorHero } from './simulator/SimulatorHero';
 import { SimulatorScreens } from './simulator/SimulatorScreens';
 import { SimulatorBottomNav } from './simulator/SimulatorBottomNav';
-import { BurgerMenuOverlay, ChatOverlay, NotificationsOverlay } from './simulator/SimulatorOverlays';
+import { BurgerMenuOverlay, ChatOverlay, NotificationsOverlay, FloatingCartButton } from './simulator/SimulatorOverlays';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
 
 interface PreviewPaneProps {
@@ -94,6 +94,18 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
             const newOverrides = { ...themeConfig.componentOverrides };
             delete newOverrides[id];
             onThemeUpdate({ componentOverrides: newOverrides });
+
+            // Refresh metadata to show default values
+            if (selectedMetadata && selectedMetadata.id === id) {
+                const refreshedProps = selectedMetadata.editableProps.map(prop => ({
+                    ...prop,
+                    value: '' // Reset to default
+                }));
+                setSelectedMetadata({
+                    ...selectedMetadata,
+                    editableProps: refreshedProps
+                });
+            }
         } else {
             // Update specific property
             onThemeUpdate({
@@ -105,6 +117,17 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     }
                 }
             });
+
+            // Update local metadata state to keep values in sync (Critical for text inputs)
+            if (selectedMetadata && selectedMetadata.id === id) {
+                const refreshedProps = selectedMetadata.editableProps.map(prop =>
+                    prop.key === key ? { ...prop, value } : prop
+                );
+                setSelectedMetadata({
+                    ...selectedMetadata,
+                    editableProps: refreshedProps
+                });
+            }
         }
     };
 
@@ -203,6 +226,12 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                             activeConversationId={activeConversationId}
                             setActiveConversationId={setActiveConversationId}
                             isDarkMode={isDarkMode}
+                        />
+                        <FloatingCartButton
+                            isVisible={previewPage === 'shop'}
+                            count={mockData.cart?.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0) || 0}
+                            onClick={() => {/* Open Cart - can be implemented later or ignored if just visual fix is needed */ }}
+                            currentTeam={currentTeam}
                         />
                     </>
                 }
