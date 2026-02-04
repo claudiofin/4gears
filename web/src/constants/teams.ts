@@ -39,8 +39,8 @@ export type TeamConfig = {
 export const DEFAULT_TEAMS: TeamConfig[] = [
     {
         id: "1",
-        name: "Calcio F.C.",
-        slug: "calcio-fc",
+        name: "4Gears Calcio",
+        slug: "4gears-calcio",
         sportType: "Calcio",
         colors: { primary: "#2563eb", secondary: "#0f172a" },
         modules: { liveScoring: true, payments: true, sponsors: true }
