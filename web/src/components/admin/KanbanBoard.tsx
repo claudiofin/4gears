@@ -1,71 +1,206 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { KanbanCard } from './KanbanCard';
-import { ExtendedSubmission } from '@/app/admin/submissions/page';
-
-const COLUMNS = [
-    { id: 'pending', title: 'Da Iniziare', color: 'bg-amber-500/10 border-amber-500/20 text-amber-500' },
-    { id: 'in_progress', title: 'In Sviluppo', color: 'bg-blue-500/10 border-blue-500/20 text-blue-500' },
-    { id: 'completed', title: 'Completati', color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' },
-    { id: 'rejected', title: 'Rifiutati', color: 'bg-rose-500/10 border-rose-500/20 text-rose-500' }
-];
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { KanbanColumn } from './kanban/KanbanColumn';
+import { KanbanTaskCard } from './kanban/KanbanTaskCard';
+import { CreateTaskModal } from './kanban/CreateTaskModal';
+import { TaskDetailModal } from './kanban/TaskDetailModal';
+import type { KanbanColumn as ColumnType, KanbanTask, KanbanLabel } from '@/types/database';
+import { Plus, Loader2 } from 'lucide-react';
 
 export function KanbanBoard() {
-    const [submissions, setSubmissions] = useState<ExtendedSubmission[]>([]);
+    const [columns, setColumns] = useState<ColumnType[]>([]);
+    const [tasks, setTasks] = useState<KanbanTask[]>([]);
+    const [labels, setLabels] = useState<KanbanLabel[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<KanbanTask | null>(null);
 
-    const fetchData = async () => {
-        const { data, error } = await supabase
-            .from('submission_requests')
-            .select('*, profiles!user_id(email)')
-            .order('updated_at', { ascending: false });
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        })
+    );
 
-        if (!error && data) {
-            setSubmissions(data as unknown as ExtendedSubmission[]);
+    const fetchKanbanData = async () => {
+        try {
+            const token = localStorage.getItem('supabase.auth.token');
+            const response = await fetch('/api/admin/kanban', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch kanban data');
+
+            const data = await response.json();
+            setColumns(data.columns || []);
+            setTasks(data.tasks || []);
+            setLabels(data.labels || []);
+        } catch (error) {
+            console.error('Error fetching kanban data:', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     useEffect(() => {
-        fetchData();
+        fetchKanbanData();
     }, []);
 
-    const handleUpdate = () => {
-        fetchData();
+    const handleDragStart = (event: DragStartEvent) => {
+        const task = tasks.find(t => t.id === event.active.id);
+        setActiveTask(task || null);
     };
 
-    if (loading) return <div className="text-slate-400">Caricamento Board...</div>;
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+        setActiveTask(null);
+
+        if (!over) return;
+
+        const taskId = active.id as string;
+        const newColumnId = over.id as string;
+
+        const task = tasks.find(t => t.id === taskId);
+        if (!task || task.column_id === newColumnId) return;
+
+        // Optimistic update
+        setTasks(prev => prev.map(t =>
+            t.id === taskId ? { ...t, column_id: newColumnId } : t
+        ));
+
+        // Update in database
+        try {
+            const token = localStorage.getItem('supabase.auth.token');
+            const response = await fetch('/api/admin/kanban/task', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    task_id: taskId,
+                    updates: { column_id: newColumnId }
+                })
+            });
+
+            if (!response.ok) {
+                // Revert on error
+                setTasks(prev => prev.map(t =>
+                    t.id === taskId ? { ...t, column_id: task.column_id } : t
+                ));
+                throw new Error('Failed to update task');
+            }
+
+            // Refresh to get updated status and timestamps
+            await fetchKanbanData();
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    };
+
+    const handleTaskCreated = () => {
+        setShowCreateModal(false);
+        fetchKanbanData();
+    };
+
+    const handleTaskUpdated = () => {
+        setSelectedTask(null);
+        fetchKanbanData();
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[calc(100vh-200px)] overflow-hidden">
-            {COLUMNS.map(column => (
-                <div key={column.id} className="flex flex-col h-full bg-slate-900/50 rounded-2xl border border-slate-800/50">
-                    <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${column.color.split(' ')[2].replace('text-', 'bg-')}`} />
-                            <h3 className="font-semibold text-white uppercase text-xs tracking-wider">{column.title}</h3>
-                        </div>
-                        <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full">
-                            {submissions.filter(s => s.status === column.id).length}
-                        </span>
+        <>
+            <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 rounded-xl border border-slate-800">
+                        <span className="text-sm text-slate-400">Total Tasks:</span>
+                        <span className="text-lg font-bold text-white">{tasks.length}</span>
                     </div>
-
-                    <div className="p-4 flex-1 overflow-y-auto space-y-4 custom-scrollbar">
-                        {submissions
-                            .filter(s => s.status === column.id)
-                            .map(submission => (
-                                <KanbanCard
-                                    key={submission.id}
-                                    submission={submission}
-                                    onUpdate={handleUpdate}
-                                />
-                            ))
-                        }
+                    <div className="flex gap-2">
+                        {labels.slice(0, 5).map(label => (
+                            <div
+                                key={label.id}
+                                className="px-3 py-1 rounded-full text-xs font-medium border"
+                                style={{
+                                    backgroundColor: `${label.color}20`,
+                                    borderColor: `${label.color}40`,
+                                    color: label.color
+                                }}
+                            >
+                                {label.name}
+                            </div>
+                        ))}
                     </div>
                 </div>
-            ))}
-        </div>
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-indigo-500/20"
+                >
+                    <Plus size={20} />
+                    <span>New Task</span>
+                </button>
+            </div>
+
+            <DndContext
+                sensors={sensors}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+            >
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 h-[calc(100vh-300px)]">
+                    {columns.map(column => {
+                        const columnTasks = tasks.filter(t => t.column_id === column.id);
+                        return (
+                            <KanbanColumn
+                                key={column.id}
+                                column={column}
+                                tasks={columnTasks}
+                                onTaskClick={setSelectedTask}
+                            />
+                        );
+                    })}
+                </div>
+
+                <DragOverlay>
+                    {activeTask ? (
+                        <div className="opacity-50">
+                            <KanbanTaskCard task={activeTask} onClick={() => { }} />
+                        </div>
+                    ) : null}
+                </DragOverlay>
+            </DndContext>
+
+            {showCreateModal && (
+                <CreateTaskModal
+                    columns={columns}
+                    labels={labels}
+                    onClose={() => setShowCreateModal(false)}
+                    onTaskCreated={handleTaskCreated}
+                />
+            )}
+
+            {selectedTask && (
+                <TaskDetailModal
+                    task={selectedTask}
+                    labels={labels}
+                    onClose={() => setSelectedTask(null)}
+                    onTaskUpdated={handleTaskUpdated}
+                />
+            )}
+        </>
     );
 }

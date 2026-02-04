@@ -6,6 +6,9 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[]
 
+export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+
 export interface Database {
     public: {
         Tables: {
@@ -95,8 +98,8 @@ export interface Database {
                     user_id: string
                     project_id: string
                     config: Json
-                    notes: string | null
-                    status: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    notes: string
+                    status: 'pending' | 'completed' | 'rejected'
                     test_email: string | null
                     phone_number: string | null
                     github_repo_url: string | null
@@ -109,8 +112,8 @@ export interface Database {
                     user_id: string
                     project_id: string
                     config: Json
-                    notes?: string | null
-                    status?: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    notes: string
+                    status?: 'pending' | 'completed' | 'rejected'
                     test_email?: string | null
                     phone_number?: string | null
                     github_repo_url?: string | null
@@ -123,14 +126,136 @@ export interface Database {
                     user_id?: string
                     project_id?: string
                     config?: Json
-                    notes?: string | null
-                    status?: 'pending' | 'in_progress' | 'completed' | 'rejected'
+                    notes?: string
+                    status?: 'pending' | 'completed' | 'rejected'
                     test_email?: string | null
                     phone_number?: string | null
                     github_repo_url?: string | null
                     github_repo_name?: string | null
                     created_at?: string
                     updated_at?: string
+                }
+            }
+            kanban_columns: {
+                Row: {
+                    id: string
+                    name: string
+                    position: number
+                    color: string
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    name: string
+                    position: number
+                    color?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    name?: string
+                    position?: number
+                    color?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
+            kanban_labels: {
+                Row: {
+                    id: string
+                    name: string
+                    color: string
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    name: string
+                    color: string
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    name?: string
+                    color?: string
+                    created_at?: string
+                }
+            }
+            kanban_tasks: {
+                Row: {
+                    id: string
+                    title: string
+                    description: string | null
+                    column_id: string | null
+                    position: number
+                    priority: TaskPriority
+                    status: TaskStatus
+                    git_branch: string | null
+                    git_commit_hash: string | null
+                    auto_commit: boolean
+                    assigned_to: string | null
+                    due_date: string | null
+                    estimated_hours: number | null
+                    actual_hours: number | null
+                    submission_request_id: string | null
+                    created_at: string
+                    updated_at: string
+                    completed_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    title: string
+                    description?: string | null
+                    column_id?: string | null
+                    position?: number
+                    priority?: TaskPriority
+                    status?: TaskStatus
+                    git_branch?: string | null
+                    git_commit_hash?: string | null
+                    auto_commit?: boolean
+                    assigned_to?: string | null
+                    due_date?: string | null
+                    estimated_hours?: number | null
+                    actual_hours?: number | null
+                    submission_request_id?: string | null
+                    created_at?: string
+                    updated_at?: string
+                    completed_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    title?: string
+                    description?: string | null
+                    column_id?: string | null
+                    position?: number
+                    priority?: TaskPriority
+                    status?: TaskStatus
+                    git_branch?: string | null
+                    git_commit_hash?: string | null
+                    auto_commit?: boolean
+                    assigned_to?: string | null
+                    due_date?: string | null
+                    estimated_hours?: number | null
+                    actual_hours?: number | null
+                    submission_request_id?: string | null
+                    created_at?: string
+                    updated_at?: string
+                    completed_at?: string | null
+                }
+            }
+            kanban_task_labels: {
+                Row: {
+                    task_id: string
+                    label_id: string
+                }
+                Insert: {
+                    task_id: string
+                    label_id: string
+                }
+                Update: {
+                    task_id?: string
+                    label_id?: string
                 }
             }
             admin_settings: {
@@ -185,3 +310,7 @@ export type Project = Database['public']['Tables']['projects']['Row'];
 export type InviteCode = Database['public']['Tables']['invite_codes']['Row'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type SubmissionRequest = Database['public']['Tables']['submission_requests']['Row'];
+export type KanbanColumn = Database['public']['Tables']['kanban_columns']['Row'];
+export type KanbanLabel = Database['public']['Tables']['kanban_labels']['Row'];
+export type KanbanTask = Database['public']['Tables']['kanban_tasks']['Row'];
+export type KanbanTaskLabel = Database['public']['Tables']['kanban_task_labels']['Row'];
