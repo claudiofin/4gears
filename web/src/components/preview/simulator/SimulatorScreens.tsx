@@ -1828,77 +1828,14 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         }
     };
 
-    const showNavigation = previewPage !== 'intro' && previewPage !== 'auth' && previewPage !== 'splash' && previewPage !== 'login';
-    const isBurger = themeConfig.navigationType === 'burger';
-    const activeColor = themeConfig.tabBarStyling?.useTeamColorForActive ? (currentTeam.colors?.primary || '#4f46e5') : (themeConfig.tabBarStyling?.labelActiveColor || '#000');
-    const inactiveColor = themeConfig.tabBarStyling?.labelColor || '#94a3b8';
-
-    // Helper map for icons
-    const IconMap: Record<string, any> = {
-        'Layout': Layout, 'Calendar': Calendar, 'Users': Users, 'ShoppingBag': ShoppingBag,
-        'Menu': Menu, 'Home': Layout, 'Newspaper': Newspaper, 'Music': Music,
-        'Video': Video, 'Shield': Shield, 'PlaySquare': PlaySquare, 'Send': Send, 'Trophy': Trophy
-    };
-
     return (
         <div className={`w-full h-full relative bg-white dark:bg-slate-950 flex flex-col overflow-hidden transition-all duration-300 ${isDarkMode ? 'dark' : ''} ${themeConfig.fontFamily ? `font-${themeConfig.fontFamily.toLowerCase().replace(' ', '-')}` : 'font-sans'}`}>
-
-            {/* Header / StatusBar area could go here if needed */}
-
             {/* Main Content */}
             <div className="flex-1 relative overflow-y-auto overflow-x-hidden scrollbar-hide">
                 {(previewPage === 'intro' || previewPage === 'splash') ? renderSplashScreen() :
                     (previewPage === 'auth' || previewPage === 'login') ? renderLoginScreen() :
                         renderContent()}
             </div>
-
-            {/* Navigation Bar */}
-            {showNavigation && !isBurger && (
-                <div className={`shrink-0 relative z-30 transition-all duration-500 ${themeConfig.navStyle !== 'classic' ? 'absolute bottom-0 left-0 right-0 p-4 pointer-events-none' :
-                    'bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)]'
-                    }`}>
-                    <div className={`flex items-center justify-around relative transition-all duration-300 pointer-events-auto ${themeConfig.navStyle === 'modern' ? 'bg-slate-900/95 backdrop-blur-2xl text-white rounded-[2.5rem] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/20 mx-2 mb-2' :
-                        themeConfig.navStyle === 'liquid' ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl pt-4 pb-8 px-6 rounded-t-[3rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] border-t border-white/20' :
-                            'py-2'
-                        }`}>
-                        {themeConfig.navigation
-                            .filter(item => item.enabled)
-                            .sort((a, b) => (a.order || 0) - (b.order || 0))
-                            .slice(0, 5)
-                            .map(item => {
-                                const isActive = previewPage === item.id;
-                                const Icon = IconMap[item.icon] || Layout;
-
-                                return (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setPreviewPage(item.id)}
-                                        className="flex flex-col items-center justify-center p-2 relative group transition-all"
-                                        style={{ gap: themeConfig.tabBarStyling?.iconSpacing || '0px' }}
-                                    >
-                                        <div className={`transition-all duration-500 ${isActive && themeConfig.navStyle !== 'classic' ? '-translate-y-1.5 scale-110 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}`}
-                                            style={{ color: isActive ? activeColor : inactiveColor }}>
-                                            <Icon size={themeConfig.navStyle === 'modern' ? 22 : 24} strokeWidth={isActive ? 2.5 : 2} />
-                                        </div>
-                                        {themeConfig.navStyle === 'classic' && (
-                                            <span className="text-[10px] font-bold uppercase tracking-wider transition-colors" style={{ color: isActive ? activeColor : inactiveColor }}>
-                                                {item.label}
-                                            </span>
-                                        )}
-                                        {isActive && themeConfig.navStyle !== 'classic' && (
-                                            <motion.div
-                                                layoutId="activeNavTab"
-                                                className="absolute -bottom-1 w-1.5 h-1.5 rounded-full"
-                                                style={{ backgroundColor: activeColor }}
-                                            />
-                                        )}
-                                    </button>
-                                );
-                            })
-                        }
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
