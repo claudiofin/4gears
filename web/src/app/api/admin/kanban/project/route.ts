@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { createGitHubRepo } from '@/lib/github';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -108,7 +109,16 @@ export async function POST(request: NextRequest) {
 
         console.log('✅ Validation passed, creating project...');
 
-        // Create project
+        // 1. Try to create GitHub Repo if requested (or default to creating one)
+        let githubInfo = null;
+        try {
+            githubInfo = await createGitHubRepo(name, description);
+            console.log('📦 GitHub Repo created:', githubInfo?.url);
+        } catch (err) {
+            console.error('⚠️ GitHub Repo creation failed, but continuing project creation:', err);
+        }
+
+        // 2. Create project in database
         // @ts-ignore - Supabase type inference issue
         const { data: project, error: projectError } = await supabase
             .from('kanban_projects')
@@ -116,8 +126,8 @@ export async function POST(request: NextRequest) {
                 submission_id,
                 name,
                 description,
-                github_repo_url,
-                github_repo_name,
+                github_repo_url: githubInfo?.url || github_repo_url,
+                github_repo_name: githubInfo?.name || github_repo_name,
                 status: 'active'
             })
             .select()

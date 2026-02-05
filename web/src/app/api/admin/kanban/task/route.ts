@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { createGitHubBranch, createGitHubIssue, commentGitHubIssue } from '@/lib/github';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -111,17 +112,46 @@ export async function POST(request: NextRequest) {
         }
 
         // If auto_commit is enabled, create Git branch
-        if (auto_commit) {
-            const branchName = `task/${task.id.slice(0, 8)}/${title.toLowerCase().replace(/\s+/g, '-').slice(0, 30)}`;
+        if (auto_commit && project_id) {
+            // Get project repo name
+            const { data: project } = await (supabase as any)
+                .from('kanban_projects')
+                .select('github_repo_name')
+                .eq('id', project_id)
+                .single();
 
-            // Update task with branch name
-            await (supabase as any)
-                .from('kanban_tasks')
-                .update({ git_branch: branchName })
-                .eq('id', task.id);
+            if (project?.github_repo_name) {
+                const branchName = `task/${task.id.slice(0, 8)}/${title.toLowerCase().replace(/\s+/g, '-').slice(0, 30)}`;
 
-            // TODO: Call Git API to create branch
-            // This will be implemented in Phase 2
+                console.log(`🌿 Creating branch ${branchName} in ${project.github_repo_name}...`);
+                const createdBranch = await createGitHubBranch(project.github_repo_name, branchName);
+
+                if (createdBranch) {
+                    // Update task with confirmed branch name
+                    await (supabase as any)
+                        .from('kanban_tasks')
+                        .update({ git_branch: createdBranch })
+                        .eq('id', task.id);
+
+                    console.log('✅ Branch created and task updated');
+                }
+
+                // Also create a GitHub Issue
+                console.log(`🎫 Creating issue in ${project.github_repo_name}...`);
+                const issueNumber = await createGitHubIssue(
+                    project.github_repo_name,
+                    title,
+                    description || 'No description provided.'
+                );
+
+                if (issueNumber) {
+                    await (supabase as any)
+                        .from('kanban_tasks')
+                        .update({ github_issue_number: issueNumber })
+                        .eq('id', task.id);
+                    console.log(`✅ Issue #${issueNumber} created`);
+                }
+            }
         }
 
         return NextResponse.json({ task }, { status: 201 });
@@ -203,11 +233,20 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // If auto_commit is enabled and status changed, create Git commit
-        if (updatedTask.auto_commit && updates.status) {
-            // TODO: Call Git API to create commit
-            // This will be implemented in Phase 2
-            console.log(`[Git] Task ${task_id} moved to ${updates.status}`);
+        // If auto_commit is enabled and status changed, create Git commit/comment
+        if (updatedTask.auto_commit && updates.status && updatedTask.github_issue_number) {
+            // Get project repo name
+            const { data: project } = await (supabase as any)
+                .from('kanban_projects')
+                .select('github_repo_name')
+                .eq('id', updatedTask.project_id)
+                .single();
+
+            if (project?.github_repo_name) {
+                const comment = `🔔 Task status updated to: **${updates.status.toUpperCase()}**`;
+                await commentGitHubIssue(project.github_repo_name, updatedTask.github_issue_number, comment);
+                console.log(`✅ Comment added to Issue #${updatedTask.github_issue_number}`);
+            }
         }
 
         return NextResponse.json({ task: updatedTask }, { status: 200 });

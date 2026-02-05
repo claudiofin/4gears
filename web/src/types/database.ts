@@ -244,6 +244,7 @@ export interface Database {
                     created_at: string
                     updated_at: string
                     completed_at: string | null
+                    github_issue_number: number | null
                 }
                 Insert: {
                     id?: string
@@ -265,6 +266,7 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                     completed_at?: string | null
+                    github_issue_number?: number | null
                 }
                 Update: {
                     id?: string
@@ -286,6 +288,7 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                     completed_at?: string | null
+                    github_issue_number?: number | null
                 }
             }
             kanban_task_labels: {
