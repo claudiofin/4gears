@@ -202,7 +202,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                             </div>
                             <div className="grid grid-cols-3 gap-2">
                                 <div className="text-center">
-                                    <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{mockData.players.length}</div>
+                                    <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{mockData?.players?.length}</div>
                                     <div className="text-[9px] text-slate-500 uppercase font-medium">Atleti</div>
                                 </div>
                                 <div className="text-center border-x border-slate-700/30">
@@ -375,7 +375,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         </button>
                     </div>
                     <div className="space-y-3">
-                        {mockData.sponsors.slice(0, 3).map((s: any) => (
+                        {mockData?.sponsors?.slice(0, 3).map((s: any) => (
                             <div key={s.id} className="flex items-center gap-3 p-2 rounded-xl bg-slate-100/10 border border-white/5">
                                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1">
                                     <img src={s.image} alt={s.name} className="max-h-full max-w-full grayscale" />
@@ -481,14 +481,14 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         return (
             <div className={`h-full w-full flex flex-col items-center ${logoAlignment} p-8 relative overflow-hidden`} style={getBgStyle()}>
                 <div className={`
-                    bg-white rounded-[32px] shadow-2xl flex items-center justify-center p-6 mb-6 mx-auto
+                    bg-white rounded-[32px] shadow-2xl flex items-center justify-center p-6 mb-6 mx-auto overflow-hidden
                     ${logoSizeMap[splash.logoSize as keyof typeof logoSizeMap] || 'w-32 h-32'}
                     ${animClass}
                 `}>
                     <img
-                        src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'}
+                        src={currentTeam.branding?.appIcon || currentTeam.logo || sportConfig.heroImage}
                         alt={currentTeam.name}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover"
                     />
                 </div>
 
@@ -569,10 +569,10 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         }} />
 
                         <div className="relative z-10 text-center space-y-8">
-                            <div className="w-28 h-28 bg-white/95 backdrop-blur-xl rounded-[28px] shadow-2xl flex items-center justify-center mx-auto p-6 ring-1 ring-white/20">
+                            <div className="w-28 h-28 bg-white/95 backdrop-blur-xl rounded-[28px] shadow-2xl flex items-center justify-center mx-auto p-0 overflow-hidden ring-1 ring-white/20">
                                 <img
-                                    src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'}
-                                    className="w-full h-full object-contain"
+                                    src={currentTeam.branding?.appIcon || currentTeam.logo || sportConfig.heroImage}
+                                    className="w-full h-full object-cover"
                                     alt="App Logo"
                                 />
                             </div>
@@ -606,8 +606,8 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     {!isSplitScreen && (
                         <div className="mt-8 mb-8 text-center flex-shrink-0">
                             {(login.heroStyle === 'logo' || login.heroStyle === 'none') && (
-                                <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 p-4">
-                                    <img src={currentTeam.branding?.appIcon || currentTeam.logo || 'https://cdn-icons-png.flaticon.com/512/732/732200.png'} className="w-full h-full object-contain" alt="App Logo" />
+                                <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 p-0 overflow-hidden">
+                                    <img src={currentTeam.branding?.appIcon || currentTeam.logo || sportConfig.heroImage} className="w-full h-full object-cover" alt="App Logo" />
                                 </div>
                             )}
                             {login.heroStyle === 'image' && login.heroImageUrl && (
@@ -919,7 +919,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                             <>
                                 <SectionHeader id="home_sponsor_section" label="Sezione Sponsor Home" title="Main Sponsors" />
                                 <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-                                    {mockData.sponsors.map((s: any, i: number) => (
+                                    {mockData?.sponsors?.map((s: any, i: number) => (
                                         <PremiumCard
                                             key={s.id}
                                             themeConfig={themeConfig}
@@ -1042,7 +1042,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         <SectionHeader id="roster_header_first" label="Header Sezione Rosa" title="Rosa Attuale" />
 
                         <div className="space-y-3">
-                            {mockData.players.map((player: any) => {
+                            {mockData?.players?.map((player: any) => {
                                 const playerId = `player_${player.id}`;
                                 return (
                                     <motion.div key={player.id} className="mb-3">
@@ -1146,7 +1146,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                     </h3>
                                 )}
                             </Selectable>
-                            {mockData.events.map((event: any) => (
+                            {mockData?.events?.map((event: any) => (
                                 <motion.div
                                     key={event.id}
                                     initial={{ opacity: 0, x: -10 }}
@@ -1367,7 +1367,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <div className="px-4 pb-24 space-y-4" style={{ paddingTop: `${topPaddingValue}px` }}>
                         <SectionHeader id="staff_header" label="Titolo Organigramma" title="Staff Societario" isFirst={true} />
                         <div className="space-y-3">
-                            {mockData.staff.map((s: any) => (
+                            {mockData?.staff?.map((s: any) => (
                                 <PremiumCard key={s.id} themeConfig={themeConfig} isDarkMode={isDarkMode} className="flex items-center gap-4 p-3" id={`staff_${s.id}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `staff_${s.id}`} onElementSelect={onSelect}>
                                     <div className="w-14 h-14 rounded-2xl bg-slate-200 overflow-hidden relative border border-slate-700/30">
                                         <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
@@ -1435,7 +1435,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         </p>
                         <SectionHeader id="history_achievements" label="Titolo Successi" title="Palmarès" />
                         <div className="space-y-3">
-                            {mockData.history.achievements.map((item: any, i: number) => (
+                            {mockData?.history?.achievements?.map((item: any, i: number) => (
                                 <Selectable
                                     key={i}
                                     id={`achievement_${i}`}
@@ -1476,7 +1476,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                             title={sportConfig.scoring.term === 'Goal' ? 'Cori & Identità' : (sportConfig.scoring.term === 'Punti' ? 'Hype & Inni' : 'Identità & Team')}
                         />
                         <div className="space-y-4">
-                            {mockData.chants.map((chant: any) => (
+                            {mockData?.chants?.map((chant: any) => (
                                 <PremiumCard key={chant.id} themeConfig={themeConfig} isDarkMode={isDarkMode} className="p-4" id={`chant_${chant.id}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `chant_${chant.id}`} onElementSelect={onSelect}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-3">
@@ -1533,7 +1533,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     <div className="px-4 pb-24 space-y-4" style={{ paddingTop: `${topPaddingValue}px` }}>
                         <SectionHeader id="sponsors_header_main" label="Titolo Sponsor Main" title="Main Sponsors" isFirst={true} />
                         <div className="grid grid-cols-1 gap-3">
-                            {mockData.sponsors.filter((s: any) => s.tier === 'Gold').map((s: any) => (
+                            {mockData?.sponsors?.filter((s: any) => s.tier === 'Gold').map((s: any) => (
                                 <Selectable
                                     key={s.id}
                                     id={`sponsor_${s.id}`}
@@ -1555,7 +1555,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         </div>
                         <SectionHeader id="sponsors_header_partners" label="Titolo Sponsor Partner" title="Official Partners" />
                         <div className="grid grid-cols-2 gap-3">
-                            {mockData.sponsors.filter((s: any) => s.tier !== 'Gold').map((s: any) => (
+                            {mockData?.sponsors?.filter((s: any) => s.tier !== 'Gold').map((s: any) => (
                                 <div key={s.id} className={`p-4 rounded-2xl border flex items-center justify-center aspect-video ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                                     <img src={s.image} alt={s.name} className="max-h-8 opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer" />
                                 </div>

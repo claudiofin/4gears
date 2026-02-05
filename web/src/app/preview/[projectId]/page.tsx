@@ -10,7 +10,11 @@ import {
     generateEvents,
     generatePlayers,
     generateNotifications,
-    generateConversations
+    generateConversations,
+    generateSponsors,
+    generateStaff,
+    generateChants,
+    generateHistory
 } from '@/constants/sports';
 
 export default function StandalonePreviewPage() {
@@ -48,6 +52,10 @@ export default function StandalonePreviewPage() {
                 events: generateEvents(sportType),
                 notifications: generateNotifications(sportType),
                 conversations: generateConversations(sportType),
+                sponsors: generateSponsors(),
+                staff: generateStaff(),
+                chants: generateChants(),
+                history: generateHistory(),
                 cart: []
             });
 
