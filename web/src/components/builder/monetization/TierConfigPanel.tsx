@@ -89,29 +89,33 @@ export function TierConfigPanel({ projectId }: TierConfigPanelProps) {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] -mr-32 -mt-32" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] -ml-32 -mb-32" />
 
-                <div className="relative flex items-start justify-between">
-                    <div className="space-y-3">
+                <div className="relative flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                             <Zap size={10} className="text-emerald-400" />
                             <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Live Monetization Enabled</span>
                         </div>
-                        <h2 className="text-3xl font-black text-white tracking-tight">
+
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="shrink-0 whitespace-nowrap relative group overflow-hidden bg-white text-slate-950 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] disabled:opacity-50"
+                        >
+                            <span className="relative z-10">{saving ? 'Sync...' : 'Pubblica Piani'}</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-indigo-500 opacity-0 group-hover:opacity-10 transition-opacity" />
+                        </motion.button>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-white tracking-tight leading-none">
                             Piani di <span className="text-emerald-400">Abbonamento</span>
                         </h2>
-                        <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+                        <p className="text-slate-400 text-[11px] leading-relaxed max-w-[280px]">
                             Definisci l'offerta commerciale del tuo club. I prezzi verranno gestiti automaticamente in base alla piattaforma.
                         </p>
                     </div>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="relative group overflow-hidden bg-white text-slate-950 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] disabled:opacity-50"
-                    >
-                        <span className="relative z-10">{saving ? 'Sync...' : 'Pubblica Piani'}</span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-indigo-500 opacity-0 group-hover:opacity-10 transition-opacity" />
-                    </motion.button>
                 </div>
             </div>
 
@@ -172,8 +176,8 @@ export function TierConfigPanel({ projectId }: TierConfigPanelProps) {
                                                     key={opt}
                                                     onClick={() => updateTier(idx, { interval: opt as any })}
                                                     className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${tier.interval === opt
-                                                            ? 'bg-white text-slate-950 shadow-lg'
-                                                            : 'bg-slate-800/50 text-slate-500 hover:text-slate-300'
+                                                        ? 'bg-white text-slate-950 shadow-lg'
+                                                        : 'bg-slate-800/50 text-slate-500 hover:text-slate-300'
                                                         }`}
                                                 >
                                                     {opt === 'monthly' ? 'Mese' : opt === 'yearly' ? 'Anno' : 'Unica'}
