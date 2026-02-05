@@ -185,6 +185,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 viewMode={viewMode}
                                 previewPage={previewPage}
                                 setPreviewPage={setPreviewPage}
+                                isStandalone={isStandalone}
                             />
                         )
                     }
@@ -200,6 +201,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 isInspectorActive={isInspectorActive}
                                 activeSelectionId={activeSelectionId}
                                 onSelect={handleElementClick}
+                                isStandalone={isStandalone}
                             />
                         )
                     }

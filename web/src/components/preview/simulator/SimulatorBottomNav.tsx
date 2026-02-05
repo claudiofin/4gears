@@ -17,6 +17,7 @@ interface SimulatorBottomNavProps {
     isInspectorActive: boolean;
     activeSelectionId?: string | null;
     onSelect: (metadata: ComponentMetadata) => void;
+    isStandalone?: boolean;
 }
 
 export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
@@ -28,7 +29,8 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
     viewMode,
     isInspectorActive,
     activeSelectionId,
-    onSelect
+    onSelect,
+    isStandalone = false
 }) => {
     const { getOverride } = useSimulatorStyles(themeConfig, isDarkMode);
 
@@ -79,6 +81,8 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
     const isGlass = navStyle === 'glass';
 
     const getNavBarStyles = () => {
+        const safeAreaBottom = isStandalone ? 'var(--safe-area-bottom, 0px)' : '0px';
+
         switch (navStyle) {
             case 'classic':
                 return `w-full px-4 pt-3 pb-8 flex items-center justify-around border-t shadow-lg transition-all duration-500 ${!isDarkMode ? 'bg-white border-slate-200' : ''}`;
@@ -96,7 +100,13 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
 
     const getNavBarInlineStyles = () => {
         const baseStyles: React.CSSProperties = {};
-        if (isClassic) return baseStyles;
+        const safeAreaBottom = isStandalone ? 'var(--safe-area-bottom, 0px)' : '0px';
+
+        if (isClassic) {
+            baseStyles.paddingBottom = `calc(32px + ${safeAreaBottom})`;
+        } else {
+            baseStyles.marginBottom = `calc(16px + ${safeAreaBottom})`;
+        }
 
         if (isDarkMode) {
             baseStyles.backgroundColor = 'rgba(15, 23, 42, 0.95)';

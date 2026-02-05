@@ -78,10 +78,18 @@ export default function BuilderPage() {
         },
         navigation: [
             { id: 'home', label: 'Home', icon: 'Layout', enabled: true, order: 0 },
-            { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 1 },
-            { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 2 },
-            { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 3 },
-            { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 4 },
+            { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: false, order: 1 },
+            { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 2 },
+            { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 3 },
+            { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: false, order: 4 },
+            { id: 'video', label: 'Video Analisi', icon: 'Video', enabled: false, order: 5 },
+            { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 6 },
+            { id: 'chat', label: 'Team Chat', icon: 'MessageSquare', enabled: false, order: 7 },
+            { id: 'lineup', label: 'Formazioni', icon: 'Layout', enabled: false, order: 8 },
+            { id: 'sponsors', label: 'Sponsor & Partner', icon: 'Award', enabled: false, order: 9 },
+            { id: 'chants', label: 'Cori & Tifoseria', icon: 'Music', enabled: false, order: 10 },
+            { id: 'staff', label: 'Staff Tecnico', icon: 'Users', enabled: false, order: 11 },
+            { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 12 },
         ],
         componentOverrides: {}
     });
@@ -195,12 +203,18 @@ export default function BuilderPage() {
                                 ...(config.theme.header || {})
                             }
                         };
-                        // Only use saved navigation if it's not empty, otherwise keep defaults
-                        if (config.theme.navigation && config.theme.navigation.length > 0) {
-                            merged.navigation = config.theme.navigation;
-                        } else {
-                            merged.navigation = prev.navigation;
-                        }
+                        // Smart merge navigation: preserve saved items, append missing default items
+                        const savedNav = config.theme.navigation || [];
+                        const defaultNav = prev.navigation || [];
+                        const finalNav = [...savedNav];
+
+                        defaultNav.forEach(defItem => {
+                            if (!finalNav.some(n => n.id === defItem.id)) {
+                                finalNav.push({ ...defItem, enabled: false });
+                            }
+                        });
+
+                        merged.navigation = finalNav.sort((a, b) => (a.order || 0) - (b.order || 0));
                         return merged;
                     });
                 }

@@ -69,7 +69,11 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
                         fontSize: `${(themeConfig.fontScale || 1) * 100}%`,
                         backgroundImage: currentTeam.branding?.uiBackground ? `url(${currentTeam.branding.uiBackground})` : 'none',
                         backgroundSize: 'cover',
-                        backgroundPosition: 'center'
+                        backgroundPosition: 'center',
+                        '--safe-area-top': 'env(safe-area-inset-top)',
+                        '--safe-area-bottom': 'env(safe-area-inset-bottom)',
+                        '--safe-area-left': 'env(safe-area-inset-left)',
+                        '--safe-area-right': 'env(safe-area-inset-right)',
                     } as React.CSSProperties}
                 >
                     {/* Style Injection for Dynamic Fonts */}

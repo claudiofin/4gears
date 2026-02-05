@@ -36,6 +36,7 @@ interface SimulatorHeaderProps {
     pageTitle?: string;
     previewPage: string;
     setPreviewPage: (page: string) => void;
+    isStandalone?: boolean;
 }
 
 export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
@@ -58,7 +59,8 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
     pageTitle,
     viewMode,
     previewPage,
-    setPreviewPage
+    setPreviewPage,
+    isStandalone = false
 }) => {
     const headerRef = React.useRef<HTMLDivElement>(null);
     const { getIconProps } = useSimulatorStyles(themeConfig, isDarkMode);
@@ -83,6 +85,11 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             if (showHeaderTabs) height += 50;
         }
 
+        // Add safe area if standalone
+        if (isStandalone) {
+            return `calc(${height}px + var(--safe-area-top, 0px))`;
+        }
+
         return height;
     };
 
@@ -102,7 +109,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
         observer.observe(headerRef.current);
         return () => observer.disconnect();
-    }, [onHeightChange, enableUniversalMenu, showHeaderTabs, isHome]);
+    }, [onHeightChange, enableUniversalMenu, showHeaderTabs, isHome, isStandalone]);
 
     const renderIcon = (item: any, isActive: boolean) => {
         const iconMap: Record<string, React.ElementType> = {
@@ -135,11 +142,10 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     height: targetHeight,
                     minHeight: targetHeight
                 }}
-                className="relative w-full pt-14 pb-3 px-6 flex flex-col overflow-hidden backdrop-blur-md"
+                className={`relative w-full pb-3 px-6 flex flex-col overflow-hidden backdrop-blur-md ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'}`}
                 style={{
                     borderRadius: themeConfig.borderRadius === 'full' ? '0 0 40px 40px' : '0'
                 }}
-
             >
                 <div className="absolute inset-0 z-0">
                     {/* Primary Gradient Layer */}

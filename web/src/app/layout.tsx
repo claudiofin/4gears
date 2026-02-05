@@ -68,6 +68,18 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "4Gears Platform",
   description: "Create and manage your sports app configurations",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: '4Gears Preview',
+  },
 };
 
 export default function RootLayout({
