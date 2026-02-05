@@ -78,7 +78,7 @@ export default function BuilderPage() {
         },
         navigation: [
             { id: 'home', label: 'Home', icon: 'Layout', enabled: true, order: 0 },
-            { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: false, order: 1 },
+            { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: true, order: 1 },
             { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 2 },
             { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 3 },
             { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: false, order: 4 },
@@ -206,13 +206,20 @@ export default function BuilderPage() {
                         // Smart merge navigation: preserve saved items, append missing default items
                         const savedNav = config.theme.navigation || [];
                         const defaultNav = prev.navigation || [];
-                        const finalNav = [...savedNav];
+                        let finalNav = [...savedNav];
 
                         defaultNav.forEach(defItem => {
                             if (!finalNav.some(n => n.id === defItem.id)) {
                                 finalNav.push({ ...defItem, enabled: false });
                             }
                         });
+
+                        // EMERGENCY FIX: If all items are disabled in the saved nav, enable the core 5
+                        const activeCount = finalNav.filter(n => n.enabled).length;
+                        if (activeCount === 0) {
+                            const coreIds = ['home', 'news', 'events', 'roster', 'shop', 'menu']; // Actually 6, but user can disable one
+                            finalNav = finalNav.map(n => coreIds.includes(n.id) ? { ...n, enabled: true } : n);
+                        }
 
                         merged.navigation = finalNav.sort((a, b) => (a.order || 0) - (b.order || 0));
                         return merged;
