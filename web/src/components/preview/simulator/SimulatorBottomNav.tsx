@@ -92,7 +92,7 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
                 return `mx-4 mb-4 flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/10 transition-all duration-500`;
             case 'liquid':
                 // Liquid style - squircle shape
-                return `mx-4 mb-6 flex items-center justify-around px-4 py-3 rounded-[2rem] border shadow-[0_-20px_60px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-slate-900/60 border-slate-700/50' : 'bg-white/80 border-slate-200/50'} backdrop-blur-2xl`;
+                return `mx-4 mb-6 flex items-center justify-around px-4 py-3 rounded-[2rem] border shadow-[0_-20px_60px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-slate-900/80 border-slate-700/50' : 'bg-white/90 border-slate-200/50'} backdrop-blur-2xl`;
             default:
                 return `mx-4 mb-4 flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-t transition-all duration-500`;
         }
@@ -103,18 +103,23 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
         const safeAreaBottom = isStandalone ? 'var(--safe-area-bottom, 0px)' : '0px';
 
         if (isClassic) {
-            baseStyles.paddingBottom = `calc(32px + ${safeAreaBottom})`;
+            baseStyles.paddingBottom = `calc(16px + ${safeAreaBottom})`;
         } else {
-            baseStyles.marginBottom = `calc(16px + ${safeAreaBottom})`;
+            // For floating/liquid styles, we use margin instead of padding bottom
+            baseStyles.marginBottom = `calc(12px + ${safeAreaBottom})`;
         }
 
-        if (isDarkMode) {
-            baseStyles.backgroundColor = 'rgba(15, 23, 42, 0.95)';
-            baseStyles.borderColor = 'rgba(255, 255, 255, 0.15)';
-        } else {
-            baseStyles.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            baseStyles.borderColor = 'rgba(0, 0, 0, 0.05)';
+        // Apply background only if not overridden by specific styles in getNavBarStyles
+        if (navStyle === 'classic' || navStyle === 'modern' || navStyle === 'glass') {
+            if (isDarkMode) {
+                baseStyles.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+                baseStyles.borderColor = 'rgba(255, 255, 255, 0.15)';
+            } else {
+                baseStyles.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                baseStyles.borderColor = 'rgba(0, 0, 0, 0.05)';
+            }
         }
+
         return baseStyles;
     };
 
