@@ -1,2 +1,27 @@
-.vercel
+# dependencies
+web/node_modules
+/node_modules
+
+# next.js
+web/.next/
+web/out/
+
+# production
+web/build
+
+# env
 .env*.local
+*.env
+
+# vercel
+.vercel
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local runtime files
+web/next-env.d.ts
+web/tsconfig.tsbuildinfo
+.DS_Store
