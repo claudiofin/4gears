@@ -109,7 +109,7 @@ export default function ProjectKanbanPage() {
         );
     }
 
-    const progress = project.stats.total > 0
+    const progress = project.stats && project.stats.total > 0
         ? Math.round((project.stats.completed / project.stats.total) * 100)
         : 0;
 
@@ -167,19 +167,19 @@ export default function ProjectKanbanPage() {
                     <div className="grid grid-cols-4 gap-4 mb-4">
                         <div className="bg-slate-950/50 rounded-lg p-3 border border-slate-800">
                             <div className="text-xs text-slate-500 font-medium mb-1">Totale Task</div>
-                            <div className="text-2xl font-black text-white">{project.stats.total}</div>
+                            <div className="text-2xl font-black text-white">{project.stats?.total || 0}</div>
                         </div>
                         <div className="bg-slate-950/50 rounded-lg p-3 border border-slate-800">
                             <div className="text-xs text-emerald-400 font-medium mb-1">Completate</div>
-                            <div className="text-2xl font-black text-white">{project.stats.completed}</div>
+                            <div className="text-2xl font-black text-white">{project.stats?.completed || 0}</div>
                         </div>
                         <div className="bg-slate-950/50 rounded-lg p-3 border border-slate-800">
                             <div className="text-xs text-indigo-400 font-medium mb-1">In Corso</div>
-                            <div className="text-2xl font-black text-white">{project.stats.inProgress}</div>
+                            <div className="text-2xl font-black text-white">{project.stats?.inProgress || 0}</div>
                         </div>
                         <div className="bg-slate-950/50 rounded-lg p-3 border border-slate-800">
                             <div className="text-xs text-amber-400 font-medium mb-1">Bloccate</div>
-                            <div className="text-2xl font-black text-white">{project.stats.blocked}</div>
+                            <div className="text-2xl font-black text-white">{project.stats?.blocked || 0}</div>
                         </div>
                     </div>
 

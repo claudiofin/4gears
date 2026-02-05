@@ -56,7 +56,7 @@ export default function KanbanProjectsPage() {
     };
 
     const getProgressPercentage = (stats: ProjectWithStats['stats']) => {
-        if (stats.total === 0) return 0;
+        if (!stats || stats.total === 0) return 0;
         return Math.round((stats.completed / stats.total) * 100);
     };
 
@@ -85,8 +85,8 @@ export default function KanbanProjectsPage() {
                         key={status}
                         onClick={() => setFilter(status)}
                         className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-tight transition-all ${filter === status
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-800'
                             }`}
                     >
                         {status}
