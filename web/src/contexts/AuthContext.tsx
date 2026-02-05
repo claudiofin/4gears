@@ -80,11 +80,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signUp = async (email: string, password: string, inviteCode: string) => {
         try {
+            const normalizedCode = inviteCode.trim().toUpperCase();
+
             // 1. Check if invite code is valid
             const { data: inviteData, error: inviteError } = await supabase
                 .from('invite_codes')
                 .select('*')
-                .eq('code', inviteCode)
+                .eq('code', normalizedCode)
                 .eq('used', false)
                 .single();
 
@@ -98,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 password,
                 options: {
                     data: {
-                        invite_code: inviteCode
+                        invite_code: normalizedCode
                     }
                 }
             });

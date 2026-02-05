@@ -18,6 +18,7 @@ export interface Database {
                     code: string
                     used: boolean
                     used_by: string | null
+                    role: string | null
                     created_at: string
                     used_at: string | null
                 }
@@ -26,6 +27,7 @@ export interface Database {
                     code: string
                     used?: boolean
                     used_by?: string | null
+                    role?: string | null
                     created_at?: string
                     used_at?: string | null
                 }
@@ -34,6 +36,7 @@ export interface Database {
                     code?: string
                     used?: boolean
                     used_by?: string | null
+                    role?: string | null
                     created_at?: string
                     used_at?: string | null
                 }
