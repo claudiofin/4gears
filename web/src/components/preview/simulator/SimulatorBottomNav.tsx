@@ -85,7 +85,7 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
 
         switch (navStyle) {
             case 'classic':
-                return `w-full px-4 pt-3 pb-8 flex items-center justify-around border-t shadow-lg transition-all duration-500 ${!isDarkMode ? 'bg-white border-slate-200' : ''}`;
+                return `w-full px-4 pt-3 pb-8 flex items-center justify-around border-t shadow-[0_-4px_20px_rgba(0,0,0,0.05)] transition-all duration-500`;
             case 'glass':
             case 'modern':
                 // Premium floating pill
@@ -109,15 +109,13 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
             baseStyles.marginBottom = `calc(12px + ${safeAreaBottom})`;
         }
 
-        // Apply background only if not overridden by specific styles in getNavBarStyles
-        if (navStyle === 'classic' || navStyle === 'modern' || navStyle === 'glass') {
-            if (isDarkMode) {
-                baseStyles.backgroundColor = 'rgba(15, 23, 42, 0.95)';
-                baseStyles.borderColor = 'rgba(255, 255, 255, 0.15)';
-            } else {
-                baseStyles.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-                baseStyles.borderColor = 'rgba(0, 0, 0, 0.05)';
-            }
+        // Apply background for all styles to ensure visibility
+        if (isDarkMode) {
+            baseStyles.backgroundColor = navStyle === 'liquid' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(15, 23, 42, 0.98)';
+            baseStyles.borderColor = 'rgba(255, 255, 255, 0.1)';
+        } else {
+            baseStyles.backgroundColor = navStyle === 'liquid' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 1)';
+            baseStyles.borderColor = 'rgba(0, 0, 0, 0.1)';
         }
 
         return baseStyles;

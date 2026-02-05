@@ -134,7 +134,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     };
 
     return (
-        <div className={`relative w-full h-full ${isStandalone ? 'bg-black' : 'bg-[#030712]'} overflow-hidden transition-colors duration-300 flex items-center justify-center`}>
+        <div className={`relative w-full h-full ${isStandalone ? 'bg-black' : 'bg-[#020617]'} overflow-hidden transition-colors duration-300 flex items-center justify-center`}>
             {/* Simulator + Inspector Container */}
             <div className={`relative flex items-center justify-center ${isStandalone ? 'p-0 w-full h-full' : 'p-4'}`}>
                 <SimulatorLayout
