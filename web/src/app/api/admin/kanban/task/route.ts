@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
             title,
             description,
             column_id,
+            project_id, // Added project_id
             priority,
             assigned_to,
             due_date,
@@ -33,11 +34,17 @@ export async function POST(request: NextRequest) {
 
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
-        // Get max position in column
-        const { data: maxPosData } = await (supabase as any)
+        // Get max position in column for THIS project
+        let maxPosQuery = (supabase as any)
             .from('kanban_tasks')
             .select('position')
-            .eq('column_id', column_id || '')
+            .eq('column_id', column_id || '');
+
+        if (project_id) {
+            maxPosQuery = maxPosQuery.eq('project_id', project_id);
+        }
+
+        const { data: maxPosData } = await maxPosQuery
             .order('position', { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -51,6 +58,7 @@ export async function POST(request: NextRequest) {
                 title,
                 description,
                 column_id,
+                project_id, // Added project_id
                 position,
                 priority: priority || 'medium',
                 assigned_to,

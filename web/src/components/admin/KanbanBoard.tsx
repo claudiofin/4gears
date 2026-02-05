@@ -190,6 +190,7 @@ export function KanbanBoard({ projectId }: { projectId?: string }) {
 
             {showCreateModal && (
                 <CreateTaskModal
+                    projectId={projectId} // Added projectId
                     columns={columns}
                     labels={labels}
                     onClose={() => setShowCreateModal(false)}

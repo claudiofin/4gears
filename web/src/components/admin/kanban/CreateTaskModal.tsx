@@ -5,13 +5,14 @@ import { X, Plus, GitBranch, Calendar, Clock } from 'lucide-react';
 import type { KanbanColumn, KanbanLabel, TaskPriority } from '@/types/database';
 
 interface CreateTaskModalProps {
+    projectId?: string; // Added projectId
     columns: KanbanColumn[];
     labels: KanbanLabel[];
     onClose: () => void;
     onTaskCreated: () => void;
 }
 
-export function CreateTaskModal({ columns, labels, onClose, onTaskCreated }: CreateTaskModalProps) {
+export function CreateTaskModal({ projectId, columns, labels, onClose, onTaskCreated }: CreateTaskModalProps) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [columnId, setColumnId] = useState(columns[0]?.id || '');
@@ -40,6 +41,7 @@ export function CreateTaskModal({ columns, labels, onClose, onTaskCreated }: Cre
                     title: title.trim(),
                     description: description.trim() || null,
                     column_id: columnId,
+                    project_id: projectId, // Sent projectId to API
                     priority,
                     due_date: dueDate || null,
                     estimated_hours: estimatedHours ? parseFloat(estimatedHours) : null,
