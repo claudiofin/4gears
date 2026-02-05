@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { KanbanProject } from '@/types/database';
-import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2, Loader2, Calculator, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { KanbanBoard } from '@/components/admin/KanbanBoard';
+import { QuoteInspector } from '@/components/admin/quotes/QuoteInspector';
 
 interface ProjectWithStats extends KanbanProject {
     stats: {
@@ -18,6 +19,7 @@ interface ProjectWithStats extends KanbanProject {
     submission_requests?: {
         team_name: string;
         sport_type: string;
+        notes: string;
     } | null;
 }
 
@@ -236,6 +238,19 @@ export default function ProjectKanbanPage() {
                         </div>
                     </div>
 
+                    {/* User Briefing Section */}
+                    {project.submission_requests?.notes && (
+                        <div className="mt-4 p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
+                            <h3 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <StickyNote size={12} />
+                                User Briefing & Notes
+                            </h3>
+                            <p className="text-sm text-slate-300 italic whitespace-pre-wrap leading-relaxed">
+                                "{project.submission_requests.notes}"
+                            </p>
+                        </div>
+                    )}
+
                     {/* Progress Bar */}
                     <div>
                         <div className="flex items-center justify-between mb-2">
@@ -271,8 +286,20 @@ export default function ProjectKanbanPage() {
                 </div>
             </div>
 
-            {/* Kanban Board */}
-            <KanbanBoard projectId={projectId} />
+            {/* Main Content Area */}
+            <div className="flex gap-6">
+                <div className="flex-1">
+                    <KanbanBoard projectId={projectId} />
+                </div>
+
+                {/* Side Inspector */}
+                <div className="w-96 shrink-0 h-fit sticky top-6">
+                    <QuoteInspector
+                        projectId={projectId}
+                        submissionId={project.submission_id}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

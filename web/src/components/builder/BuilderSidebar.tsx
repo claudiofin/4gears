@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, Shield, Palette, Layout, Settings } from 'lucide-react';
+import { Activity, Shield, Palette, Layout, Settings, CreditCard, StickyNote } from 'lucide-react';
 import { TeamConfig } from '@/constants/teams';
 import { ThemeConfig, EditorSelection, FeatureFlags } from '@/types/builder';
 import { IdentityTab } from './IdentityTab';
@@ -9,6 +9,8 @@ import { SportTab } from './SportTab';
 import { SplashSettingsPanel } from './settings/SplashSettingsPanel';
 import { LoginSettingsPanel } from './settings/LoginSettingsPanel'; // Import fixed
 import { ViewMode } from '@/types/builder';
+import { TierConfigPanel } from './monetization/TierConfigPanel';
+import { BriefTab } from './BriefTab';
 
 interface BuilderSidebarProps {
     currentTeam: TeamConfig;
@@ -24,7 +26,10 @@ interface BuilderSidebarProps {
     featureFlags: FeatureFlags;
     onFeatureToggle: (id: string) => void;
     onFeatureUpdate: (id: string, updates: Partial<FeatureFlags[keyof FeatureFlags]>) => void;
-    viewMode?: ViewMode; // New Prop
+    viewMode: ViewMode; // New Prop
+    projectId: string;
+    userNotes: string;
+    onNotesUpdate: (notes: string) => void;
 }
 
 export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
@@ -38,9 +43,12 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     featureFlags,
     onFeatureToggle,
     onFeatureUpdate,
-    viewMode = 'USER'
+    viewMode,
+    projectId,
+    userNotes,
+    onNotesUpdate
 }) => {
-    const [activeTab, setActiveTab] = useState<'IDENTITY' | 'THEME' | 'CONTENT' | 'SPORT'>('THEME');
+    const [activeTab, setActiveTab] = useState<'IDENTITY' | 'THEME' | 'CONTENT' | 'SPORT' | 'MONETIZATION' | 'BRIEF'>('THEME');
 
     // Context-Aware Render: Splash
     if (viewMode === 'SPLASH') {
@@ -130,6 +138,20 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                         <Layout size={14} />
                         FEATURES
                     </button>
+                    <button
+                        onClick={() => setActiveTab('MONETIZATION')}
+                        className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'MONETIZATION' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <CreditCard size={14} />
+                        PLANS
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('BRIEF')}
+                        className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'BRIEF' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <StickyNote size={14} />
+                        BRIEF
+                    </button>
                 </div>
             </div>
 
@@ -168,6 +190,16 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                     />
                 )}
 
+                {activeTab === 'MONETIZATION' && projectId && (
+                    <TierConfigPanel projectId={projectId} />
+                )}
+
+                {activeTab === 'BRIEF' && (
+                    <BriefTab
+                        notes={userNotes}
+                        onUpdate={onNotesUpdate}
+                    />
+                )}
             </div>
         </div>
     );

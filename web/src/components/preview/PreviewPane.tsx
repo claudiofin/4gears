@@ -24,6 +24,7 @@ interface PreviewPaneProps {
     themeConfig: ThemeConfig;
     currentTeam: TeamConfig;
 
+    isStandalone?: boolean;
     activeSelectionId?: string | null | undefined;
     onElementSelect: (metadata: ComponentMetadata) => void; // Matched page.tsx
     onThemeUpdate: (updates: Partial<ThemeConfig>) => void;
@@ -45,6 +46,7 @@ interface PreviewPaneProps {
 }
 
 export const PreviewPane: React.FC<PreviewPaneProps> = ({
+    isStandalone = false,
     deviceType,
     notchStyle,
     isDarkMode,
@@ -132,10 +134,11 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     };
 
     return (
-        <div className="relative w-full h-full bg-slate-900/50 backdrop-blur-sm overflow-hidden transition-colors duration-300 flex items-center justify-center">
+        <div className={`relative w-full h-full ${isStandalone ? 'bg-black' : 'bg-slate-900/50 backdrop-blur-sm'} overflow-hidden transition-colors duration-300 flex items-center justify-center`}>
             {/* Simulator + Inspector Container */}
-            <div className="relative flex items-center justify-center p-8">
+            <div className={`relative flex items-center justify-center ${isStandalone ? 'p-0 w-full h-full' : 'p-8'}`}>
                 <SimulatorLayout
+                    isStandalone={isStandalone}
                     deviceType={deviceType}
                     notchStyle={notchStyle}
                     isDarkMode={isDarkMode}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,17 +11,25 @@ interface SubmissionModalProps {
     projectId: string;
     projectName: string;
     config: any;
+    userNotes?: string;
 }
 
-export default function SubmissionModal({ isOpen, onClose, projectId, projectName: initialProjectName, config }: SubmissionModalProps) {
+export default function SubmissionModal({ isOpen, onClose, projectId, projectName: initialProjectName, config, userNotes }: SubmissionModalProps) {
     const { session } = useAuth();
     const [projectName, setProjectName] = useState(initialProjectName);
-    const [notes, setNotes] = useState('');
+    const [notes, setNotes] = useState(userNotes || '');
     const [testEmail, setTestEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+
+    // Pre-fill notes when userNotes changes or modal opens
+    useEffect(() => {
+        if (isOpen && userNotes) {
+            setNotes(userNotes);
+        }
+    }, [isOpen, userNotes]);
 
     const handleSubmit = async () => {
         if (!projectName.trim()) {

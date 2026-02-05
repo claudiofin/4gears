@@ -6,9 +6,10 @@ import { ThemeConfig } from '@/types/builder';
 interface UseProjectSaveProps {
     projectId: string;
     config: any;
+    userNotes?: string;
 }
 
-export function useProjectSave({ projectId, config }: UseProjectSaveProps) {
+export function useProjectSave({ projectId, config, userNotes }: UseProjectSaveProps) {
     const { user } = useAuth();
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -23,7 +24,7 @@ export function useProjectSave({ projectId, config }: UseProjectSaveProps) {
         }, 30000); // 30 seconds debounce
 
         return () => clearTimeout(timer);
-    }, [config, projectId]);
+    }, [config, projectId, userNotes]);
 
     const saveProject = async () => {
         if (!user || !projectId || projectId === 'new') return;
@@ -36,6 +37,7 @@ export function useProjectSave({ projectId, config }: UseProjectSaveProps) {
                 .from('projects')
                 .update({
                     config,
+                    user_notes: userNotes,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', projectId)

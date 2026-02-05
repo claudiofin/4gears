@@ -14,6 +14,7 @@ interface SimulatorLayoutProps {
     bottomNav?: React.ReactNode;
     inspector?: React.ReactNode;
     overlays?: React.ReactNode; // New: For burger menu, chat, notifications inside phone
+    isStandalone?: boolean;
     onScrollChange?: (isScrolled: boolean) => void;
 }
 
@@ -28,6 +29,7 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     bottomNav,
     inspector,
     overlays,
+    isStandalone = false,
     onScrollChange
 }) => {
     const { getBodyFont, getHeadingFont } = useSimulatorStyles(themeConfig, isDarkMode);
@@ -41,9 +43,9 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 pb-33 pt-[47px] relative isolate h-full w-full">
+        <div className={`flex-1 flex flex-col items-center justify-center ${isStandalone ? 'p-0' : 'p-8 pb-33 pt-[47px]'} relative isolate h-full w-full`}>
             {/* Background Noise/Gradient for the Workspace */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none -z-10"></div>
+            {!isStandalone && <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none -z-10"></div>}
 
             {/* Inspector Controls */}
             {inspector && (
@@ -52,8 +54,11 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
                 </div>
             )}
 
-            {/* Phone Mockup Frame */}
-            <div className={`relative w-[375px] h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden transform transition-transform shrink-0 ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`}>
+            {/* Phone Mockup Frame - Only on desktop version */}
+            <div className={`relative transition-all duration-500 shrink-0 ${isStandalone
+                ? 'w-full h-full'
+                : `w-[375px] h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`
+                }`}>
 
                 {/* Internal App Content */}
                 <div
@@ -98,22 +103,24 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
                         <div className={`absolute inset-0 z-0 ${isDarkMode ? 'bg-black/40' : 'bg-white/20'}`} />
                     )}
 
-                    {/* Status Bar */}
-                    <div className="h-12 w-full bg-transparent absolute top-0 z-[100] flex justify-between items-center px-6 pt-2 pointer-events-none">
-                        <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-black'} w-10`}>9:41</span>
-                        {notchStyle !== 'NONE' && (
-                            <div className={`absolute left-1/2 transform -translate-x-1/2 top-0 bg-black z-[100] transition-all duration-300 ${deviceType === 'ANDROID'
-                                ? 'w-3 h-3 rounded-full top-4 shadow-sm'
-                                : notchStyle === 'FLOATING'
-                                    ? 'w-[120px] h-[35px] top-2 rounded-[20px] shadow-xl'
-                                    : 'w-[120px] h-[30px] rounded-b-[24px]'
-                                }`}></div>
-                        )}
-                        <div className="flex gap-1.5 w-10 justify-end">
-                            <div className={`w-4 h-4 rounded-full border-[1.5px] ${isDarkMode ? 'border-white' : 'border-black'}`}></div>
-                            <div className={`w-4 h-4 rounded-full border-[1.5px] ${isDarkMode ? 'border-white' : 'border-black'}`}></div>
+                    {/* Status Bar - Hide on standalone (device has its own) or style it */}
+                    {!isStandalone && (
+                        <div className="h-12 w-full bg-transparent absolute top-0 z-[100] flex justify-between items-center px-6 pt-2 pointer-events-none">
+                            <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-black'} w-10`}>9:41</span>
+                            {notchStyle !== 'NONE' && (
+                                <div className={`absolute left-1/2 transform -translate-x-1/2 top-0 bg-black z-[100] transition-all duration-300 ${deviceType === 'ANDROID'
+                                    ? 'w-3 h-3 rounded-full top-4 shadow-sm'
+                                    : notchStyle === 'FLOATING'
+                                        ? 'w-[120px] h-[35px] top-2 rounded-[20px] shadow-xl'
+                                        : 'w-[120px] h-[30px] rounded-b-[24px]'
+                                    }`}></div>
+                            )}
+                            <div className="flex gap-1.5 w-10 justify-end">
+                                <div className={`w-4 h-4 rounded-full border-[1.5px] ${isDarkMode ? 'border-white' : 'border-black'}`}></div>
+                                <div className={`w-4 h-4 rounded-full border-[1.5px] ${isDarkMode ? 'border-white' : 'border-black'}`}></div>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Liquid Header (Absolute) */}
                     {header}

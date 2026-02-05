@@ -75,6 +75,8 @@ export interface Database {
                     user_id: string
                     name: string
                     config: Json
+                    user_notes: string
+                    monetization_config: Json
                     created_at: string
                     updated_at: string
                 }
@@ -83,6 +85,8 @@ export interface Database {
                     user_id: string
                     name: string
                     config: Json
+                    user_notes?: string
+                    monetization_config?: Json
                     created_at?: string
                     updated_at?: string
                 }
@@ -91,6 +95,8 @@ export interface Database {
                     user_id?: string
                     name?: string
                     config?: Json
+                    user_notes?: string
+                    monetization_config?: Json
                     created_at?: string
                     updated_at?: string
                 }
@@ -348,6 +354,85 @@ export interface Database {
                     created_at?: string
                 }
             }
+            project_quotes: {
+                Row: {
+                    id: string
+                    project_id: string | null
+                    submission_id: string | null
+                    total_amount: number
+                    hypothetical_market_price: number | null
+                    status: 'draft' | 'sent' | 'accepted' | 'rejected'
+                    notes: string | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    project_id?: string | null
+                    submission_id?: string | null
+                    total_amount: number
+                    hypothetical_market_price?: number | null
+                    status?: 'draft' | 'sent' | 'accepted' | 'rejected'
+                    notes?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    project_id?: string | null
+                    submission_id?: string | null
+                    total_amount?: number
+                    hypothetical_market_price?: number | null
+                    status?: 'draft' | 'sent' | 'accepted' | 'rejected'
+                    notes?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
+            app_tiers: {
+                Row: {
+                    id: string
+                    project_id: string | null
+                    name: string
+                    description: string | null
+                    price: number
+                    interval: 'monthly' | 'yearly' | 'one_time'
+                    features: Json
+                    revenuecat_id: string | null
+                    stripe_price_id: string | null
+                    is_active: boolean
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    project_id?: string | null
+                    name: string
+                    description?: string | null
+                    price: number
+                    interval?: 'monthly' | 'yearly' | 'one_time'
+                    features?: Json
+                    revenuecat_id?: string | null
+                    stripe_price_id?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    project_id?: string | null
+                    name?: string
+                    description?: string | null
+                    price?: number
+                    interval?: 'monthly' | 'yearly' | 'one_time'
+                    features?: Json
+                    revenuecat_id?: string | null
+                    stripe_price_id?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
     }
 }
@@ -362,3 +447,5 @@ export type KanbanColumn = Database['public']['Tables']['kanban_columns']['Row']
 export type KanbanLabel = Database['public']['Tables']['kanban_labels']['Row'];
 export type KanbanTask = Database['public']['Tables']['kanban_tasks']['Row'];
 export type KanbanTaskLabel = Database['public']['Tables']['kanban_task_labels']['Row'];
+export type ProjectQuote = Database['public']['Tables']['project_quotes']['Row'];
+export type AppTier = Database['public']['Tables']['app_tiers']['Row'];

@@ -23,8 +23,9 @@ import {
     generateNotifications,
     generateConversations
 } from '@/constants/sports';
-import { ArrowLeft, Save, Send, Loader2, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, Send, Loader2, Check, AlertCircle, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PreviewQRCode } from '@/components/builder/PreviewQRCode';
 
 export default function BuilderPage() {
     const params = useParams();
@@ -36,6 +37,7 @@ export default function BuilderPage() {
     const [project, setProject] = useState<Project | null>(null);
     const [error, setError] = useState('');
     const [showSubmissionModal, setShowSubmissionModal] = useState(false);
+    const [showQRCode, setShowQRCode] = useState(false);
 
     // Builder State
     const [teams, setTeams] = useState<TeamConfig[]>(DEFAULT_TEAMS);
@@ -115,10 +117,13 @@ export default function BuilderPage() {
         simulator: { appTier, userPersona, viewMode, notchStyle, deviceType, isDarkMode, mockScenario }
     };
 
+    const [userNotes, setUserNotes] = useState('');
+
     // Use save hook
     const { saving, lastSaved, error: saveError, manualSave } = useProjectSave({
         projectId,
-        config: currentConfig
+        config: currentConfig,
+        userNotes: userNotes
     });
 
     // Load project
@@ -168,6 +173,7 @@ export default function BuilderPage() {
             if (!data) return;
 
             setProject(data);
+            if (data.user_notes) setUserNotes(data.user_notes);
 
             // Load config and merge with defaults
             const config = data.config as any;
@@ -375,8 +381,16 @@ export default function BuilderPage() {
                         </button>
 
                         <button
+                            onClick={() => setShowQRCode(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors border border-slate-700"
+                        >
+                            <Smartphone className="w-4 h-4 text-indigo-400" />
+                            Vedi su Telefono
+                        </button>
+
+                        <button
                             onClick={() => setShowSubmissionModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors shadow-lg shadow-indigo-500/20"
                         >
                             <Send className="w-4 h-4" />
                             Invia per Creazione
@@ -415,6 +429,9 @@ export default function BuilderPage() {
                         onFeatureToggle={handleFeatureToggle}
                         onFeatureUpdate={handleFeatureUpdate}
                         viewMode={viewMode}
+                        projectId={projectId}
+                        userNotes={userNotes}
+                        onNotesUpdate={setUserNotes}
                     />
 
                     <div className="flex-1 flex overflow-hidden">
@@ -478,6 +495,14 @@ export default function BuilderPage() {
                 projectId={projectId}
                 projectName={project?.name || 'Progetto'}
                 config={currentConfig}
+                userNotes={userNotes}
+            />
+
+            {/* QR Code Preview Modal */}
+            <PreviewQRCode
+                isOpen={showQRCode}
+                onClose={() => setShowQRCode(false)}
+                projectId={projectId}
             />
         </main>
     );
