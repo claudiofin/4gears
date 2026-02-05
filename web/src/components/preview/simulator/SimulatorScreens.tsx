@@ -4,7 +4,7 @@ import {
     ChevronRight, Bell, Search, Plus, User, MapPin, Clock, Trophy,
     CreditCard, BarChart3, MessageSquare, Menu, Sun, Moon, X, LogOut,
     Package, Send, Gauge, Info, BookOpen, Music, Award, Edit2, Trash2, Play, Lock,
-    ArrowLeft, Reply, CheckCheck
+    ArrowLeft, Reply, CheckCheck, Newspaper, PlaySquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Selectable } from '../../builder/VisualInspector';
@@ -101,7 +101,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
         const iconMap: Record<string, React.ElementType> = {
             Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge,
-            Info, BookOpen, Music, Award, Bell, MessageSquare
+            Info, BookOpen, Music, Award, Bell, MessageSquare, Newspaper, PlaySquare, Send, Trophy
         };
 
         let iconName = item.icon;
@@ -143,7 +143,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     >
                         <div className="flex items-center gap-2 mb-2">
                             <div
-                                className="p-1.5 rounded-lg w-fit"
+                                className="p-1.5 rounded-lg w-fit transition-all duration-300"
                                 style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}
                             >
                                 <Users size={14} />
@@ -1732,6 +1732,97 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     </div>
                 );
 
+            case 'news':
+            case 'news-feed':
+            case 'news-media':
+                return (
+                    <div className="px-4 pb-24 space-y-4" style={{ paddingTop: `${topPaddingValue}px` }}>
+                        <SectionHeader id="news_header" label="Titolo News" title="News & Media" isFirst={true} />
+                        <div className="space-y-4">
+                            {[1, 2, 3, 4].map(i => (
+                                <PremiumCard key={i} themeConfig={themeConfig} isDarkMode={isDarkMode} className="p-0 overflow-hidden" id={`news_post_${i}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `news_post_${i}`} onElementSelect={onSelect}>
+                                    <div className="aspect-video relative">
+                                        <img
+                                            src={`https://images.unsplash.com/photo-${i % 2 === 0 ? '1508098682722-e99c43a406b2' : '1552667466-07f70cdba9f3'}?w=800&fit=crop`}
+                                            className="w-full h-full object-cover"
+                                            alt="News"
+                                        />
+                                        <div className="absolute top-3 left-3 px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded">SOCIETÀ</div>
+                                    </div>
+                                    <div className="p-4 text-left">
+                                        <div className="text-[9px] text-slate-500 font-bold uppercase mb-1">{i} ORA FA • NEWS</div>
+                                        <div className={`text-sm font-bold leading-snug ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Importante aggiornamento per la stagione 2024/25 di {currentTeam.name}</div>
+                                        <div className="text-[10px] text-slate-500 mt-2 line-clamp-2">Scopri tutte le novità riguardanti il nuovo kit gara e le date dei prossimi incontri istituzionali...</div>
+                                    </div>
+                                </PremiumCard>
+                            ))}
+                        </div>
+                    </div>
+                );
+
+            case 'chat':
+            case 'team-chat':
+                return (
+                    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950" style={{ paddingTop: `${topPaddingValue}px` }}>
+                        <div className="px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">T</div>
+                                <div>
+                                    <div className="text-sm font-bold">Team Chat</div>
+                                    <div className="text-[10px] text-emerald-500 font-bold uppercase">12 Online</div>
+                                </div>
+                            </div>
+                            <Settings size={18} className="text-slate-400" />
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div className="flex justify-center">
+                                <span className="text-[10px] px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded-full text-slate-500 font-bold uppercase">Oggi</span>
+                            </div>
+                            <div className="flex gap-3 max-w-[80%]">
+                                <div className="w-8 h-8 rounded-full bg-slate-300 shrink-0" />
+                                <div className="bg-white dark:bg-slate-900 p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-800">
+                                    <div className="text-[9px] font-black text-blue-600 mb-1">Mister Rossi</div>
+                                    <div className="text-xs">Ragazzi, ricordatevi l'allenamento delle 18:30. Puntuali! ⚽️</div>
+                                </div>
+                            </div>
+                            <div className="flex flex-row-reverse gap-3 max-w-[80%] ml-auto">
+                                <div className="w-8 h-8 rounded-full bg-indigo-500 shrink-0" />
+                                <div className="bg-indigo-600 p-3 rounded-2xl rounded-tr-none shadow-sm text-white">
+                                    <div className="text-xs">Ricevuto Mister, ci saremo tutti! 🫡</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 mb-20">
+                            <div className="flex gap-2 p-2 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+                                <input placeholder="Scrivi un messaggio..." className="flex-1 bg-transparent text-xs px-2 outline-none" />
+                                <button className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                    <Send size={14} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 'lineup':
+            case 'formazioni':
+                return (
+                    <div className="px-4 flex flex-col h-full overflow-hidden" style={{ paddingTop: `${topPaddingValue}px`, paddingBottom: '90px' }}>
+                        <div className="shrink-0">
+                            <SectionHeader id="lineup_header" label="Titolo Formazioni" title="Probabile Formazione" isFirst={true} />
+                        </div>
+                        <div className="flex-1 min-h-0 py-2">
+                            <div className="aspect-[3/4] bg-emerald-600/10 rounded-3xl border-2 border-dashed border-emerald-500/20 relative flex items-center justify-center overflow-hidden">
+                                <TacticsBoard
+                                    sportType={currentTeam.sportType}
+                                    themeConfig={themeConfig}
+                                    isDarkMode={isDarkMode}
+                                />
+                                <div className="absolute top-4 right-4 bg-emerald-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg">MODALITÀ CAMPO</div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
             default:
                 return <div className="p-4" style={{ paddingTop: `${topPaddingValue}px` }}>Pagina non trovata</div>;
         }
@@ -1744,7 +1835,9 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
     // Helper map for icons
     const IconMap: Record<string, any> = {
-        'Layout': Layout, 'Calendar': Calendar, 'Users': Users, 'ShoppingBag': ShoppingBag, 'Menu': Menu, 'Home': Layout
+        'Layout': Layout, 'Calendar': Calendar, 'Users': Users, 'ShoppingBag': ShoppingBag,
+        'Menu': Menu, 'Home': Layout, 'Newspaper': Newspaper, 'Music': Music,
+        'Video': Video, 'Shield': Shield, 'PlaySquare': PlaySquare, 'Send': Send, 'Trophy': Trophy
     };
 
     return (
@@ -1761,12 +1854,11 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
             {/* Navigation Bar */}
             {showNavigation && !isBurger && (
-                <div className={`shrink-0 relative z-30 transition-all duration-300 ${themeConfig.navStyle === 'modern' ? 'absolute bottom-0 left-0 right-0 p-4 pointer-events-none' :
-                    themeConfig.navStyle === 'liquid' ? 'absolute bottom-0 left-0 right-0 p-0 pointer-events-none' :
-                        'bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)]'
+                <div className={`shrink-0 relative z-30 transition-all duration-500 ${themeConfig.navStyle !== 'classic' ? 'absolute bottom-0 left-0 right-0 p-4 pointer-events-none' :
+                    'bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)]'
                     }`}>
-                    <div className={`flex items-center justify-around relative transition-all duration-300 pointer-events-auto ${themeConfig.navStyle === 'modern' ? 'bg-slate-900/90 backdrop-blur-xl text-white rounded-2xl p-2 shadow-2xl mx-4 mb-2' :
-                        themeConfig.navStyle === 'liquid' ? 'bg-white/90 dark:bg-slate-950/90 backdrop-blur-lg pt-4 pb-8 px-4 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)]' :
+                    <div className={`flex items-center justify-around relative transition-all duration-300 pointer-events-auto ${themeConfig.navStyle === 'modern' ? 'bg-slate-900/95 backdrop-blur-2xl text-white rounded-[2.5rem] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/20 mx-2 mb-2' :
+                        themeConfig.navStyle === 'liquid' ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl pt-4 pb-8 px-6 rounded-t-[3rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] border-t border-white/20' :
                             'py-2'
                         }`}>
                         {themeConfig.navigation
@@ -1784,17 +1876,21 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                                         className="flex flex-col items-center justify-center p-2 relative group transition-all"
                                         style={{ gap: themeConfig.tabBarStyling?.iconSpacing || '0px' }}
                                     >
-                                        <div className={`transition-all duration-300 ${isActive && themeConfig.navStyle !== 'classic' ? '-translate-y-1' : ''}`}
+                                        <div className={`transition-all duration-500 ${isActive && themeConfig.navStyle !== 'classic' ? '-translate-y-1.5 scale-110 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}`}
                                             style={{ color: isActive ? activeColor : inactiveColor }}>
-                                            <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                                            <Icon size={themeConfig.navStyle === 'modern' ? 22 : 24} strokeWidth={isActive ? 2.5 : 2} />
                                         </div>
                                         {themeConfig.navStyle === 'classic' && (
-                                            <span className="text-[10px] font-medium transition-colors" style={{ color: isActive ? activeColor : inactiveColor }}>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider transition-colors" style={{ color: isActive ? activeColor : inactiveColor }}>
                                                 {item.label}
                                             </span>
                                         )}
                                         {isActive && themeConfig.navStyle !== 'classic' && (
-                                            <div className="absolute -bottom-1 w-1 h-1 rounded-full" style={{ backgroundColor: activeColor }} />
+                                            <motion.div
+                                                layoutId="activeNavTab"
+                                                className="absolute -bottom-1 w-1.5 h-1.5 rounded-full"
+                                                style={{ backgroundColor: activeColor }}
+                                            />
                                         )}
                                     </button>
                                 );
