@@ -14,11 +14,12 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
+        console.log('🚀 Create Task Body:', body); // Debug log
+
         const {
             title,
             description,
             column_id,
-            project_id, // Added project_id
             priority,
             assigned_to,
             due_date,
@@ -28,11 +29,29 @@ export async function POST(request: NextRequest) {
             auto_commit = true
         } = body;
 
+        // Try to get project_id from body or infer from column
+        let project_id = body.project_id;
+
         if (!title) {
             return NextResponse.json({ error: 'Title is required' }, { status: 400 });
         }
 
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+
+        // If project_id is missing, infer it from the column
+        if (!project_id && column_id) {
+            console.log('🔍 Inferring project_id from column_id:', column_id);
+            const { data: columnData } = await (supabase as any)
+                .from('kanban_columns')
+                .select('project_id')
+                .eq('id', column_id)
+                .single();
+
+            if (columnData && (columnData as any).project_id) {
+                project_id = (columnData as any).project_id;
+                console.log('✅ Inferred project_id:', project_id);
+            }
+        }
 
         // Get max position in column for THIS project
         let maxPosQuery = (supabase as any)
@@ -58,7 +77,7 @@ export async function POST(request: NextRequest) {
                 title,
                 description,
                 column_id,
-                project_id, // Added project_id
+                project_id, // Use the (possibly inferred) project_id
                 position,
                 priority: priority || 'medium',
                 assigned_to,
