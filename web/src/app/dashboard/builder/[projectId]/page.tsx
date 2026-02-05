@@ -80,7 +80,7 @@ export default function BuilderPage() {
             { id: 'home', label: 'Home', icon: 'Layout', enabled: true, order: 0 },
             { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: true, order: 1 },
             { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 2 },
-            { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 3 },
+            { id: 'roster', label: 'Roster', icon: 'Users', enabled: false, order: 3 },
             { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: false, order: 4 },
             { id: 'video', label: 'Video Analisi', icon: 'Video', enabled: false, order: 5 },
             { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 6 },
@@ -217,7 +217,7 @@ export default function BuilderPage() {
                         // EMERGENCY FIX: If all items are disabled in the saved nav, enable the core 5
                         const activeCount = finalNav.filter(n => n.enabled).length;
                         if (activeCount === 0) {
-                            const coreIds = ['home', 'news', 'events', 'roster', 'shop', 'menu']; // Actually 6, but user can disable one
+                            const coreIds = ['home', 'news', 'events', 'shop', 'menu']; // Exactly 5
                             finalNav = finalNav.map(n => coreIds.includes(n.id) ? { ...n, enabled: true } : n);
                         }
 
