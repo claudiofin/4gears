@@ -20,11 +20,12 @@ interface BurgerMenuOverlayProps {
     isInspectorActive: boolean;
     activeSelectionId?: string | null;
     onSelect: (metadata: ComponentMetadata) => void;
+    isStandalone?: boolean;
 }
 
 export const BurgerMenuOverlay: React.FC<BurgerMenuOverlayProps> = ({
     isOpen, onClose, themeConfig, isDarkMode, currentTeam, previewPage, setPreviewPage,
-    isInspectorActive, activeSelectionId, onSelect
+    isInspectorActive, activeSelectionId, onSelect, isStandalone = false
 }) => {
     const { getOverride } = useSimulatorStyles(themeConfig, isDarkMode);
     const styling = {
@@ -90,8 +91,13 @@ export const BurgerMenuOverlay: React.FC<BurgerMenuOverlayProps> = ({
                             background: `linear-gradient(135deg, ${currentTeam.colors.primary}, ${currentTeam.colors.secondary})`
                         }}
                     >
-                        {/* Header */}
-                        <div className="pt-14 pb-6 px-8 flex justify-between items-center" style={{ color: styling.textColor }}>
+                        <div
+                            className="pt-14 pb-6 px-8 flex justify-between items-center"
+                            style={{
+                                color: styling.textColor,
+                                paddingTop: isStandalone ? 'calc(1.5rem + var(--safe-area-top, 0px))' : undefined
+                            }}
+                        >
                             <div>
                                 <div className="text-[10px] font-bold uppercase tracking-widest opacity-50">Menu</div>
                                 <Selectable
@@ -189,9 +195,10 @@ interface NotificationsOverlayProps {
     onClose: () => void;
     notifications: any[];
     isDarkMode: boolean;
+    isStandalone?: boolean;
 }
 
-export const NotificationsOverlay: React.FC<NotificationsOverlayProps> = ({ isOpen, onClose, notifications, isDarkMode }) => (
+export const NotificationsOverlay: React.FC<NotificationsOverlayProps> = ({ isOpen, onClose, notifications, isDarkMode, isStandalone = false }) => (
     <AnimatePresence>
         {isOpen && (
             <motion.div
@@ -202,7 +209,10 @@ export const NotificationsOverlay: React.FC<NotificationsOverlayProps> = ({ isOp
                 className={`absolute inset-0 z-[90] flex flex-col ${isDarkMode ? 'bg-[#0f172a]' : 'bg-slate-50'}`}
             >
                 {/* Header */}
-                <div className={`pt-12 pb-4 px-6 flex items-center justify-between border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-[#0f172a]/80 border-white/10' : 'bg-white/80 border-slate-200'}`}>
+                <div
+                    className={`pt-12 pb-4 px-6 flex items-center justify-between border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-[#0f172a]/80 border-white/10' : 'bg-white/80 border-slate-200'}`}
+                    style={{ paddingTop: isStandalone ? 'calc(1rem + var(--safe-area-top, 0px))' : undefined }}
+                >
                     <div className="flex items-center gap-3">
                         <button
                             onClick={onClose}
@@ -271,9 +281,10 @@ interface ChatOverlayProps {
     activeConversationId: string | null;
     setActiveConversationId: (id: string | null) => void;
     isDarkMode: boolean;
+    isStandalone?: boolean;
 }
 
-export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conversations, activeConversationId, setActiveConversationId, isDarkMode }) => {
+export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conversations, activeConversationId, setActiveConversationId, isDarkMode, isStandalone = false }) => {
     const activeConversation = conversations.find(c => c.id === activeConversationId);
 
     return (
@@ -290,7 +301,10 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conve
                         // --- CONVERSATION VIEW ---
                         <>
                             {/* Chat Header */}
-                            <div className={`pt-12 pb-4 px-6 flex items-center gap-4 border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-slate-900/80 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
+                            <div
+                                className={`pt-12 pb-4 px-6 flex items-center gap-4 border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-slate-900/80 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}
+                                style={{ paddingTop: isStandalone ? 'calc(1rem + var(--safe-area-top, 0px))' : undefined }}
+                            >
                                 <button
                                     onClick={() => setActiveConversationId(null)}
                                     className={`p-2 -ml-2 rounded-full transition-all active:scale-90 ${isDarkMode ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-900'}`}
@@ -350,7 +364,10 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conve
                             </div>
 
                             {/* Input Area */}
-                            <div className={`p-6 border-t ${isDarkMode ? 'bg-slate-900/50 border-white/10' : 'bg-white border-slate-200'}`}>
+                            <div
+                                className={`p-6 border-t ${isDarkMode ? 'bg-slate-900/50 border-white/10' : 'bg-white border-slate-200'}`}
+                                style={{ paddingBottom: isStandalone ? 'calc(1.5rem + var(--safe-area-bottom, 0px))' : undefined }}
+                            >
                                 <div className={`flex gap-2 p-2 rounded-[24px] border items-center transition-all focus-within:ring-2 focus-within:ring-blue-500/20 ${isDarkMode ? 'bg-slate-950 border-white/5 focus-within:border-blue-500/50' : 'bg-slate-50 border-slate-200 focus-within:border-blue-500'}`}>
                                     <div className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-white/5 text-slate-400' : 'hover:bg-slate-200 text-slate-500'}`}>
                                         <Plus size={20} />
@@ -370,7 +387,10 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({ isOpen, onClose, conve
                         // --- INBOX VIEW ---
                         <>
                             {/* Inbox Header */}
-                            <div className={`pt-12 pb-4 px-6 border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-[#0f172a]/80 border-white/10' : 'bg-white/80 border-slate-200'}`}>
+                            <div
+                                className={`pt-12 pb-4 px-6 border-b backdrop-blur-xl sticky top-0 z-20 ${isDarkMode ? 'bg-[#0f172a]/80 border-white/10' : 'bg-white/80 border-slate-200'}`}
+                                style={{ paddingTop: isStandalone ? 'calc(1rem + var(--safe-area-top, 0px))' : undefined }}
+                            >
                                 <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-3">
                                         <button

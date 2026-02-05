@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { Project } from '@/types/database';
 import { Plus, LogOut, Loader2 } from 'lucide-react';
 import ProjectCard from '@/components/dashboard/ProjectCard';
+import QuoteViewerModal from '@/components/dashboard/QuoteViewerModal';
 import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
@@ -15,6 +16,7 @@ export default function DashboardPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedProjectForQuote, setSelectedProjectForQuote] = useState<any | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -29,12 +31,19 @@ export default function DashboardPage() {
             setLoading(true);
             const { data, error } = await supabase
                 .from('projects')
-                .select('*')
+                .select('*, project_quotes(*)')
                 .eq('user_id', user.id)
                 .order('updated_at', { ascending: false });
 
             if (error) throw error;
-            setProjects(data as Project[] || []);
+
+            // Map the data to handle the nested quote
+            const projectsWithQuotes = (data || []).map((p: any) => ({
+                ...p,
+                quote: p.project_quotes?.[0] || null
+            }));
+
+            setProjects(projectsWithQuotes as any[] || []);
         } catch (err: any) {
             setError(err.message || 'Errore nel caricamento dei progetti');
         } finally {
@@ -189,7 +198,7 @@ export default function DashboardPage() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {projects.map((project, index) => (
+                                {projects.map((project: any, index: number) => (
                                     <motion.div
                                         key={project.id}
                                         initial={{ opacity: 0, y: 20 }}
@@ -199,6 +208,7 @@ export default function DashboardPage() {
                                         <ProjectCard
                                             project={project}
                                             onOpen={() => router.push(`/dashboard/builder/${project.id}`)}
+                                            onOpenQuote={() => setSelectedProjectForQuote(project)}
                                             onDelete={() => handleDeleteProject(project.id)}
                                         />
                                     </motion.div>
@@ -208,6 +218,17 @@ export default function DashboardPage() {
                     </>
                 )}
             </main>
+
+            <QuoteViewerModal
+                isOpen={!!selectedProjectForQuote}
+                onClose={() => setSelectedProjectForQuote(null)}
+                projectId={selectedProjectForQuote?.id}
+                quote={selectedProjectForQuote?.quote}
+                onStatusUpdate={() => {
+                    loadProjects();
+                    setSelectedProjectForQuote(null);
+                }}
+            />
         </div>
     );
 }

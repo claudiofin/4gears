@@ -68,9 +68,12 @@ export function QuoteInspector({ projectId, submissionId }: QuoteInspectorProps)
             if (res.ok) {
                 if (newStatus) setStatus(newStatus as any);
                 alert('Preventivo salvato con successo');
+            } else {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Errore durante il salvataggio');
             }
-        } catch (error) {
-            alert('Errore durante il salvataggio');
+        } catch (error: any) {
+            alert(error.message || 'Errore durante il salvataggio');
         } finally {
             setSaving(false);
         }
@@ -86,34 +89,47 @@ export function QuoteInspector({ projectId, submissionId }: QuoteInspectorProps)
                     <h3 className="font-semibold text-white">Analisi Preventivo</h3>
                 </div>
                 <div className={`px-2 py-1 rounded text-xs font-medium uppercase tracking-wider ${status === 'accepted' ? 'bg-emerald-500/20 text-emerald-400' :
-                        status === 'sent' ? 'bg-blue-500/20 text-blue-400' :
-                            'bg-slate-700 text-slate-300'
+                    status === 'sent' ? 'bg-blue-500/20 text-blue-400' :
+                        'bg-slate-700 text-slate-300'
                     }`}>
                     {status}
                 </div>
             </div>
 
             <div className="p-6 space-y-6">
-                {/* Hypothetical Market Price */}
-                <div className="relative p-6 rounded-xl bg-red-500/5 border border-red-500/10 overflow-hidden">
+                {/* Market Price Analysis */}
+                <div className="relative p-6 rounded-xl bg-slate-800/50 border border-slate-800 overflow-hidden">
                     <div className="relative z-10">
-                        <p className="text-red-400 text-sm font-medium mb-1">Prezzo di Mercato Ipotetico</p>
+                        <p className="text-slate-400 text-sm font-medium mb-1">Stima Prezzo di Mercato</p>
                         <p className="text-3xl font-bold text-white">€{analysis?.marketPrice.toLocaleString()}</p>
-                        <p className="text-slate-500 text-xs mt-2 italic">
-                            Basato su tariffe senior standard (€120/h) e costi di sviluppo custom.
+                        <p className="text-slate-500 text-[10px] mt-2 italic leading-relaxed">
+                            Analisi basata su: Setup base (€{analysis?.breakdown.base.toLocaleString()}),
+                            sviluppo custom (€120/h) e surcharges per urgenze.
                         </p>
                     </div>
                 </div>
 
-                {/* Savings Indicator */}
-                <div className="flex items-center gap-4 py-2">
-                    <div className="h-[1px] flex-1 bg-slate-800" />
-                    <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        <TrendingDown className="w-4 h-4" />
-                        Risparmio: €{analysis?.savings.toLocaleString()}
+                {analysis?.totalHours === 0 && (
+                    <div className="flex items-start gap-3 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                        <AlertCircle className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
+                        <div className="text-xs text-orange-300/80 leading-relaxed">
+                            <p className="font-bold text-orange-400 mb-1 caps">Nessun Task Identificato</p>
+                            Il calcolo è basato solo sui costi fissi di setup. Aggiungi dei Task nel Kanban per generare una stima accurata delle ore di sviluppo.
+                        </div>
                     </div>
-                    <div className="h-[1px] flex-1 bg-slate-800" />
-                </div>
+                )}
+
+                {/* Savings Indicator */}
+                {analysis && analysis.savings > 0 && (
+                    <div className="flex items-center gap-4 py-2">
+                        <div className="h-[1px] flex-1 bg-slate-800" />
+                        <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                            <TrendingDown className="w-4 h-4" />
+                            Risparmio Stimato: €{analysis.savings.toLocaleString()}
+                        </div>
+                        <div className="h-[1px] flex-1 bg-slate-800" />
+                    </div>
+                )}
 
                 {/* Our Price Setup */}
                 <div className="space-y-4">
