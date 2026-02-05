@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { projectId, notes, config, testEmail, phoneNumber } = body;
+        const { projectId, projectName, notes, config, testEmail, phoneNumber } = body;
 
         // Validation
         if (!projectId || !notes || !config || !testEmail || !phoneNumber) {
@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
             .insert({
                 user_id: user.id,
                 project_id: projectId,
+                project_name: projectName || 'Nuovo Progetto', // Added project_name
                 config,
                 notes: notes.trim(),
                 test_email: testEmail,

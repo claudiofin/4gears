@@ -13,8 +13,9 @@ interface SubmissionModalProps {
     config: any;
 }
 
-export default function SubmissionModal({ isOpen, onClose, projectId, projectName, config }: SubmissionModalProps) {
+export default function SubmissionModal({ isOpen, onClose, projectId, projectName: initialProjectName, config }: SubmissionModalProps) {
     const { session } = useAuth();
+    const [projectName, setProjectName] = useState(initialProjectName);
     const [notes, setNotes] = useState('');
     const [testEmail, setTestEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -23,6 +24,10 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
     const [error, setError] = useState('');
 
     const handleSubmit = async () => {
+        if (!projectName.trim()) {
+            setError('Il nome del progetto è obbligatorio');
+            return;
+        }
         if (!notes.trim()) {
             setError('Le note sono obbligatorie');
             return;
@@ -40,6 +45,7 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                 },
                 body: JSON.stringify({
                     projectId,
+                    projectName: projectName.trim(),
                     notes,
                     testEmail,
                     phoneNumber: phone,
@@ -100,13 +106,24 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                             <>
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-6">
-                                    <div>
+                                    <div className="flex-1 mr-4">
                                         <h2 className="text-2xl font-bold text-white mb-2">Invia per Creazione</h2>
-                                        <p className="text-slate-400">Progetto: <span className="font-semibold text-white">{projectName}</span></p>
+                                        <div className="space-y-1">
+                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider">
+                                                Nome del Progetto
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={projectName}
+                                                onChange={(e) => setProjectName(e.target.value)}
+                                                className="w-full bg-transparent border-b border-slate-800 focus:border-blue-500 text-lg font-semibold text-white outline-none pb-1 transition-colors"
+                                                placeholder="Nome del progetto..."
+                                            />
+                                        </div>
                                     </div>
                                     <button
                                         onClick={onClose}
-                                        className="p-2 hover:bg-slate-800 rounded-xl transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-xl transition-colors shrink-0"
                                     >
                                         <X className="w-5 h-5 text-slate-400" />
                                     </button>

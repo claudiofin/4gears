@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Extend type to include joined profile email and new contact fields
 export type ExtendedSubmission = SubmissionRequest & {
     profiles: { email: string | null } | null;
+    project_name?: string; // Added project_name
     test_email?: string;
     phone_number?: string;
     github_repo_url?: string;
@@ -76,7 +76,7 @@ export default function SubmissionsPage() {
                     try {
                         // Extract data from config
                         const config = submission.config as any;
-                        const teamName = config?.identity?.teamName || config?.team_name || 'Nuovo Progetto';
+                        const teamName = submission.project_name || config?.identity?.teamName || config?.team_name || 'Nuovo Progetto';
                         const sportType = config?.identity?.sportType || config?.sport_type || 'Sport';
 
                         const response = await fetch('/api/admin/kanban/project', {
@@ -180,7 +180,7 @@ export default function SubmissionsPage() {
                                     </td>
                                     <td className="p-4">
                                         <div className="font-medium text-white">
-                                            {(sub.config as any)?.team?.name || 'Senza Nome'}
+                                            {sub.project_name || (sub.config as any)?.team?.name || 'Senza Nome'}
                                         </div>
                                         <div className="text-[11px] text-slate-500 uppercase font-mono">
                                             {format(new Date(sub.created_at), 'd MMM yyyy, HH:mm', { locale: it })}

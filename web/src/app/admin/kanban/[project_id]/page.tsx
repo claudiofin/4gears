@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { KanbanProject } from '@/types/database';
-import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { KanbanBoard } from '@/components/admin/KanbanBoard';
@@ -28,6 +28,9 @@ export default function ProjectKanbanPage() {
 
     const [project, setProject] = useState<ProjectWithStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditingName, setIsEditingName] = useState(false); // Added for editing name
+    const [newName, setNewName] = useState(''); // Added for editing name
+    const [isSaving, setIsSaving] = useState(false); // Added for saving state
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -35,6 +38,7 @@ export default function ProjectKanbanPage() {
                 const response = await fetch(`/api/admin/kanban/project?id=${projectId}`);
                 const data = await response.json();
                 setProject(data.project);
+                setNewName(data.project.name); // Set initial new name
             } catch (error) {
                 console.error('Error fetching project:', error);
             } finally {
@@ -86,7 +90,34 @@ export default function ProjectKanbanPage() {
             alert('Errore durante il completamento del progetto');
         }
     };
+    const handleUpdateName = async () => {
+        if (!newName.trim() || newName === project?.name) {
+            setIsEditingName(false);
+            return;
+        }
 
+        setIsSaving(true);
+        try {
+            const response = await fetch('/api/admin/kanban/project', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: projectId,
+                    name: newName.trim(),
+                }),
+            });
+
+            if (!response.ok) throw new Error('Failed to update name');
+
+            setProject(prev => prev ? { ...prev, name: newName.trim() } : null);
+            setIsEditingName(false);
+        } catch (error) {
+            console.error('Error updating name:', error);
+            alert('Errore durante l\'aggiornamento del nome');
+        } finally {
+            setIsSaving(false);
+        }
+    };
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -128,9 +159,31 @@ export default function ProjectKanbanPage() {
                 <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
                     <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                            <h1 className="text-3xl font-black text-white tracking-tight mb-2">
-                                {project.name}
-                            </h1>
+                            {isEditingName ? (
+                                <div className="flex items-center gap-2 mb-2">
+                                    <input
+                                        type="text"
+                                        value={newName}
+                                        onChange={(e) => setNewName(e.target.value)}
+                                        className="text-3xl font-black text-white tracking-tight bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 outline-none focus:border-indigo-500 transition-all"
+                                        autoFocus
+                                        disabled={isSaving}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleUpdateName();
+                                            if (e.key === 'Escape') setIsEditingName(false);
+                                        }}
+                                        onBlur={handleUpdateName}
+                                    />
+                                    {isSaving && <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />}
+                                </div>
+                            ) : (
+                                <h1
+                                    className="text-3xl font-black text-white tracking-tight mb-2 hover:text-indigo-400 cursor-pointer transition-colors"
+                                    onClick={() => setIsEditingName(true)}
+                                >
+                                    {project.name}
+                                </h1>
+                            )}
                             {project.description && (
                                 <p className="text-slate-400">{project.description}</p>
                             )}
