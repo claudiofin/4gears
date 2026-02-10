@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, ShoppingBag, Plus, ChevronRight, Edit2, Trash2 } from 'lucide-react';
+import { Users, ShoppingBag, Plus, ChevronRight, Edit2, Trash2, Shield, FileText, Calendar } from 'lucide-react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
 import { PremiumCard } from '@/components/ui/PremiumCard';
@@ -16,7 +16,8 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
     getOverride,
     getCardClass,
     mockData,
-    rolePreview
+    rolePreview,
+    setPreviewPage
 }) => {
     const primaryColor = currentTeam.colors.primary;
     const secondaryColor = currentTeam.colors.secondary;
@@ -100,6 +101,46 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                         <Plus size={10} /> +5% VS TARGET
                     </div>
                 </PremiumCard>
+            </div>
+
+            {/* Admin Modules Quick Access */}
+            <div className="grid grid-cols-2 gap-3">
+                <button
+                    onClick={() => setPreviewPage('admin_secretariat')}
+                    className={`p-4 rounded-[2rem] border flex flex-col items-center gap-2 transition-all active:scale-95 ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}
+                >
+                    <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
+                        <FileText size={20} />
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-900'}`}>Segreteria</span>
+                </button>
+                <button
+                    onClick={() => setPreviewPage('admin_personas')}
+                    className={`p-4 rounded-[2rem] border flex flex-col items-center gap-2 transition-all active:scale-95 ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}
+                >
+                    <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500">
+                        <Shield size={20} />
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-900'}`}>Ruoli</span>
+                </button>
+                <button
+                    onClick={() => setPreviewPage('events')}
+                    className={`p-4 rounded-[2rem] border flex flex-col items-center gap-2 transition-all active:scale-95 ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}
+                >
+                    <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                        <Calendar size={20} />
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-900'}`}>Eventi</span>
+                </button>
+                <button
+                    onClick={() => setPreviewPage('admin_federation')}
+                    className={`p-4 rounded-[2rem] border flex flex-col items-center gap-2 transition-all active:scale-95 ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}
+                >
+                    <div className="p-2 bg-rose-500/10 rounded-xl text-rose-500">
+                        <Users size={20} />
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-900'}`}>Federazione</span>
+                </button>
             </div>
 
             {/* Shop Orders List */}

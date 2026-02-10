@@ -15,7 +15,8 @@ import { ShopConfigPanel } from './monetization/ShopConfigPanel';
 import { BriefTab } from './BriefTab';
 import { CommunicationTab } from './CommunicationTab';
 import { ClubTab } from './ClubTab';
-import { Building2 } from 'lucide-react';
+import { RolesTab } from './RolesTab';
+import { Building2, Gavel } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface BuilderSidebarProps {
@@ -67,7 +68,7 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     onRemoveTeam
 }) => {
     const { t } = useLanguage();
-    const [activeTab, setActiveTab] = useState<'THEME' | 'IDENTITY' | 'CLUB' | 'SPORT' | 'CONTENT' | 'FEATURES' | 'MONETIZATION' | 'BRIEF' | 'COMMUNICATION'>('THEME');
+    const [activeTab, setActiveTab] = useState<'THEME' | 'IDENTITY' | 'CLUB' | 'SPORT' | 'CONTENT' | 'FEATURES' | 'MONETIZATION' | 'BRIEF' | 'COMMUNICATION' | 'ROLES'>('THEME');
     const [monetizationSubTab, setMonetizationSubTab] = useState<'TIERS' | 'SPONSORS' | 'SHOP'>('TIERS');
 
     // Context-Aware Render: Splash
@@ -180,6 +181,13 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                         PLANS
                     </button>
                     <button
+                        onClick={() => setActiveTab('ROLES')}
+                        className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'ROLES' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <Gavel size={14} />
+                        ROLES
+                    </button>
+                    <button
                         onClick={() => setActiveTab('BRIEF')}
                         className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'BRIEF' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
                     >
@@ -242,6 +250,15 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                         flags={featureFlags}
                         onToggle={onFeatureToggle}
                         onUpdate={onFeatureUpdate}
+                    />
+                )}
+
+                {activeTab === 'ROLES' && (
+                    <RolesTab
+                        onUpdate={(updates) => {
+                            console.log('Roles update:', updates);
+                            // This would update project config
+                        }}
                     />
                 )}
 

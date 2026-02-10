@@ -53,11 +53,19 @@ export const EventsScreen: React.FC<InteractiveScreenProps & { getIconProps: any
     onSelect,
     getOverride,
     getIconProps,
-    mockData
+    mockData,
+    viewMode
 }) => {
     return (
         <div className="px-4 pb-24" style={{ paddingTop: `${topPaddingValue}px` }}>
-            <SectionHeader id="events_header" label="Titolo Eventi" title="Prossimi Appuntamenti" isFirst={true} isDarkMode={isDarkMode} isInspectorActive={isInspectorActive} activeSelectionId={activeSelectionId} onSelect={onSelect} getOverride={getOverride} />
+            <div className="flex items-center justify-between">
+                <SectionHeader id="events_header" label="Titolo Eventi" title="Prossimi Appuntamenti" isFirst={true} isDarkMode={isDarkMode} isInspectorActive={isInspectorActive} activeSelectionId={activeSelectionId} onSelect={onSelect} getOverride={getOverride} />
+                {viewMode === 'ADMIN' && (
+                    <button className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/20 active:scale-95 transition-all">
+                        <Plus size={20} />
+                    </button>
+                )}
+            </div>
             <div className="mt-4">
                 <SmartCalendar themeConfig={themeConfig} isDarkMode={isDarkMode} onDateSelect={() => { }} />
             </div>

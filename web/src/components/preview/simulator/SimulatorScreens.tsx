@@ -16,6 +16,7 @@ import { NewsScreen, EventsScreen, TacticsScreen, ShopScreen } from './screens/F
 import { MatchDetailScreen } from './screens/MatchDetailScreen';
 import { SplashScreen } from './screens/SplashScreen';
 import { LoginScreen } from './screens/LoginScreen';
+import { AdminPersonasScreen } from './screens/AdminPersonasScreen';
 
 interface SimulatorScreensProps {
     previewPage: string;
@@ -110,13 +111,24 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         activeFeatures,
         getIconProps,
         deviceType,
-        onViewModeChange
+        onViewModeChange,
+        viewMode
     };
 
     const renderContent = () => {
-        // Special case for Admin Dashboard
-        if (viewMode === 'ADMIN' && (currentPage === 'home' || currentPage === 'admin')) {
-            return <AdminDashboardScreen {...screenProps} />;
+        if (viewMode === 'ADMIN') {
+            if (currentPage === 'home' || currentPage === 'admin') {
+                return <AdminDashboardScreen {...screenProps} />;
+            }
+            if (currentPage === 'admin_personas') {
+                return <AdminPersonasScreen {...screenProps} />;
+            }
+            if (currentPage === 'admin_secretariat') {
+                return <SecretariatScreen {...screenProps} />;
+            }
+            if (currentPage === 'admin_federation') {
+                return <FederationToolsScreen {...screenProps} />;
+            }
         }
 
         switch (currentPage) {
@@ -133,10 +145,14 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                 return <ShopScreen {...screenProps} />;
             case 'match_detail':
                 return <MatchDetailScreen {...screenProps} />;
+            case 'admin_secretariat':
             case 'secretariat':
                 return <SecretariatScreen {...screenProps} />;
+            case 'admin_federation':
             case 'federation':
                 return <FederationToolsScreen {...screenProps} />;
+            case 'admin_personas':
+                return <AdminPersonasScreen {...screenProps} />;
             case 'coach_dashboard':
                 return <CoachDashboardScreen {...screenProps} />;
             case 'athlete_dashboard':

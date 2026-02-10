@@ -222,14 +222,10 @@ export default function AdminPage() {
                             <Zap size={80} strokeWidth={1} />
                         </div>
                         <h3 className="text-2xl font-black uppercase italic leading-none mb-3 tracking-tight">Quick Actions</h3>
-                        <p className="text-indigo-100/70 text-sm mb-8 max-w-[200px] font-medium leading-relaxed">Configura rapidamente nuovi club o gestisci i ruoli della piattaforma.</p>
+                        <p className="text-indigo-100/70 text-sm mb-8 max-w-[200px] font-medium leading-relaxed">Configura rapidamente nuovi club partner o gestisci gli accessi alla piattaforma.</p>
                         <div className="space-y-3">
                             <Link href="/admin/submissions" className="w-full flex items-center justify-between px-5 py-3 bg-white text-indigo-900 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all group">
-                                Crea Nuovo Club
-                                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                            <Link href="/admin/personas" className="w-full flex items-center justify-between px-5 py-3 bg-indigo-500 text-white border border-indigo-400/30 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all group">
-                                Gestisci Personas
+                                Registra Nuovo Club
                                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </div>

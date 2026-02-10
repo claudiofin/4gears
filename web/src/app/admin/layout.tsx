@@ -35,8 +35,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navigation = [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-        { name: 'Segreteria', href: '/admin/secretariat', icon: Users },
-        { name: 'Eventi', href: '/admin/events', icon: Calendar },
         { name: 'Rilascio App', href: '/admin/releases', icon: Smartphone },
         { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
         { name: 'Richieste', href: '/admin/submissions', icon: FileText },
