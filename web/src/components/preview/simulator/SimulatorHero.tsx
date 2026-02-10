@@ -105,14 +105,6 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                         )}
                     </Selectable>
                 </div>
-
-                <motion.div
-                    whileHover={{ scale: 1.1, rotate: 6 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner transform rotate-3 transition-all cursor-pointer"
-                >
-                    <Icon {...getIconProps(28, "text-white")} />
-                </motion.div>
             </div>
         </motion.div>
     );

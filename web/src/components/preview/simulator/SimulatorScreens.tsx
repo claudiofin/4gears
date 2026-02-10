@@ -91,7 +91,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
         const predictedHeight = getHeaderHeight();
         const baseHeight = headerHeight || predictedHeight;
-        return baseHeight + 20;
+        return baseHeight;
     };
 
     const topPaddingValue = getTopPadding();
