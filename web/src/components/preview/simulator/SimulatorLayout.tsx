@@ -47,6 +47,12 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     const { getBodyFont, getHeadingFont } = useSimulatorStyles(themeConfig, isDarkMode);
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        if (onScrollChange) {
+            onScrollChange(e.currentTarget.scrollTop > 10);
+        }
+    };
+
     const [scaleMultiplier, setScaleMultiplier] = useState(1);
 
     useEffect(() => {
