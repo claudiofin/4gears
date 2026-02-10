@@ -1,6 +1,7 @@
-import { ThemeConfig, ViewMode, PermissionKey, NavItem, DeviceType, SportConfig } from '@/types/builder';
+import { ThemeConfig, ViewMode, PermissionKey, NavItem, DeviceType } from '@/types/builder';
 import { ComponentMetadata } from '@/types/inspector';
 import { TeamConfig } from '@/constants/teams';
+import { SportConfig } from '@/constants/sports';
 
 export interface BaseScreenProps {
     themeConfig: ThemeConfig;
