@@ -21,7 +21,6 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
 }) => {
     const primaryColor = currentTeam.colors.primary;
     const secondaryColor = currentTeam.colors.secondary;
-    const gridCols = rolePreview === 'admin' ? 'grid-cols-4' : 'grid-cols-2';
 
     return (
         <div className="p-6 pb-32 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ paddingTop: `${topPaddingValue}px` }}>
@@ -37,8 +36,8 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                 getOverride={getOverride}
             />
 
-            {/* KPI Stats Grid */}
-            <div className={`grid ${gridCols} gap-3`}>
+            {/* KPI Stats Grid - Horizontal Scroll for Premium Feel */}
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 no-scrollbar snap-x touch-pan-x">
                 <PremiumCard
                     themeConfig={themeConfig}
                     isDarkMode={isDarkMode}
@@ -46,15 +45,15 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                     isInspectorActive={isInspectorActive}
                     isSelected={activeSelectionId === 'admin_kpi_fans'}
                     onElementSelect={onSelect}
-                    className="p-4"
+                    className="p-4 min-w-[160px] flex-1 snap-start"
                     traits={['background', 'border', 'spacing', 'content']}
                 >
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-3">
                         <div
-                            className="p-1.5 rounded-lg w-fit transition-all duration-300"
-                            style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}
+                            className="p-2 rounded-xl w-fit transition-all duration-300 shadow-sm"
+                            style={{ backgroundColor: `${primaryColor}15`, color: primaryColor, border: `1px solid ${primaryColor}20` }}
                         >
-                            <Users size={14} />
+                            <Users size={16} />
                         </div>
                         <Selectable
                             id="admin_kpi_fans_label"
@@ -71,9 +70,13 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                             </span>
                         </Selectable>
                     </div>
-                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_fans')?.text || mockData?.adminData?.stats?.fans || '45.2K'}</div>
-                    <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
-                        <Plus size={10} /> +12% VS IERI
+                    <div className={`text-2xl font-black tracking-tighter leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>
+                        {getOverride('admin_kpi_fans')?.text || mockData?.adminData?.stats?.fans || '45.2K'}
+                    </div>
+                    <div className="flex items-center gap-1 mt-3">
+                        <span className="text-emerald-500 text-[9px] font-black bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-wider">
+                            +12% vs ieri
+                        </span>
                     </div>
                 </PremiumCard>
 
@@ -84,23 +87,50 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                     isInspectorActive={isInspectorActive}
                     isSelected={activeSelectionId === 'admin_kpi_revenue'}
                     onElementSelect={onSelect}
-                    className="p-4"
+                    className="p-4 min-w-[160px] flex-1 snap-start"
                     traits={['background', 'border', 'spacing', 'content']}
                 >
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-3">
                         <div
-                            className="p-1.5 rounded-lg w-fit"
-                            style={{ backgroundColor: `${secondaryColor}20`, color: secondaryColor }}
+                            className="p-2 rounded-xl w-fit shadow-sm"
+                            style={{ backgroundColor: `${secondaryColor}15`, color: secondaryColor, border: `1px solid ${secondaryColor}20` }}
                         >
-                            <ShoppingBag size={14} />
+                            <ShoppingBag size={16} />
                         </div>
                         <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>Entrate</span>
                     </div>
-                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_revenue')?.text || mockData?.adminData?.stats?.revenue || '€8.2K'}</div>
-                    <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
-                        <Plus size={10} /> +5% VS TARGET
+                    <div className={`text-2xl font-black tracking-tighter leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>
+                        {getOverride('admin_kpi_revenue')?.text || mockData?.adminData?.stats?.revenue || '€8.2K'}
+                    </div>
+                    <div className="flex items-center gap-1 mt-3">
+                        <span className="text-emerald-500 text-[9px] font-black bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-wider">
+                            +5% vs target
+                        </span>
                     </div>
                 </PremiumCard>
+
+                {/* Optional Placeholder / Future KPI */}
+                {rolePreview === 'admin' && (
+                    <PremiumCard
+                        themeConfig={themeConfig}
+                        isDarkMode={isDarkMode}
+                        id="admin_kpi_growth"
+                        isInspectorActive={isInspectorActive}
+                        isSelected={false}
+                        onElementSelect={onSelect}
+                        className="p-4 min-w-[160px] flex-1 snap-start opacity-60 grayscale"
+                        traits={['background', 'border', 'spacing', 'content']}
+                    >
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="p-2 rounded-xl w-fit bg-slate-500/10 text-slate-500 border border-slate-500/20">
+                                <Plus size={16} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Growth</span>
+                        </div>
+                        <div className="text-2xl font-black tracking-tighter leading-none text-slate-400">88%</div>
+                        <div className="text-[9px] font-black text-slate-500 mt-3 uppercase tracking-wider">Target Reach</div>
+                    </PremiumCard>
+                )}
             </div>
 
             {/* Admin Modules Quick Access */}
