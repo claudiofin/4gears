@@ -17,6 +17,7 @@ import { MatchDetailScreen } from './screens/MatchDetailScreen';
 import { SplashScreen } from './screens/SplashScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { AdminPersonasScreen } from './screens/AdminPersonasScreen';
+import { MenuScreen } from './screens/MenuScreen';
 
 interface SimulatorScreensProps {
     previewPage: string;
@@ -103,7 +104,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         return baseHeight;
     };
 
-    const topPaddingValue = getTopPadding();
+    const topPaddingValue = getTopPadding() + 16; // +16px gap between header and body content
 
     const screenProps = {
         themeConfig,
@@ -147,6 +148,8 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         switch (currentPage) {
             case 'home':
                 return <HomeScreen {...screenProps} />;
+            case 'menu':
+                return <MenuScreen {...screenProps} />;
             case 'news':
                 return <NewsScreen {...screenProps} />;
             case 'calendar':

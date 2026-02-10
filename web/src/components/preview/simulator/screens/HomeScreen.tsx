@@ -24,7 +24,7 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
     featureFlags
 }) => {
     return (
-        <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue + 16}px` }}>
+        <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
             {/* Hero content is always integrated into the SimulatorHeader mega-header */}
 
             <div className="px-6 space-y-6">
