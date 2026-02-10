@@ -18,11 +18,11 @@ export default function InvitesPage() {
         try {
             const { data, error } = await supabase
                 .from('invite_codes')
-                .select('*')
+                .select('*, profiles:used_by(email)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setInvites(data || []);
+            setInvites(data as any[] || []);
         } catch (error) {
             console.error('Error fetching invites:', error);
         } finally {
@@ -39,20 +39,20 @@ export default function InvitesPage() {
         try {
             const prefix = selectedRole === 'admin' ? '4G-ADMIN-' : '4G-';
             const code = `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('invite_codes')
-                .insert([{
+                .insert({
                     code,
                     role: selectedRole,
                     used: false,
-                }])
+                })
                 .select()
                 .single();
 
             if (error) throw error;
 
             if (data) {
-                setInvites([data, ...invites]);
+                setInvites([data as unknown as InviteCode, ...invites]);
             }
         } catch (error) {
             console.error('Error generating code:', error);
@@ -111,7 +111,7 @@ export default function InvitesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                            {invites.map((invite) => (
+                            {invites.map((invite: any) => (
                                 <tr key={invite.id} className="hover:bg-slate-800/30 transition-colors">
                                     <td className="p-4 font-mono text-white text-lg font-bold tracking-wider">
                                         {invite.code}
@@ -133,10 +133,10 @@ export default function InvitesPage() {
                                         </span>
                                     </td>
                                     <td className="p-4 text-sm text-slate-400">
-                                        {invite.created_at ? format(new Date(invite.created_at), 'd MMM yyyy, HH:mm', { locale: it }) : '-'}
+                                        {invite.used_at ? format(new Date(invite.used_at), 'd MMM yyyy, HH:mm', { locale: it }) : '-'}
                                     </td>
                                     <td className="p-4 text-sm text-slate-500 font-mono">
-                                        {invite.used_by ? `${invite.used_by.substring(0, 8)}...` : '-'}
+                                        {invite.profiles?.email || (invite.used_by ? `${invite.used_by.substring(0, 8)}...` : '-')}
                                     </td>
                                     <td className="p-4 text-right">
                                         <button

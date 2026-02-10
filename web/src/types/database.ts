@@ -649,6 +649,13 @@ export type Database = {
                         referencedRelation: "projects"
                         referencedColumns: ["id"]
                     },
+                    {
+                        foreignKeyName: "submission_requests_user_id_fkey"
+                        columns: ["user_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    },
                 ]
             }
             team_events: {
@@ -698,6 +705,39 @@ export type Database = {
                     },
                 ]
             }
+            application_releases: {
+                Row: {
+                    assets: Json
+                    created_at: string
+                    id: string
+                    platform: string
+                    project_name: string
+                    status: string
+                    updated_at: string
+                    version: string
+                }
+                Insert: {
+                    assets?: Json
+                    created_at?: string
+                    id?: string
+                    platform: string
+                    project_name: string
+                    status?: string
+                    updated_at?: string
+                    version: string
+                }
+                Update: {
+                    assets?: Json
+                    created_at?: string
+                    id?: string
+                    platform?: string
+                    project_name?: string
+                    status?: string
+                    updated_at?: string
+                    version?: string
+                }
+                Relationships: []
+            }
         }
         Views: {
             [_ in never]: never
@@ -729,6 +769,7 @@ export type Project = Database["public"]["Tables"]["projects"]["Row"]
 export type InviteCode = Database["public"]["Tables"]["invite_codes"]["Row"]
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"]
 export type SubmissionRequest = Database["public"]["Tables"]["submission_requests"]["Row"]
+export type ApplicationRelease = Database["public"]["Tables"]["application_releases"]["Row"]
 export type KanbanProject = Database["public"]["Tables"]["kanban_projects"]["Row"]
 export type KanbanColumn = Database["public"]["Tables"]["kanban_columns"]["Row"]
 export type KanbanLabel = Database["public"]["Tables"]["kanban_labels"]["Row"]

@@ -56,42 +56,38 @@ export default function AnalyticsPage() {
                 const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
                 const { data: submissions } = await supabase.from('submission_requests').select('status, config');
 
-                const typedSubmissions = submissions as any[];
+                if (submissions) {
+                    const approvedCount = submissions.filter(s => s.status === 'completed' || s.status === 'in_progress').length;
+                    const totalSubmissions = submissions.length;
+                    const pendingCount = submissions.filter(s => s.status === 'pending').length;
+                    const rejectedCount = totalSubmissions - approvedCount - pendingCount;
 
-                const approvedCount = typedSubmissions?.filter(s => s.status === 'completed' || s.status === 'in_progress').length || 0;
-                const totalSubmissions = typedSubmissions?.length || 0;
-                const pendingCount = typedSubmissions?.filter(s => s.status === 'pending').length || 0;
-                const rejectedCount = totalSubmissions - approvedCount - pendingCount;
+                    // Group by sport type from config
+                    const sportsMap: Record<string, number> = {};
+                    submissions.forEach(s => {
+                        const config = s.config as any;
+                        const sport = config?.team?.sportType || config?.identity?.sportType || 'Genereale';
+                        sportsMap[sport] = (sportsMap[sport] || 0) + 1;
+                    });
 
-                // Mocking sports distribution from submission data if available
-                const sportsMap: Record<string, number> = {};
-                typedSubmissions?.forEach(s => {
-                    const sport = (s.config as any)?.team?.sport || 'Inviato';
-                    sportsMap[sport] = (sportsMap[sport] || 0) + 1;
-                });
+                    const sportsArray = Object.entries(sportsMap)
+                        .map(([sport, count]) => ({ sport, count }))
+                        .sort((a, b) => b.count - a.count)
+                        .slice(0, 5);
 
-                const sportsArray = Object.entries(sportsMap)
-                    .map(([sport, count]) => ({ sport, count }))
-                    .sort((a, b) => b.count - a.count)
-                    .slice(0, 5);
-
-                setStats({
-                    totalUsers: userCount || 0,
-                    activeProjects: approvedCount,
-                    approvalRate: totalSubmissions > 0 ? Math.round((approvedCount / totalSubmissions) * 100) : 0,
-                    pendingRequests: pendingCount,
-                    submissionsByStatus: {
-                        approved: approvedCount,
-                        pending: pendingCount,
-                        rejected: rejectedCount
-                    },
-                    sportsDistribution: sportsArray.length > 0 ? sportsArray : [
-                        { sport: 'Calcio', count: 45 },
-                        { sport: 'Basket', count: 28 },
-                        { sport: 'Tennis', count: 15 },
-                        { sport: 'Volley', count: 12 }
-                    ]
-                });
+                    setStats({
+                        totalUsers: userCount || 0,
+                        activeProjects: approvedCount,
+                        approvalRate: totalSubmissions > 0 ? Math.round((approvedCount / totalSubmissions) * 100) : 0,
+                        pendingRequests: pendingCount,
+                        submissionsByStatus: {
+                            approved: approvedCount,
+                            pending: pendingCount,
+                            rejected: rejectedCount
+                        },
+                        sportsDistribution: sportsArray
+                    });
+                }
             } catch (err) {
                 console.error('Analytics Error:', err);
             } finally {

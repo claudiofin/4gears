@@ -32,9 +32,9 @@ export default function SubmissionsPage() {
     const fetchSubmissions = async () => {
         try {
             setError(null);
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('submission_requests')
-                .select('*, profiles!user_id(email)')
+                .select('*, profiles:user_id(email)')
                 .order('created_at', { ascending: false });
 
             if (error) {
@@ -42,7 +42,7 @@ export default function SubmissionsPage() {
                 setError(error.message);
                 return;
             }
-            setSubmissions(data as ExtendedSubmission[]);
+            setSubmissions(data as unknown as ExtendedSubmission[]);
         } catch (err: any) {
             console.error('Error in fetchSubmissions:', err);
             setError(err.message || 'Errore sconosciuto');
@@ -59,7 +59,7 @@ export default function SubmissionsPage() {
         setProcessingId(id);
         try {
             // Update submission status
-            const { error } = await (supabase as any)
+            const { error } = await supabase
                 .from('submission_requests')
                 .update({ status: newStatus })
                 .eq('id', id);
@@ -428,12 +428,14 @@ export default function SubmissionsPage() {
                                             {Object.entries((selectedSubmission.config as any)?.features || {}).map(([key, feat]: [string, any]) => (
                                                 <div key={key} className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${feat.enabled ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-slate-950/50 border-slate-800 grayscale'}`}>
                                                     <div className="flex items-center gap-3">
-                                                        <div className={`p-2 rounded-xl ${feat.enabled ? 'bg-emerald-500/20 text-emerald-500' : 'bg-slate-800 text-slate-600'}`}>
-                                                            <ShieldCheck size={18} />
+                                                        <div className={`p-2 rounded-xl ${feat.enabled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-600'}`}>
+                                                            {key === 'monetization' ? <Code size={18} /> :
+                                                                key === 'advanced_stats' ? <Activity size={18} /> :
+                                                                    <ShieldCheck size={18} />}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-bold text-white">{feat.label}</p>
-                                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{feat.minTier}</p>
+                                                            <p className="text-sm font-bold text-white">{feat.label || key}</p>
+                                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{feat.minTier || 'Basic'}</p>
                                                         </div>
                                                     </div>
                                                     {feat.enabled ? (

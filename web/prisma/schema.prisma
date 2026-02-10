@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Configurazione globale del progetto (importata dal Builder)
+model ProjectConfig {
+  id            String   @id @default(cuid())
+  projectId     String   @unique
+  name          String
+  slug          String
+  multiTeamMode Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+  
+  // JSON blob per feature flags e temi (per flessibilità senza troppe tabelle)
+  features      Json
+  theme         Json
+  simulator     Json?
+  
+  teams         Team[]
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  sportType   String
+  primaryColor String
+  secondaryColor String
+  logoImage   String?
+  config      ProjectConfig @relation(fields: [configId], references: [projectId])
+  configId    String
+
+  players     Player[]
+  events      Event[]
+  staff       Staff[]
+  sponsors    Sponsor[]
+  chants      Chant[]
+  products    Product[]
+}
+
+model Player {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  number      Int
+  image       String?
+  stats       Json      // Dati dinamici per sport (goal, punti, etc)
+  medicalExp  DateTime? // Scadenza certificato medico
+  team        Team     @relation(fields: [teamId], references: [id])
+  teamId      String
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // match, training, event
+  date        DateTime
+  location    String
+  opponent    String?  // Solo per match
+  description String?
+  team        Team     @relation(fields: [teamId], references: [id])
+  teamId      String
+  
+  attendance  Attendance[]
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  status    String   // present, absent, pending
+  playerId  String?
+  staffId   String?
+  eventId   String   @relation(fields: [eventId], references: [id])
+  eventId   String
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  image     String?
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+}
+
+model Sponsor {
+  id        String   @id @default(cuid())
+  name      String
+  tier      String   // gold, silver, bronze
+  image     String
+  url       String?
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+}
+
+model Chant {
+  id        String   @id @default(cuid())
+  title     String
+  duration  String?
+  lyric     String
+  audioUrl  String?
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String
+  category    String
+  inStock     Boolean  @default(true)
+  team        Team     @relation(fields: [teamId], references: [id])
+  teamId      String
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   // info, success, warning, error
+  createdAt DateTime @default(now())
+  teamId    String?
+}
+
+model ApplicationRelease {
+  id            String   @id @default(cuid())
+  projectName   String
+  version       String
+  platform      String   // ios, android
+  status        String   // released, processing, pending, rejected
+  createdAt     DateTime @default(now())
+  assets        Json     // { screenshots: number, banner: boolean }
+}
