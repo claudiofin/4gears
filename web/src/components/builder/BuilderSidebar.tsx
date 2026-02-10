@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, Shield, Palette, Layout, Settings, CreditCard, StickyNote } from 'lucide-react';
+import { Activity, Shield, Palette, Layout, Settings, CreditCard, StickyNote, Mail } from 'lucide-react';
 import { TeamConfig } from '@/constants/teams';
 import { ThemeConfig, EditorSelection, FeatureFlags } from '@/types/builder';
 import { IdentityTab } from './IdentityTab';
@@ -10,7 +10,13 @@ import { SplashSettingsPanel } from './settings/SplashSettingsPanel';
 import { LoginSettingsPanel } from './settings/LoginSettingsPanel'; // Import fixed
 import { ViewMode } from '@/types/builder';
 import { TierConfigPanel } from './monetization/TierConfigPanel';
+import { SponsorConfigPanel } from './monetization/SponsorConfigPanel';
+import { ShopConfigPanel } from './monetization/ShopConfigPanel';
 import { BriefTab } from './BriefTab';
+import { CommunicationTab } from './CommunicationTab';
+import { ClubTab } from './ClubTab';
+import { Building2 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface BuilderSidebarProps {
     currentTeam: TeamConfig;
@@ -30,6 +36,13 @@ interface BuilderSidebarProps {
     projectId: string;
     userNotes: string;
     onNotesUpdate: (notes: string) => void;
+
+    // Club/Team Multi-management
+    teams: TeamConfig[];
+    multiTeamMode: boolean;
+    onToggleMultiTeam: (enabled: boolean) => void;
+    onAddTeam: () => void;
+    onRemoveTeam: (id: string) => void;
 }
 
 export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
@@ -46,9 +59,16 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     viewMode,
     projectId,
     userNotes,
-    onNotesUpdate
+    onNotesUpdate,
+    teams,
+    multiTeamMode,
+    onToggleMultiTeam,
+    onAddTeam,
+    onRemoveTeam
 }) => {
-    const [activeTab, setActiveTab] = useState<'IDENTITY' | 'THEME' | 'CONTENT' | 'SPORT' | 'MONETIZATION' | 'BRIEF'>('THEME');
+    const { t } = useLanguage();
+    const [activeTab, setActiveTab] = useState<'THEME' | 'IDENTITY' | 'CLUB' | 'SPORT' | 'CONTENT' | 'FEATURES' | 'MONETIZATION' | 'BRIEF' | 'COMMUNICATION'>('THEME');
+    const [monetizationSubTab, setMonetizationSubTab] = useState<'TIERS' | 'SPONSORS' | 'SHOP'>('TIERS');
 
     // Context-Aware Render: Splash
     if (viewMode === 'SPLASH') {
@@ -115,21 +135,35 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                         className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'THEME' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
                     >
                         <Palette size={14} />
-                        DESIGN
+                        {t('tabs.design')}
                     </button>
                     <button
                         onClick={() => setActiveTab('IDENTITY')}
                         className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'IDENTITY' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
                     >
                         <Settings size={14} />
-                        BRAND
+                        {t('tabs.brand')}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('CLUB')}
+                        className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'CLUB' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <Building2 size={14} />
+                        {t('tabs.club')}
                     </button>
                     <button
                         onClick={() => setActiveTab('SPORT')}
                         className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'SPORT' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
                     >
                         <Activity size={14} />
-                        SPORT
+                        {t('tabs.sport')}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('COMMUNICATION')}
+                        className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'COMMUNICATION' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <Mail size={14} />
+                        COMMS
                     </button>
                     <button
                         onClick={() => setActiveTab('CONTENT')}
@@ -172,11 +206,32 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                         currentTeam={currentTeam}
                         onTeamChange={onTeamChange}
                         onUpdate={onTeamUpdate}
+                        themeConfig={themeConfig}
+                        onThemeUpdate={onThemeUpdate}
+                    />
+                )}
+
+                {activeTab === 'CLUB' && (
+                    <ClubTab
+                        teams={teams}
+                        currentTeamId={currentTeam.id}
+                        onTeamChange={onTeamChange}
+                        onAddTeam={onAddTeam}
+                        onRemoveTeam={onRemoveTeam}
+                        multiTeamMode={multiTeamMode}
+                        onToggleMultiTeam={onToggleMultiTeam}
                     />
                 )}
 
                 {activeTab === 'SPORT' && (
                     <SportTab
+                        config={currentTeam}
+                        onUpdate={onTeamUpdate}
+                    />
+                )}
+
+                {activeTab === 'COMMUNICATION' && (
+                    <CommunicationTab
                         config={currentTeam}
                         onUpdate={onTeamUpdate}
                     />
@@ -190,8 +245,47 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                     />
                 )}
 
-                {activeTab === 'MONETIZATION' && projectId && (
-                    <TierConfigPanel projectId={projectId} />
+                {activeTab === 'MONETIZATION' && (
+                    <div className="space-y-6">
+                        <div className="flex p-1 bg-slate-800/50 rounded-lg">
+                            <button
+                                onClick={() => setMonetizationSubTab('TIERS')}
+                                className={`flex-1 py-2 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${monetizationSubTab === 'TIERS' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                Piani Abbonamento
+                            </button>
+                            <button
+                                onClick={() => setMonetizationSubTab('SPONSORS')}
+                                className={`flex-1 py-2 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${monetizationSubTab === 'SPONSORS' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                Sponsor & Partner
+                            </button>
+                            <button
+                                onClick={() => setMonetizationSubTab('SHOP')}
+                                className={`flex-1 py-2 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${monetizationSubTab === 'SHOP' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                Store
+                            </button>
+                        </div>
+
+                        {monetizationSubTab === 'TIERS' && projectId && (
+                            <TierConfigPanel projectId={projectId} />
+                        )}
+
+                        {monetizationSubTab === 'SPONSORS' && (
+                            <SponsorConfigPanel
+                                config={themeConfig}
+                                onUpdate={onThemeUpdate}
+                            />
+                        )}
+
+                        {monetizationSubTab === 'SHOP' && (
+                            <ShopConfigPanel
+                                config={themeConfig}
+                                onUpdate={onThemeUpdate}
+                            />
+                        )}
+                    </div>
                 )}
 
                 {activeTab === 'BRIEF' && (

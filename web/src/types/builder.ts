@@ -79,6 +79,40 @@ export interface LoginConfig {
     };
 }
 
+export interface Sponsor {
+    id: string;
+    name: string;
+    logoUrl?: string;
+    link?: string;
+    tier: 'gold' | 'silver' | 'bronze';
+    enabled: boolean;
+}
+
+export interface SponsorConfig {
+    enabled: boolean;
+    layout: 'grid' | 'carousel' | 'list';
+    scrollingText?: string; // e.g. scrolling banner text
+    items: Sponsor[];
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    price: number;
+    description?: string;
+    image?: string;
+    category?: 'merch' | 'tickets' | 'experiences';
+    status: 'active' | 'draft' | 'soldout';
+}
+
+export interface ShopConfig {
+    enabled: boolean;
+    layout: 'grid' | 'list';
+    currency: string;
+    featuredCategoryId?: string;
+    products: Product[];
+}
+
 export type ThemeConfig = {
     fontFamily: string;
     bodyFont?: string; // New: Body font separate from headings
@@ -111,11 +145,52 @@ export type ThemeConfig = {
         useTeamColorForActive?: boolean;
     };
     burgerMenuStyling?: BurgerMenuConfig;
-    splash?: SplashConfig; // New: Dedicated Splash Settings
-    login?: LoginConfig; // New: Dedicated Login Settings
+    splash?: SplashConfig;
+    login?: LoginConfig;
+    sponsors?: SponsorConfig;
+    shop?: ShopConfig;
+    memberCard?: MemberCardConfig;
+    registrationForm?: RegistrationFormConfig;
     navigation: NavItem[];
     componentOverrides: Record<string, ComponentOverride>;
 };
+
+export interface MemberCardConfig {
+    enabled: boolean;
+    style: 'classic' | 'modern' | 'glass';
+    showPhoto: boolean;
+    showQrCode: boolean;
+    showLogo: boolean;
+    backgroundColor?: string;
+    backgroundImage?: string;
+    textColor?: string;
+    accentColor?: string;
+    tierStyles?: {
+        FREE?: Partial<MemberCardConfig>;
+        PREMIUM?: Partial<MemberCardConfig>;
+        ELITE?: Partial<MemberCardConfig>;
+    };
+}
+
+export interface RegistrationFormField {
+    id: string;
+    label: string;
+    type: 'text' | 'number' | 'date' | 'select' | 'checkbox';
+    required: boolean;
+    options?: string[]; // For select type
+}
+
+export interface RegistrationFormConfig {
+    enabled: boolean;
+    fields: RegistrationFormField[];
+    requiredDocuments: {
+        medicalCertificate: boolean;
+        identityDocument: boolean;
+        photoPermissions: boolean;
+        customDocuments: string[];
+    };
+    welcomeMessage?: string;
+}
 
 export type ComponentOverride = {
     textColor?: string;

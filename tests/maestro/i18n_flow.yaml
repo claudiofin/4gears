@@ -1,0 +1,11 @@
+appId: com.fourgears.app
+---
+- launchApp
+- tapOn: "Lingua"
+- tapOn: "English"
+- assertVisible: "Official Shop"
+- assertVisible: "News"
+- tapOn: "Language"
+- tapOn: "Italiano"
+- assertVisible: "Store Ufficiale"
+- assertVisible: "Notizie"

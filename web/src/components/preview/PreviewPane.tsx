@@ -15,6 +15,7 @@ import { SimulatorScreens } from './simulator/SimulatorScreens';
 import { SimulatorBottomNav } from './simulator/SimulatorBottomNav';
 import { BurgerMenuOverlay, ChatOverlay, NotificationsOverlay, FloatingCartButton } from './simulator/SimulatorOverlays';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
+import { MarketingStudioPanel } from '../builder/MarketingStudioPanel';
 
 interface PreviewPaneProps {
     deviceType: DeviceType;
@@ -41,6 +42,17 @@ interface PreviewPaneProps {
     previewPage: string;
     setPreviewPage: (page: string) => void;
 
+    // Role Preview Props
+    userPersona?: 'ADMIN' | 'COACH' | 'PLAYER' | 'FAN';
+    multiTeamMode?: boolean;
+
+    // Marketing Studio Props
+    marketingMode?: boolean;
+    marketingQuote?: string;
+    marketingBg?: string;
+    marketingTemplate?: '3d' | 'front';
+    onMarketingUpdate?: (updates: any) => void;
+
     // Ignored props or add if needed: appTier, userPersona, etc.
     [key: string]: any; // Allow other props to pass through without error
 }
@@ -65,6 +77,13 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     setMockData,
     previewPage,
     setPreviewPage,
+    userPersona,
+    marketingMode,
+    marketingQuote,
+    marketingBg,
+    marketingTemplate,
+    onMarketingUpdate,
+    multiTeamMode
 }) => {
     // Scroll state is local
     const [isScrolled, setIsScrolled] = useState(false);
@@ -145,6 +164,16 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     themeConfig={themeConfig}
                     currentTeam={currentTeam}
                     onScrollChange={setIsScrolled}
+                    marketingMode={marketingMode}
+                    marketingQuote={marketingQuote}
+                    marketingBg={marketingBg}
+                    marketingTemplate={marketingTemplate}
+                    rolePreview={
+                        userPersona === 'ADMIN' ? 'admin' :
+                            userPersona === 'COACH' ? 'coach' :
+                                userPersona === 'PLAYER' ? 'athlete' :
+                                    userPersona === 'FAN' ? 'fan' : null
+                    }
                     inspector={
                         onInspectorToggle && (
                             <VisualInspector
@@ -260,6 +289,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         setMockData={setMockData}
                         headerHeight={headerHeight}
                         deviceType={deviceType}
+                        multiTeamMode={multiTeamMode}
                     />
                 </SimulatorLayout>
 
@@ -272,6 +302,17 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         onClose={onInspectorClose || (() => { })}
                     />
                 </div>
+
+                {/* Marketing Studio Panel */}
+                <MarketingStudioPanel
+                    isOpen={!!marketingMode}
+                    onClose={() => onMarketingUpdate?.({ mode: false })}
+                    quote={marketingQuote || ''}
+                    bg={marketingBg || ''}
+                    template={marketingTemplate || '3d'}
+                    currentTeam={currentTeam}
+                    onUpdate={onMarketingUpdate || (() => { })}
+                />
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Ticket, LogOut, TrendingUp, KanbanSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Ticket, LogOut, TrendingUp, KanbanSquare, Settings, Users, Calendar, Smartphone } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { user, profile, loading, signOut } = useAuth();
@@ -35,6 +35,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navigation = [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+        { name: 'Segreteria', href: '/admin/secretariat', icon: Users },
+        { name: 'Eventi', href: '/admin/events', icon: Calendar },
+        { name: 'Rilascio App', href: '/admin/releases', icon: Smartphone },
         { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
         { name: 'Richieste', href: '/admin/submissions', icon: FileText },
         { name: 'Kanban', href: '/admin/kanban', icon: KanbanSquare },

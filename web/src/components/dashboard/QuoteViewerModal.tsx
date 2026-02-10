@@ -76,7 +76,7 @@ export default function QuoteViewerModal({ isOpen, onClose, projectId, quote, on
                         {/* Content */}
                         <div className="p-8 space-y-8">
                             {/* Main Price Card */}
-                            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-700 shadow-xl shadow-indigo-500/20 overflow-hidden">
+                            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-indigo-600 to-indigo-900 shadow-xl shadow-indigo-500/20 overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-10">
                                     <Euro size={120} />
                                 </div>

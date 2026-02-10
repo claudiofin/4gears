@@ -11,6 +11,8 @@ import { DEFAULT_TEAMS, TeamConfig } from '@/constants/teams';
 import { BuilderSidebar } from '@/components/builder/BuilderSidebar';
 import { TopBar } from '@/components/builder/TopBar';
 import { PreviewPane } from '@/components/preview/PreviewPane';
+import { MarketingStudioPanel } from '@/components/builder/MarketingStudioPanel';
+import { HandoverModal } from '@/components/builder/HandoverModal';
 import { ComponentMetadata } from '@/types/inspector';
 import SubmissionModal from '@/components/builder/SubmissionModal';
 import {
@@ -42,6 +44,7 @@ export default function BuilderPage() {
     // Builder State
     const [teams, setTeams] = useState<TeamConfig[]>(DEFAULT_TEAMS);
     const [currentTeamId, setCurrentTeamId] = useState<string>(teams[0].id);
+    const [multiTeamMode, setMultiTeamMode] = useState(false);
     const currentTeam = teams.find(t => t.id === currentTeamId) || teams[0];
 
     const [activeTab, setActiveTab] = useState('home');
@@ -50,14 +53,27 @@ export default function BuilderPage() {
     const [userPersona, setUserPersona] = useState<UserPersona>('FAN');
     const [viewMode, setViewMode] = useState<ViewMode>('USER');
     const [notchStyle, setNotchStyle] = useState<NotchStyle>('STANDARD');
-    const [deviceType, setDeviceType] = useState<DeviceType>('IPHONE');
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [deviceType, setDeviceType] = useState<'IPHONE' | 'ANDROID'>('IPHONE');
+    const [isDarkMode, setIsDarkMode] = useState(true);
     const [mockScenario, setMockScenario] = useState<MockScenario>('STANDARD');
+    const [isMarketingOpen, setIsMarketingOpen] = useState(false);
+    const [marketingConfig, setMarketingConfig] = useState({
+        quote: 'Il Tuo Team, La Tua App.',
+        bg: 'linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%)',
+        template: '3d' as '3d' | 'front'
+    });
+    const [isHandoverOpen, setIsHandoverOpen] = useState(false);
 
     const [activeChat, setActiveChat] = useState<any>(null);
     const [cart, setCart] = useState<any[]>([]);
     const [isInspectorActive, setIsInspectorActive] = useState(false);
     const [editorSelection, setEditorSelection] = useState<EditorSelection>({ type: 'global', id: null });
+
+    // Marketing Studio State
+    const [isMarketingMode, setIsMarketingMode] = useState(false);
+    const [marketingQuote, setMarketingQuote] = useState("La passione per il gioco, ovunque tu sia.");
+    const [marketingBg, setMarketingBg] = useState("linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%)");
+    const [marketingTemplate, setMarketingTemplate] = useState<'3d' | 'front'>('3d');
 
     const [themeConfig, setThemeConfigState] = useState<ThemeConfig>({
         fontFamily: 'Inter',
@@ -120,6 +136,8 @@ export default function BuilderPage() {
     // Build current config for saving
     const currentConfig = {
         team: currentTeam,
+        teams: teams,
+        multiTeamMode: multiTeamMode,
         theme: themeConfig,
         features: featureFlags,
         simulator: { appTier, userPersona, viewMode, notchStyle, deviceType, isDarkMode, mockScenario }
@@ -191,6 +209,15 @@ export default function BuilderPage() {
                     const savedTeam = config.team;
                     setTeams(prev => prev.map(t => t.id === savedTeam.id ? { ...t, ...savedTeam } : t));
                     setCurrentTeamId(savedTeam.id);
+                }
+
+                if (config.teams) {
+                    setTeams(config.teams);
+                    if (config.team) setCurrentTeamId(config.team.id);
+                }
+
+                if (config.multiTeamMode !== undefined) {
+                    setMultiTeamMode(config.multiTeamMode);
                 }
 
                 if (config.theme) {
@@ -435,6 +462,8 @@ export default function BuilderPage() {
                     onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
                     mockScenario={mockScenario}
                     onMockScenarioChange={setMockScenario}
+                    onMarketingToggle={() => setIsMarketingOpen(!isMarketingOpen)}
+                    onHandoverClick={() => setIsHandoverOpen(true)}
                 />
 
                 <div className="flex flex-1 overflow-hidden">
@@ -453,6 +482,28 @@ export default function BuilderPage() {
                         projectId={projectId}
                         userNotes={userNotes}
                         onNotesUpdate={setUserNotes}
+                        teams={teams}
+                        multiTeamMode={multiTeamMode}
+                        onToggleMultiTeam={setMultiTeamMode}
+                        onAddTeam={() => {
+                            const newTeam: TeamConfig = {
+                                ...currentTeam,
+                                id: Math.random().toString(36).substr(2, 9),
+                                name: `${currentTeam.name} Copy`,
+                                slug: `${currentTeam.slug}-copy`
+                            };
+                            setTeams([...teams, newTeam]);
+                            setCurrentTeamId(newTeam.id);
+                        }}
+                        onRemoveTeam={(id) => {
+                            if (teams.length > 1) {
+                                const newTeams = teams.filter(t => t.id !== id);
+                                setTeams(newTeams);
+                                if (currentTeamId === id) {
+                                    setCurrentTeamId(newTeams[0].id);
+                                }
+                            }
+                        }}
                     />
 
                     <div className="flex-1 flex overflow-hidden">
@@ -502,6 +553,16 @@ export default function BuilderPage() {
                                     onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
                                     onUndo={() => { }}
                                     onRedo={() => { }}
+                                    marketingMode={isMarketingMode}
+                                    marketingQuote={marketingQuote}
+                                    marketingBg={marketingBg}
+                                    marketingTemplate={marketingTemplate}
+                                    onMarketingUpdate={(updates: any) => {
+                                        if (updates.quote) setMarketingQuote(updates.quote);
+                                        if (updates.bg) setMarketingBg(updates.bg);
+                                        if (updates.template) setMarketingTemplate(updates.template);
+                                        if (updates.mode !== undefined) setIsMarketingMode(updates.mode);
+                                    }}
                                 />
                             </div>
                         </div>
@@ -524,6 +585,23 @@ export default function BuilderPage() {
                 isOpen={showQRCode}
                 onClose={() => setShowQRCode(false)}
                 projectId={projectId}
+            />
+
+            <MarketingStudioPanel
+                isOpen={isMarketingOpen}
+                onClose={() => setIsMarketingOpen(false)}
+                quote={marketingConfig.quote}
+                bg={marketingConfig.bg}
+                template={marketingConfig.template}
+                currentTeam={currentTeam}
+                onUpdate={(updates) => setMarketingConfig(prev => ({ ...prev, ...updates }))}
+            />
+
+            <HandoverModal
+                isOpen={isHandoverOpen}
+                onClose={() => setIsHandoverOpen(false)}
+                projectConfig={currentConfig}
+                currentTeam={currentTeam}
             />
         </main>
     );

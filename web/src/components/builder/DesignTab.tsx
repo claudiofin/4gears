@@ -1,5 +1,8 @@
 import React from 'react';
-import { Type, Layout, Grid, Moon, Sun, Upload, X, Palette, Sparkles } from 'lucide-react';
+import {
+    Type, Layout, Grid, Moon, Sun, Upload, X, Palette, Sparkles,
+    Home, Calendar, Users, ShoppingBag, Video, MessageSquare, Trophy, Activity, List, PlayCircle
+} from 'lucide-react';
 import { ThemeConfig, FeatureFlags } from '@/types/builder';
 
 interface DesignTabProps {
@@ -875,7 +878,31 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                         />
                                         <label htmlFor={`nav-item-toggle-${item.id}`} className="text-xs text-slate-300 font-medium cursor-pointer">{item.label}</label>
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        {/* Icon Picker */}
+                                        <div className="flex gap-1 p-1 bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-x-auto max-w-[120px] scrollbar-none">
+                                            {[Home, Calendar, Users, ShoppingBag, Video, MessageSquare, Trophy, Activity, List, PlayCircle].map((Icon, i) => {
+                                                const iconName = Icon.name || Icon.displayName || '';
+                                                const isSelected = item.icon === iconName && !item.customIconUrl;
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => {
+                                                            onUpdate((prev: any) => ({
+                                                                ...prev,
+                                                                navigation: (prev.navigation || []).map((n: any) =>
+                                                                    n.id === item.id ? { ...n, icon: iconName, customIconUrl: undefined } : n
+                                                                )
+                                                            }));
+                                                        }}
+                                                        className={`p-1 rounded transition-all ${isSelected ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
+                                                        title={iconName}
+                                                    >
+                                                        <Icon size={12} />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                         {/* Icon Upload Button */}
                                         <div className="relative">
                                             <input

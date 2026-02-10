@@ -1,0 +1,14 @@
+appId: com.fourgears.app
+---
+- launchApp
+- assertVisible: "Home"
+- tapOn: "Notizie"
+- assertVisible: "Tutte le Notizie"
+- tapOn: "Shop"
+- assertVisible: "Store Ufficiale"
+- tapOn: "Acquista ora"
+- assertVisible: "Dettaglio Prodotto"
+- tapOn: "Aggiungi al carrello"
+- assertVisible: "Carrello"
+- tapOn: "Checkout"
+- assertVisible: "Metodo di Pagamento"

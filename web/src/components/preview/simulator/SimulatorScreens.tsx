@@ -1,10 +1,10 @@
 import React from 'react';
 import {
     Settings, Calendar, Users, ShoppingBag, Layout, Video, Shield,
-    ChevronRight, Bell, Search, Plus, User, MapPin, Clock, Trophy,
+    ChevronRight, ChevronLeft, Bell, Search, Plus, User, MapPin, Clock, Trophy,
     CreditCard, BarChart3, MessageSquare, Menu, Sun, Moon, X, LogOut,
     Package, Send, Gauge, Info, BookOpen, Music, Award, Edit2, Trash2, Play, Lock,
-    ArrowLeft, Reply, CheckCheck, Newspaper, PlaySquare
+    ArrowLeft, Reply, CheckCheck, Check, Newspaper, PlaySquare, Circle, AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Selectable } from '../../builder/VisualInspector';
@@ -35,6 +35,7 @@ interface SimulatorScreensProps {
     setMockData: any;
     headerHeight?: number;
     deviceType?: DeviceType;
+    multiTeamMode?: boolean;
 }
 
 export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
@@ -228,6 +229,22 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
+                        <button
+                            onClick={() => setPreviewPage('coach_dashboard')}
+                            className={`col-span-2 p-4 flex items-center justify-between group transition-all duration-300 ${getCardClass(true)} hover:border-indigo-500/50 hover:bg-indigo-500/5`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform">
+                                    <Gauge size={18} />
+                                </div>
+                                <div className="text-left">
+                                    <div className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Pannello Allenatore</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Gestione Rosa & Calendario</div>
+                                </div>
+                            </div>
+                            <ChevronRight className="text-slate-400 group-hover:translate-x-1 transition-transform" size={16} />
+                        </button>
+
                         <PremiumCard
                             themeConfig={themeConfig}
                             isDarkMode={isDarkMode}
@@ -726,139 +743,72 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
     const renderContent = () => {
         switch (previewPage) {
             case 'home':
+                const liveMatch = mockData?.liveMatch;
                 return (
                     <div className={`${getSpacingClass()} px-4 pb-32`} style={{ paddingTop: `${topPaddingValue}px` }}>
-                        {/* Next Match */}
-                        <Selectable
-                            id="next_match_card"
-                            type="card"
-                            label="Card Prossimo Match"
-                            isInspectorActive={isInspectorActive}
-                            isSelected={activeSelectionId === 'next_match_card'}
-                            onSelect={onSelect}
-                            className={`p-5 ${getCardClass(true)}`}
-                            overrides={getOverride('next_match_card')}
-                            traits={['background', 'border', 'spacing', 'interaction']}
-                        >
-                            <div className="flex justify-between items-center mb-4">
-                                <span className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>Prossimo {sportConfig.scoring.term === 'Goal' ? 'Match' : 'Evento'}</span>
-                                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-100 uppercase tracking-tighter">
-                                    {sportConfig.federation} • {sportConfig.scoring.period}
-                                </span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="text-center flex flex-col items-center">
-                                    <Selectable
-                                        id="home_team_logo"
-                                        type="icon"
-                                        label="Logo Casa"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'home_team_logo'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('home_team_logo')}
-                                        traits={['icon', 'interaction']}
-                                    >
-                                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center">
-                                            <sportConfig.icon {...getIconProps(20, "text-slate-400")} />
+                        {/* Match Card (Live or Next) */}
+                        <div onClick={() => setPreviewPage('match-detail')} className="cursor-pointer">
+                            <Selectable
+                                id="next_match_card"
+                                type="card"
+                                label={liveMatch ? "Card Match LIVE" : "Card Prossimo Match"}
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'next_match_card'}
+                                onSelect={onSelect}
+                                className={`p-5 transition-transform hover:scale-[1.02] ${getCardClass(true)} ${liveMatch ? 'border-rose-500/50 bg-rose-500/5' : ''}`}
+                                overrides={getOverride('next_match_card')}
+                                traits={['background', 'border', 'spacing', 'interaction']}
+                            >
+                                <div className="flex justify-between items-center mb-4">
+                                    <div className="flex items-center gap-2">
+                                        {liveMatch && (
+                                            <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                                        )}
+                                        <span className={`text-xs font-bold uppercase tracking-wider ${liveMatch ? 'text-rose-500' : 'text-slate-400'}`}>
+                                            {liveMatch ? 'MATCH LIVE' : `Prossimo ${sportConfig.scoring.term === 'Goal' ? 'Match' : 'Evento'}`}
+                                        </span>
+                                    </div>
+                                    <span className={`text-[10px] font-bold ${liveMatch ? 'text-rose-700 bg-rose-50 border-rose-100' : 'text-blue-700 bg-blue-50 border-blue-100'} px-2 py-1 rounded-md border uppercase tracking-tighter`}>
+                                        {liveMatch ? `${liveMatch.minute}'` : (sportConfig.federation + ' • ' + sportConfig.scoring.period)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div className="text-center flex flex-col items-center flex-1">
+                                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center overflow-hidden">
+                                            <img src={currentTeam.logo} alt="Home" className="w-8 h-8 object-contain" />
                                         </div>
-                                    </Selectable>
-                                    <Selectable
-                                        id="home_team_label"
-                                        type="text"
-                                        label="Etichetta Casa"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'home_team_label'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('home_team_label')}
-                                        traits={['content', 'typography', 'interaction']}
-                                    >
-                                        {(getOverride('home_team_label')?.visible !== false || isInspectorActive) && (
-                                            <span
-                                                className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('home_team_label')?.fontSize || ''} ${getOverride('home_team_label')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                                style={{ color: getOverride('home_team_label')?.textColor }}
-                                            >
-                                                {getOverride('home_team_label')?.text || 'CASA'}
-                                            </span>
+                                        <span className="text-[10px] font-bold tracking-wide dark:text-white text-slate-900 uppercase">
+                                            {currentTeam.name}
+                                        </span>
+                                    </div>
+
+                                    <div className="text-center px-4 shrink-0">
+                                        {liveMatch ? (
+                                            <div className="flex flex-col items-center">
+                                                <div className="text-4xl font-black italic tracking-tighter dark:text-white text-slate-900">
+                                                    {liveMatch.score_home} - {liveMatch.score_away}
+                                                </div>
+                                                <div className="text-[8px] font-black text-rose-500 uppercase mt-1">Tempo Reale</div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="text-3xl font-black block tracking-tighter dark:text-white text-slate-900">VS</span>
+                                                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full mt-1 inline-block">15:00</span>
+                                            </>
                                         )}
-                                    </Selectable>
-                                </div>
-                                <div className="text-center px-4">
-                                    <Selectable
-                                        id="match_vs_text"
-                                        type="text"
-                                        label="Testo VS"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'match_vs_text'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('match_vs_text')}
-                                        traits={['content', 'typography', 'interaction']}
-                                    >
-                                        {(getOverride('match_vs_text')?.visible !== false || isInspectorActive) && (
-                                            <span
-                                                className={`text-3xl font-black block tracking-tighter w-full ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('match_vs_text')?.fontSize || ''} ${getOverride('match_vs_text')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                                style={{ color: getOverride('match_vs_text')?.textColor }}
-                                            >
-                                                {getOverride('match_vs_text')?.text || 'VS'}
-                                            </span>
-                                        )}
-                                    </Selectable>
-                                    <Selectable
-                                        id="match_time_text"
-                                        type="text"
-                                        label="Orario Match"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'match_time_text'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('match_time_text')}
-                                        traits={['content', 'typography', 'interaction']}
-                                    >
-                                        {(getOverride('match_time_text')?.visible !== false || isInspectorActive) && (
-                                            <span
-                                                className={`text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full mt-1 inline-block ${getOverride('match_time_text')?.fontSize || ''} ${getOverride('match_time_text')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                                style={{ color: getOverride('match_time_text')?.textColor }}
-                                            >
-                                                {getOverride('match_time_text')?.text || '15:00'}
-                                            </span>
-                                        )}
-                                    </Selectable>
-                                </div>
-                                <div className="text-center flex flex-col items-center">
-                                    <Selectable
-                                        id="away_team_logo"
-                                        type="icon"
-                                        label="Logo Trasferta"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'away_team_logo'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('away_team_logo')}
-                                        traits={['icon', 'interaction']}
-                                    >
-                                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center">
-                                            <Shield {...getIconProps(20, "text-slate-400")} />
+                                    </div>
+
+                                    <div className="text-center flex flex-col items-center flex-1">
+                                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-2 border border-slate-200 flex items-center justify-center overflow-hidden">
+                                            <Shield size={24} className="text-slate-300" />
                                         </div>
-                                    </Selectable>
-                                    <Selectable
-                                        id="away_team_label"
-                                        type="text"
-                                        label="Etichetta Trasferta"
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === 'away_team_label'}
-                                        onSelect={onSelect}
-                                        overrides={getOverride('away_team_label')}
-                                        traits={['content', 'typography', 'interaction']}
-                                    >
-                                        {(getOverride('away_team_label')?.visible !== false || isInspectorActive) && (
-                                            <span
-                                                className={`text-[10px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'} ${getOverride('away_team_label')?.fontSize || ''} ${getOverride('away_team_label')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                                style={{ color: getOverride('away_team_label')?.textColor }}
-                                            >
-                                                {getOverride('away_team_label')?.text || 'TRASFERTA'}
-                                            </span>
-                                        )}
-                                    </Selectable>
+                                        <span className="text-[10px] font-bold tracking-wide dark:text-white text-slate-900 uppercase">
+                                            {liveMatch?.opponent_name || 'TRASFERTA'}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </Selectable>
+                            </Selectable>
+                        </div>
 
                         {/* Quick Actions Grid - Dynamic from Nav items */}
                         <div className={`grid grid-cols-2 ${themeConfig.spacingLevel === 'compact' ? 'gap-2' : 'gap-3'}`}>
@@ -1233,12 +1183,9 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     setMockData?.setCart((prev: any[]) => [...prev, product]);
                 };
 
-                const cartCount = mockData?.cart?.length || 0;
-
                 return (
                     <div className="px-4 pb-24 relative" style={{ paddingTop: `${topPaddingValue}px` }}>
                         <SectionHeader id="shop_header" label="Titolo Shop" title="Official Store" isFirst={true} />
-
                         <div className="grid grid-cols-2 gap-3 mt-4">
                             {shopProducts.map((product, i) => {
                                 const itemId = `shop_item_${i}`;
@@ -1760,6 +1707,9 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     </div>
                 );
 
+            case 'match-detail':
+                return renderMatchDetail();
+
             case 'chat':
             case 'team-chat':
                 return (
@@ -1823,9 +1773,347 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                     </div>
                 );
 
+            case 'coach_dashboard':
+                return renderCoachDashboard();
+
             default:
                 return <div className="p-4" style={{ paddingTop: `${topPaddingValue}px` }}>Pagina non trovata</div>;
         }
+    };
+
+    const renderEventDetail = () => {
+        const event = mockData?.events?.[0]; // Mocking the first event
+        if (!event) return null;
+
+        return (
+            <div className="px-4 pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
+                <div className="flex items-center gap-2 mb-2">
+                    <button
+                        onClick={() => setPreviewPage('events')}
+                        className="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-500 transition-colors"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Dettaglio Appuntamento</span>
+                </div>
+
+                <PremiumCard
+                    themeConfig={themeConfig}
+                    isDarkMode={isDarkMode}
+                    className="p-6 flex flex-col items-center text-center gap-4"
+                    id="event_detail_main"
+                >
+                    <div className={`w-16 h-16 rounded-2xl ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'} flex flex-col items-center justify-center font-black`}>
+                        <span className="text-blue-500 text-xs uppercase">{event.date.split(' ')[0]}</span>
+                        <span className="text-2xl">{event.date.split(' ')[1]}</span>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black">{event.title}</h2>
+                        <div className="flex items-center justify-center gap-3 mt-2 text-xs text-slate-500 font-bold uppercase tracking-tight">
+                            <span className="flex items-center gap-1"><Clock size={12} /> {event.time}</span>
+                            <span className="flex items-center gap-1"><MapPin size={12} /> {event.location}</span>
+                        </div>
+                    </div>
+                </PremiumCard>
+
+                <SectionHeader id="event_convocations_header" label="Header Convocati" title="Sei stato Convocato!" />
+                <div className={`p-4 rounded-3xl border border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between`}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                            <Check size={20} strokeWidth={3} />
+                        </div>
+                        <div className="text-left">
+                            <div className="text-sm font-bold text-emerald-500">Conferma la tua presenza</div>
+                            <div className="text-[9px] text-slate-500 uppercase font-bold">L'allenatore attende un tuo riscontro</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <button
+                        onClick={() => {
+                            const newEvents = [...(mockData?.events || [])];
+                            if (newEvents[0]) newEvents[0].rsvp = 'going';
+                            setMockData({ ...mockData, events: newEvents });
+                        }}
+                        className={`py-4 rounded-2xl text-white text-xs font-black shadow-lg transition-all active:scale-95 ${event.rsvp === 'going' ? 'bg-emerald-600 ring-4 ring-emerald-500/20' : 'bg-emerald-500 shadow-emerald-500/20'
+                            }`}
+                    >
+                        {event.rsvp === 'going' ? 'CONFERMATO ✓' : 'ACCETTO'}
+                    </button>
+                    <button
+                        onClick={() => {
+                            const newEvents = [...(mockData?.events || [])];
+                            if (newEvents[0]) newEvents[0].rsvp = 'not_going';
+                            setMockData({ ...mockData, events: newEvents });
+                        }}
+                        className={`py-4 rounded-2xl text-white text-xs font-black shadow-lg transition-all active:scale-95 ${event.rsvp === 'not_going' ? 'bg-rose-600 ring-4 ring-rose-500/20' : 'bg-rose-500 shadow-rose-500/20'
+                            }`}
+                    >
+                        {event.rsvp === 'not_going' ? 'RIFIUTATO ✕' : 'RIFIUTO'}
+                    </button>
+                </div>
+
+                <SectionHeader id="event_staff_header" label="Header Staff Evento" title="Staff & Note" />
+                <PremiumCard
+                    themeConfig={themeConfig}
+                    isDarkMode={isDarkMode}
+                    className="p-4 space-y-3"
+                    id="event_notes"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                            <img src="https://i.pravatar.cc/100?u=coach" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <div className="text-xs font-bold">Coach Rossi</div>
+                            <div className="text-[9px] text-slate-500 uppercase font-black">Nota per gli atleti</div>
+                        </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed italic">
+                        "Portare il kit da allenamento invernale e le borracce personali. Massimo impegno!"
+                    </p>
+                </PremiumCard>
+            </div>
+        );
+    };
+
+    const renderCoachDashboard = () => {
+        const stats = [
+            { label: 'Atleti', value: mockData?.players?.length || 0, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+            { label: 'Eventi', value: mockData?.events?.length || 0, icon: Calendar, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+            { label: 'Media Voto', value: '7.2', icon: Trophy, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+            { label: 'Presenze', value: '92%', icon: BarChart3, color: 'text-rose-500', bg: 'bg-rose-500/10' },
+        ];
+
+        return (
+            <div className="px-4 pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
+                <SectionHeader id="coach_dash_header" label="Titolo Coach Dashboard" title="Pannello Allenatore" isFirst={true} />
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                    {stats.map((stat, i) => (
+                        <PremiumCard
+                            key={i}
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            className="p-4 flex flex-col gap-2"
+                            id={`coach_stat_${i}`}
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === `coach_stat_${i}`}
+                            onElementSelect={onSelect}
+                        >
+                            <div className={`w-8 h-8 rounded-lg ${stat.bg} ${stat.color} flex items-center justify-center`}>
+                                <stat.icon size={18} />
+                            </div>
+                            <div>
+                                <div className="text-xl font-black">{stat.value}</div>
+                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</div>
+                            </div>
+                        </PremiumCard>
+                    ))}
+                </div>
+
+                {/* Global Timeline / Conflict Resolution (Multi-Team) */}
+                {props.multiTeamMode && (
+                    <>
+                        <SectionHeader id="coach_global_timeline" label="Header Timeline Globale" title="Occupazione Campi" />
+                        <PremiumCard
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            className="p-4"
+                            id="global_calendar_card"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'global_calendar_card'}
+                            onElementSelect={onSelect}
+                        >
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Oggi • Campo Principale</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                            <span className="text-[8px] font-bold text-slate-400">Team A</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                            <span className="text-[8px] font-bold text-slate-400">Team B</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="relative h-12 bg-slate-100 dark:bg-slate-800/50 rounded-xl overflow-hidden flex items-center px-1">
+                                    <div className="absolute left-[10%] w-[30%] h-8 bg-blue-500/20 border-l-2 border-blue-500 flex items-center px-2">
+                                        <span className="text-[8px] font-bold text-blue-400">Allenamento U17</span>
+                                    </div>
+                                    <div className="absolute left-[45%] w-[40%] h-8 bg-emerald-500/20 border-l-2 border-emerald-500 flex items-center px-2">
+                                        <span className="text-[8px] font-bold text-emerald-400">Prima Squadra</span>
+                                    </div>
+                                    {/* Conflict Indicator */}
+                                    <div className="absolute left-[38%] w-[10%] h-8 bg-red-500/40 border-x border-red-500 flex items-center justify-center">
+                                        <AlertCircle size={10} className="text-white animate-pulse" />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-2 bg-red-500/10 rounded-lg border border-red-500/20">
+                                    <AlertCircle size={12} className="text-red-500" />
+                                    <p className="text-[9px] font-bold text-red-400">Conflitto di orario tra U17 e Prima Squadra (16:45 - 17:00)</p>
+                                </div>
+                            </div>
+                        </PremiumCard>
+                    </>
+                )}
+
+                {/* Upcoming Events List */}
+                <SectionHeader id="coach_events_header" label="Header Eventi Coach" title="Prossimi Appuntamenti" />
+                <div className="space-y-3">
+                    {mockData?.events?.slice(0, 2).map((event: any) => (
+                        <PremiumCard
+                            key={event.id}
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            className="p-4 flex items-center gap-4"
+                            id={`coach_event_${event.id}`}
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === `coach_event_${event.id}`}
+                            onElementSelect={onSelect}
+                        >
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center text-[10px] font-black">
+                                <span className="text-blue-500">{event.date.split(' ')[0]}</span>
+                                <span>{event.date.split(' ')[1]}</span>
+                            </div>
+                            <div className="flex-1">
+                                <div className="text-xs font-bold">{event.title}</div>
+                                <div className="text-[9px] text-slate-500 uppercase font-bold tracking-tight mt-0.5">
+                                    {event.time} • {event.location}
+                                </div>
+                            </div>
+                            <div className="flex -space-x-2">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+                                        <img src={`https://i.pravatar.cc/100?u=${event.id}${i}`} className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                                <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[8px] font-bold">+12</div>
+                            </div>
+                        </PremiumCard>
+                    ))}
+                </div>
+
+                {/* Recent Roster Updates */}
+                <SectionHeader id="coach_roster_header" label="Header Rosa Coach" title="Stato Atleti" />
+                <div className="space-y-3">
+                    {mockData?.players?.slice(0, 3).map((player: any) => (
+                        <PremiumCard
+                            key={player.id}
+                            themeConfig={themeConfig}
+                            isDarkMode={isDarkMode}
+                            className="p-3 flex items-center gap-3"
+                            id={`coach_player_${player.id}`}
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === `coach_player_${player.id}`}
+                            onElementSelect={onSelect}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                                <img src={player.image} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="text-xs font-bold">{player.name}</div>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                    <div className={`w-1.5 h-1.5 rounded-full ${player.id % 2 === 0 ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                                    <div className="text-[9px] text-slate-500 uppercase font-black">{player.id % 2 === 0 ? 'Disponibile' : 'In Dubbio'}</div>
+                                </div>
+                            </div>
+                            <div className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded font-black text-[10px]">#{player.number}</div>
+                        </PremiumCard>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+    const renderMatchDetail = () => {
+        const liveMatch = mockData?.liveMatch || {
+            opponent_name: 'FC VALENCIA',
+            score_home: 2,
+            score_away: 1,
+            minute: 74,
+            events: [
+                { type: 'goal', minute: 23, player: 'L. MARTINEZ', team: 'home' },
+                { type: 'yellow_card', minute: 41, player: 'G. ROSSI', team: 'home' },
+                { type: 'goal', minute: 58, player: 'S. RAMIREZ', team: 'away' },
+                { type: 'goal', minute: 67, player: 'M. KHAN', team: 'home' }
+            ]
+        };
+
+        const renderEventIcon = (type: string) => {
+            switch (type) {
+                case 'goal': return <Trophy size={14} className="text-emerald-500" />;
+                case 'yellow_card': return <div className="w-3 h-4 bg-amber-400 rounded-sm" />;
+                case 'red_card': return <div className="w-3 h-4 bg-rose-500 rounded-sm" />;
+                case 'substitution': return <Users size={14} className="text-blue-500" />;
+                default: return <Circle size={14} className="text-slate-400" />;
+            }
+        };
+
+        return (
+            <div className={`flex flex-col h-full bg-slate-50 dark:bg-slate-950 animate-in fade-in slide-in-from-right-4 duration-500`} style={{ paddingTop: `${topPaddingValue}px` }}>
+                <div className="px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <button onClick={() => setPreviewPage('home')} className="flex items-center gap-1 text-xs font-bold text-slate-500">
+                        <ChevronLeft size={16} /> Indietro
+                    </button>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Match Live</div>
+                    <div className="w-12" />
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-6 mt-4">
+                    {/* Main Scoreboard */}
+                    <div className={`p-8 rounded-[32px] ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} border flex flex-col items-center shadow-xl`}>
+                        <div className="flex items-center gap-2 mb-6 text-rose-500 animate-pulse">
+                            <span className="w-2 h-2 rounded-full bg-rose-500" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">LIVE • {liveMatch.minute}'</span>
+                        </div>
+
+                        <div className="flex justify-between items-center w-full">
+                            <div className="text-center flex-1">
+                                <div className="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-3 mb-3 mx-auto">
+                                    <img src={currentTeam.logo} alt="Home" className="w-full h-full object-contain" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-tight truncate px-1">{currentTeam.name}</div>
+                            </div>
+
+                            <div className="text-5xl font-[1000] italic tracking-tighter px-4 dark:text-white text-slate-900">
+                                {liveMatch.score_home}:{liveMatch.score_away}
+                            </div>
+
+                            <div className="text-center flex-1">
+                                <div className="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-4 mb-3 mx-auto">
+                                    <Shield size={32} className="text-slate-300" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-tight truncate px-1">{liveMatch.opponent_name}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <SectionHeader id="match_timeline_header" label="Header Timeline" title="Cronologia Live" />
+                    <div className="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-200 dark:before:bg-slate-800 pb-4">
+                        {(liveMatch.events || []).map((ev: any, i: number) => (
+                            <div key={i} className="flex gap-4 items-center relative pl-8">
+                                <div className="absolute left-0 w-6 h-6 rounded-full bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 flex items-center justify-center z-10 shadow-sm">
+                                    {renderEventIcon(ev.type)}
+                                </div>
+                                <div className={`flex-1 p-3 rounded-2xl ${isDarkMode ? 'bg-slate-900' : 'bg-white shadow-sm border border-slate-100'}`}>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-black">{ev.player}</span>
+                                        <span className="text-[10px] font-bold text-slate-400">{ev.minute}'</span>
+                                    </div>
+                                    <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
+                                        {ev.type.replace('_', ' ')}
+                                    </div>
+                                </div>
+                            </div>
+                        )).reverse()}
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (

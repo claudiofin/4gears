@@ -1,8 +1,9 @@
 'use client';
 
 import { Project } from '@/types/database';
-import { Calendar, Trash2, ExternalLink, Euro, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Trash2, ExternalLink, Euro, Clock, CheckCircle, XCircle, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProjectCardProps {
@@ -14,6 +15,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, onOpen, onOpenQuote, onDelete }: ProjectCardProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const router = useRouter();
     const config = project.config as any;
     const quote = project.quote;
 
@@ -132,13 +134,26 @@ export default function ProjectCard({ project, onOpen, onOpenQuote, onDelete }: 
                     </div>
 
                     {/* Open Button */}
-                    <button
-                        onClick={handleOpen}
-                        className={`w-full py-3 mt-auto ${quote?.status === 'sent' ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-400'} font-bold rounded-xl transition-all flex items-center justify-center gap-2 group/open`}
-                    >
-                        {quote?.status === 'sent' ? 'Vedi Preventivo' : 'Apri Progetto'}
-                        <ExternalLink className="w-4 h-4 group-hover/open:translate-x-1 group-hover/open:-translate-y-1 transition-transform" />
-                    </button>
+                    <div className="flex flex-col gap-2 mt-auto">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/dashboard/coach/${project.id}`);
+                            }}
+                            className="w-full py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-indigo-500/20 group/coach"
+                        >
+                            Pannello Coach
+                            <Users className="w-4 h-4 group-hover/coach:scale-110 transition-transform" />
+                        </button>
+
+                        <button
+                            onClick={handleOpen}
+                            className={`w-full py-3 ${quote?.status === 'sent' ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-400'} font-bold rounded-xl transition-all flex items-center justify-center gap-2 group/open`}
+                        >
+                            {quote?.status === 'sent' ? 'Vedi Preventivo' : 'Apri Progetto'}
+                            <ExternalLink className="w-4 h-4 group-hover/open:translate-x-1 group-hover/open:-translate-y-1 transition-transform" />
+                        </button>
+                    </div>
                 </div>
             </motion.div>
 

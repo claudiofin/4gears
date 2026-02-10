@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto, Outfit, Fira_Sans, Fira_Code, Inter, Playfair_Display, Open_Sans, Lato } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,8 +67,8 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "4Gears Platform",
-  description: "Create and manage your sports app configurations",
+  title: "4Gears Console | Enterprise App Studio & Analytics",
+  description: "The ultimate platform for managing app releases, player memberships, and store marketing assets for sport clubs.",
   viewport: {
     width: 'device-width',
     initialScale: 1,
@@ -93,7 +94,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} ${outfit.variable} ${firaSans.variable} ${firaCode.variable} ${inter.variable} ${playfair.variable} ${openSans.variable} ${lato.variable} antialiased`}
       >
         <AuthProvider>
-          {children}
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

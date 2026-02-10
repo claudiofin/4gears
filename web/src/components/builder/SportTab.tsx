@@ -26,6 +26,15 @@ export const SportTab: React.FC<SportTabProps> = ({ config, onUpdate }) => {
         });
     };
 
+    const updateMatchEvents = (events: string[]) => {
+        onUpdate({
+            sportOverrides: {
+                ...overrides,
+                matchEvents: events
+            }
+        });
+    };
+
     const currentRoles = overrides.roles || defaultConfig.roles;
 
     // Scoring overrides
@@ -37,6 +46,17 @@ export const SportTab: React.FC<SportTabProps> = ({ config, onUpdate }) => {
     // Clock overrides (defaults to 2 periods of 45 mins if not set)
     const currentPeriods = overrides.clock?.periods || 2;
     const currentDuration = overrides.clock?.durationMinutes || 45;
+
+    // Match Events
+    const currentMatchEvents = overrides.matchEvents || ['yellow_card', 'red_card', 'substitution'];
+    const availableEvents = [
+        { id: 'yellow_card', label: 'Cartellino Giallo' },
+        { id: 'red_card', label: 'Cartellino Rosso' },
+        { id: 'blue_card', label: 'Cartellino Blu / Espulsione Temp.' },
+        { id: 'substitution', label: 'Sostituzioni' },
+        { id: 'timeout', label: 'Time-out' },
+        { id: 'assist', label: 'Assist' }
+    ];
 
     const handleAddRole = () => {
         if (!newRole.trim()) return;
@@ -150,6 +170,41 @@ export const SportTab: React.FC<SportTabProps> = ({ config, onUpdate }) => {
                             className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                         />
                     </div>
+                </div>
+            </section>
+
+            <div className="h-px bg-slate-800" />
+
+            {/* Match Events */}
+            <section className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <Activity size={12} />
+                    Eventi Partita
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                    {availableEvents.map(event => (
+                        <button
+                            key={event.id}
+                            onClick={() => {
+                                const newEvents = currentMatchEvents.includes(event.id)
+                                    ? currentMatchEvents.filter(e => e !== event.id)
+                                    : [...currentMatchEvents, event.id];
+                                updateMatchEvents(newEvents);
+                            }}
+                            className={`flex items-center justify-between p-3 rounded-lg border transition-all ${currentMatchEvents.includes(event.id)
+                                ? 'bg-indigo-500/10 border-indigo-500/50 text-indigo-300'
+                                : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                                }`}
+                        >
+                            <span className="text-xs font-bold">{event.label}</span>
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${currentMatchEvents.includes(event.id)
+                                ? 'bg-indigo-500 border-indigo-500 text-white'
+                                : 'border-slate-600'
+                                }`}>
+                                {currentMatchEvents.includes(event.id) && <Edit3 size={10} />}
+                            </div>
+                        </button>
+                    ))}
                 </div>
             </section>
 

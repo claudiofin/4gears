@@ -32,7 +32,7 @@ export default function SubmissionsPage() {
     const fetchSubmissions = async () => {
         try {
             setError(null);
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('submission_requests')
                 .select('*, profiles!user_id(email)')
                 .order('created_at', { ascending: false });
@@ -290,7 +290,7 @@ export default function SubmissionsPage() {
                                             </div>
                                             <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-3xl group md:col-span-2">
                                                 <p className="text-[10px] text-slate-500 uppercase font-black mb-2 flex items-center gap-2">
-                                                    <Mail size={12} className="text-purple-500" /> Email per i Test
+                                                    <Mail size={12} className="text-indigo-500" /> Email per i Test
                                                 </p>
                                                 <p className="text-lg text-white font-bold">{selectedSubmission.test_email || '-'}</p>
                                             </div>

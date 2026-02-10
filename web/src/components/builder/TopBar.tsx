@@ -1,5 +1,5 @@
-import React from 'react';
-import { Smartphone, Moon, Sun, Monitor, User, Shield, Lock, Download } from 'lucide-react';
+import { Smartphone, Moon, Sun, Monitor, User, Shield, Lock, Download, Box, Globe } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 import { AppTier, UserPersona, ViewMode, NotchStyle, DeviceType, MockScenario } from '@/types/builder';
 
 interface TopBarProps {
@@ -17,6 +17,8 @@ interface TopBarProps {
     onDarkModeToggle: () => void;
     mockScenario: MockScenario;
     onMockScenarioChange: (scenario: MockScenario) => void;
+    onMarketingToggle: () => void;
+    onHandoverClick: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -33,8 +35,12 @@ export const TopBar: React.FC<TopBarProps> = ({
     isDarkMode,
     onDarkModeToggle,
     mockScenario,
-    onMockScenarioChange
+    onMockScenarioChange,
+    onMarketingToggle,
+    onHandoverClick
 }) => {
+    const { language, setLanguage, t } = useLanguage();
+
     return (
         <div className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-40">
             <div className="flex items-center gap-4">
@@ -137,16 +143,34 @@ export const TopBar: React.FC<TopBarProps> = ({
 
                     <div className="w-px h-3 bg-slate-800" />
 
-                    <select
-                        value={mockScenario}
-                        onChange={(e) => onMockScenarioChange(e.target.value as MockScenario)}
-                        className="bg-transparent text-[10px] text-slate-400 outline-none cursor-pointer hover:text-slate-200"
+                    {/* Language Switcher */}
+                    <div className="flex bg-slate-900 rounded-md p-0.5 border border-slate-700">
+                        {(['it', 'en'] as const).map((lang) => (
+                            <button
+                                key={lang}
+                                onClick={() => setLanguage(lang)}
+                                className={`px-2 py-1 text-[8px] font-black rounded transition-all ${language === lang
+                                    ? 'bg-indigo-600 text-white shadow'
+                                    : 'text-slate-500 hover:text-slate-300'
+                                    }`}
+                            >
+                                {lang.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="w-px h-3 bg-slate-800" />
+
+                    <button
+                        onClick={onHandoverClick}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition-all shadow-lg shadow-indigo-600/20"
+                        title="Richiedi Handover Progetto"
                     >
-                        <option value="STANDARD">Normal Data</option>
-                        <option value="CROWDED">High Density</option>
-                    </select>
+                        <Box size={14} />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Handover</span>
+                    </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

@@ -118,7 +118,7 @@ export default function InvitesPage() {
                                     </td>
                                     <td className="p-4">
                                         <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border ${invite.role === 'admin'
-                                            ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                                             : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
                                             }`}>
                                             {invite.role || 'user'}
@@ -133,7 +133,7 @@ export default function InvitesPage() {
                                         </span>
                                     </td>
                                     <td className="p-4 text-sm text-slate-400">
-                                        {format(new Date(invite.created_at), 'd MMM yyyy, HH:mm', { locale: it })}
+                                        {invite.created_at ? format(new Date(invite.created_at), 'd MMM yyyy, HH:mm', { locale: it }) : '-'}
                                     </td>
                                     <td className="p-4 text-sm text-slate-500 font-mono">
                                         {invite.used_by ? `${invite.used_by.substring(0, 8)}...` : '-'}

@@ -19,6 +19,19 @@ export type TeamConfig = {
         logoPosition?: 'top' | 'center' | 'bottom';
         glassIntensity?: number; // 0 to 20px
     };
+    contacts?: {
+        email?: string;
+        phone?: string;
+        website?: string;
+        address?: string;
+    };
+    socials?: {
+        facebook?: string;
+        instagram?: string;
+        twitter?: string;
+        youtube?: string;
+        tiktok?: string;
+    };
     sportOverrides?: {
         roles?: string[];
         scoring?: {
@@ -30,11 +43,38 @@ export type TeamConfig = {
             periods: number;
             durationMinutes: number;
         };
+        matchEvents?: string[]; // e.g. ['yellow_card', 'red_card', 'substitution', 'timeout']
     };
     modules: {
         liveScoring: boolean;
         payments: boolean;
         sponsors: boolean;
+    };
+    sponsors?: {
+        enabled: boolean;
+        layout: 'grid' | 'carousel' | 'list';
+        items: Array<{
+            id: string;
+            name: string;
+            logoUrl?: string;
+            link?: string;
+            tier: 'gold' | 'silver' | 'bronze';
+            enabled: boolean;
+        }>;
+    };
+    communication?: {
+        channels: {
+            email: boolean;
+            push: boolean;
+            sms: boolean;
+        };
+        templates: {
+            newsletter: {
+                headerImage?: string;
+                footerText?: string;
+                primaryColor?: string;
+            };
+        };
     };
 };
 
@@ -45,7 +85,15 @@ export const DEFAULT_TEAMS: TeamConfig[] = [
         slug: "4gears-calcio",
         sportType: "Calcio",
         colors: { primary: "#2563eb", secondary: "#0f172a" },
-        modules: { liveScoring: true, payments: true, sponsors: true }
+        modules: { liveScoring: true, payments: true, sponsors: true },
+        sponsors: {
+            enabled: true,
+            layout: 'grid',
+            items: [
+                { id: 's1', name: 'Nike', tier: 'gold', enabled: true, link: 'https://nike.com' },
+                { id: 's2', name: 'Adidas', tier: 'silver', enabled: true, link: 'https://adidas.com' }
+            ]
+        }
     },
     {
         id: "2",
