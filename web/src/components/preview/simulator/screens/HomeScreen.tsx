@@ -1,9 +1,9 @@
 import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
+import { PremiumCard } from '@/components/ui/PremiumCard';
 import { SimulatorHero } from '../SimulatorHero';
-import { Selectable } from '../../builder/VisualInspector';
+import { Selectable } from '@/components/builder/VisualInspector';
 import { Play, Music, Clock, MapPin, ChevronRight } from 'lucide-react';
 
 export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any; getIconProps: any }> = ({
@@ -38,7 +38,7 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
                 {/* Universal Menu Items in Home */}
                 {themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0 && (
                     <div className="grid grid-cols-4 gap-4 py-2">
-                        {themeConfig.header.universalMenuItems.map((item: any) => (
+                        {themeConfig.header.universalMenuItems?.map((item: any) => (
                             <div key={item.id} className="flex flex-col items-center gap-2">
                                 <div
                                     onClick={() => setPreviewPage(item.pageId)}

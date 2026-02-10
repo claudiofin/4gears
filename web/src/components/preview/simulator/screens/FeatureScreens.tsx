@@ -1,11 +1,11 @@
 import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
-import { TacticsBoard } from '../../ui/TacticsBoard';
-import { Selectable } from '../../builder/VisualInspector';
+import { PremiumCard } from '@/components/ui/PremiumCard';
+import { TacticsBoard } from '@/components/ui/TacticsBoard';
+import { Selectable } from '@/components/builder/VisualInspector';
 import { ShoppingBag, Plus, Clock, MapPin, ChevronRight, Newspaper, Calendar } from 'lucide-react';
-import { SmartCalendar } from '../../ui/SmartCalendar';
+import { SmartCalendar } from '@/components/ui/SmartCalendar';
 
 export const NewsScreen: React.FC<InteractiveScreenProps & { getIconProps: any }> = ({
     themeConfig,

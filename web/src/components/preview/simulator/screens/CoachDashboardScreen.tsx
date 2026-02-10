@@ -1,8 +1,8 @@
 import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
-import { TacticsBoard } from '../../ui/TacticsBoard';
+import { PremiumCard } from '@/components/ui/PremiumCard';
+import { TacticsBoard } from '@/components/ui/TacticsBoard';
 import { Gauge, Users, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 
 export const CoachDashboardScreen: React.FC<InteractiveScreenProps> = ({
@@ -77,7 +77,11 @@ export const CoachDashboardScreen: React.FC<InteractiveScreenProps> = ({
                 getOverride={getOverride}
             />
             <div className={`aspect-[4/3] rounded-[32px] overflow-hidden border shadow-xl ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                <TacticsBoard />
+                <TacticsBoard
+                    sportType={currentTeam.sportType}
+                    themeConfig={themeConfig}
+                    isDarkMode={isDarkMode}
+                />
             </div>
 
             <SectionHeader

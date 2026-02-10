@@ -1,5 +1,5 @@
 import React from 'react';
-import { Selectable } from '../../builder/VisualInspector';
+import { Selectable } from '@/components/builder/VisualInspector';
 import { ComponentMetadata } from '@/types/inspector';
 
 interface SectionHeaderProps {

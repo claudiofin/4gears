@@ -1,7 +1,7 @@
 import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
+import { PremiumCard } from '@/components/ui/PremiumCard';
 import { Award, Target, Zap, Heart, TrendingUp, ChevronRight } from 'lucide-react';
 
 export const AthleteDashboardScreen: React.FC<InteractiveScreenProps> = ({

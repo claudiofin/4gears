@@ -2,8 +2,8 @@ import React from 'react';
 import { Users, ShoppingBag, Plus, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
-import { Selectable } from '../../builder/VisualInspector';
+import { PremiumCard } from '@/components/ui/PremiumCard';
+import { Selectable } from '@/components/builder/VisualInspector';
 
 export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
     themeConfig,

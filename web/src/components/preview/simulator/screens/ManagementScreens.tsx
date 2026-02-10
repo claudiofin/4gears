@@ -1,9 +1,9 @@
 import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
-import { PremiumCard } from '../../ui/PremiumCard';
+import { PremiumCard } from '@/components/ui/PremiumCard';
 import { AlertTriangle, User, FileCheck, Download, Shield, FileText, Clock, Calendar } from 'lucide-react';
-import { Selectable } from '../../builder/VisualInspector';
+import { Selectable } from '@/components/builder/VisualInspector';
 
 export const SecretariatScreen: React.FC<InteractiveScreenProps> = ({
     themeConfig,
