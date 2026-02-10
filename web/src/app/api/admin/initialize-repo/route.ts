@@ -102,7 +102,29 @@ export async function POST(req: Request) {
             console.error('Failed to create config.json', await createConfigResponse.json());
         }
 
-        // 5. Update submission in database
+        // 5. Create SPECS.md in the repo (Functional Docs)
+        const { SPEC_TEMPLATE } = await import('@/constants/templates/project-specs');
+        const specsContent = SPEC_TEMPLATE(repoName, submission.config);
+        const createSpecsResponse = await fetch(`https://api.github.com/repos/${owner}/${name}/contents/SPECS.md`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${PAT}`,
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            },
+            body: JSON.stringify({
+                message: 'Initialize functional specifications',
+                content: Buffer.from(specsContent).toString('base64'),
+                branch: 'main'
+            })
+        });
+
+        if (!createSpecsResponse.ok) {
+            console.error('Failed to create SPECS.md', await createSpecsResponse.json());
+        }
+
+        // 6. Update submission in database
         const { error: updateError } = await supabase
             .from('submission_requests')
             .update({
