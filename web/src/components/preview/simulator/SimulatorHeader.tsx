@@ -75,16 +75,14 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
     // Dynamic height based on Home mode and Navigation Type
     const getHeaderHeight = () => {
-        // Slimmer base height
+        // Base height: status bar (44px) + logo row (66px)
         let height = 110;
 
+        // Add header tabs if enabled
         if (showHeaderTabs) height += 50;
-        if (enableUniversalMenu && !isHome) height += 45; // Only show persistent menu on subpages
 
-        // Add safe area if standalone
-        if (isStandalone) {
-            return `calc(${height}px + var(--safe-area-top, 0px))`;
-        }
+        // Add universal menu ONLY on subpages (not home)
+        if (enableUniversalMenu && !isHome) height += 50;
 
         return height;
     };
