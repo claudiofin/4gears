@@ -22,7 +22,7 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
     sportConfig
 }) => {
     return (
-        <div className="pb-32 space-y-6">
+        <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
             <SimulatorHero
                 themeConfig={themeConfig}
                 currentTeam={currentTeam}

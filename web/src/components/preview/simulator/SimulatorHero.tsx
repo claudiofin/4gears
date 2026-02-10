@@ -39,7 +39,7 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative pt-12 pb-8 px-6 -mx-4 -mt-4 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate"
+            className="relative pt-8 pb-8 px-6 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate"
         >
 
             {/* Dynamic Gradient Background */}
