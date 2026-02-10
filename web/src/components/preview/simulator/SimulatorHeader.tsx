@@ -136,7 +136,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     height: targetHeight,
                     minHeight: targetHeight
                 }}
-                className={`relative w-full pb-3 px-6 flex flex-col overflow-hidden backdrop-blur-md ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'}`}
+                className={`relative w-full px-6 flex flex-col justify-end overflow-hidden backdrop-blur-md ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'}`}
                 style={{
                     borderRadius: themeConfig.borderRadius === 'full' ? '0 0 40px 40px' : '0'
                 }}
@@ -269,7 +269,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
                 {/* Universal Menu - Persistent (Only on subpages) */}
                 {enableUniversalMenu && !isHome && themeConfig.header?.universalMenuItems && (
-                    <div className="relative z-10 my-1 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
+                    <div className="relative z-10 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
                         {themeConfig.header.universalMenuItems.map(itemId => {
                             let type = 'nav';
                             let id = itemId;
