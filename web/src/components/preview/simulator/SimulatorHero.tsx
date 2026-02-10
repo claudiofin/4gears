@@ -17,6 +17,7 @@ interface SimulatorHeroProps {
     onSelect: (metadata: ComponentMetadata) => void;
     getOverride: (id: string) => ComponentOverride;
     isDarkMode: boolean;
+    topPadding?: number;
 }
 
 export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
@@ -27,7 +28,8 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
     activeSelectionId,
     onSelect,
     getOverride,
-    isDarkMode
+    isDarkMode,
+    topPadding = 180
 }) => {
     const { getIconProps } = useSimulatorStyles(themeConfig, isDarkMode);
     const welcomeOverride = getOverride('welcome_text');
@@ -41,8 +43,11 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`relative pb-8 px-6 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate transition-all duration-300 ${isUnified ? 'pt-32 -mt-0' : '-mt-2 pt-4'
+            className={`relative pb-8 px-6 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate transition-all duration-300 ${isUnified ? 'pt-4' : '-mt-2 pt-4'
                 }`}
+            style={{
+                paddingTop: isUnified ? `${topPadding + 20}px` : undefined
+            }}
         >
 
             {/* Dynamic Gradient Background */}
@@ -53,8 +58,11 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
                 }}
             />
 
-            {/* Noise Texture */}
-            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none z-0"></div>
+            {/* Matching Gradient Overlay from Header */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 z-0" />
+
+            {/* Noise Texture - Matched with header opacity (20%) */}
+            <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none z-0 mix-blend-soft-light"></div>
 
             {/* Content */}
             <div className="relative z-10 flex justify-between items-end">

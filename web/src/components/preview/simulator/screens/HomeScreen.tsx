@@ -49,6 +49,7 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
                 onSelect={onSelect}
                 getOverride={getOverride}
                 sportConfig={sportConfig}
+                topPadding={topPaddingValue}
             />
 
             <div className="px-6 space-y-6">

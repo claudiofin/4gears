@@ -78,9 +78,6 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
         // Base height: status bar (44px) + logo row (66px)
         let height = 110;
 
-        // If unified, we might want a slightly more compact header row? 
-        // For now let's keep it consistent.
-
         // Add header tabs if enabled
         if (showHeaderTabs) height += 50;
 
@@ -91,7 +88,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             themeConfig.header?.universalMenuPlacement === 'header' || !isHome
         );
 
-        if (showUniversalMenuInHeader) height += 50;
+        if (showUniversalMenuInHeader) height += 70; // Increased to 70 to avoid truncation
 
         return height;
     };
@@ -138,7 +135,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             isInspectorActive={isInspectorActive}
             isSelected={activeSelectionId === 'header_main'}
             onSelect={onSelect}
-            className="absolute top-0 left-0 right-0 z-40 overflow-hidden"
+            className="absolute top-0 left-0 right-0 z-40"
             overrides={headerOverride}
             traits={['background', 'layout']}
         >
@@ -148,8 +145,8 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     height: targetHeight,
                     minHeight: targetHeight
                 }}
-                className={`relative w-full px-6 flex flex-col justify-end overflow-hidden transition-all duration-300 ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'
-                    } ${!isUnified ? 'backdrop-blur-md shadow-2xl' : ''}`}
+                className={`relative w-full px-6 flex flex-col justify-end transition-all duration-300 ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'
+                    } ${!isUnified ? 'backdrop-blur-md shadow-2xl overflow-hidden' : ''}`}
                 style={{
                     borderRadius: (themeConfig.borderRadius === 'full' && !isUnified) ? '0 0 40px 40px' : '0'
                 }}
@@ -281,7 +278,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
                 {/* Universal Menu - Persistent */}
                 {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
-                    <div className="relative z-10 pb-4 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto touch-pan-x">
+                    <div className="relative z-10 pb-8 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto touch-pan-x">
                         <AnimatePresence mode="popLayout">
                             <motion.div className="flex items-center gap-2 px-1 min-w-max">
                                 {themeConfig.header.universalMenuItems.map(itemId => {

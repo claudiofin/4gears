@@ -80,10 +80,14 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
             let height = 110;
 
             if (showHeaderTabs) height += 50;
-            // Persistent universal menu is only in header when NOT on home
-            if (themeConfig.header?.enableUniversalMenu && !isHome) {
-                height += 50;
-            }
+
+            // Sync with SimulatorHeader.tsx logic
+            const enableUniversalMenu = themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0;
+            const showUniversalMenuInHeader = enableUniversalMenu && (
+                themeConfig.header?.universalMenuPlacement === 'header' || !isHome
+            );
+
+            if (showUniversalMenuInHeader) height += 70;
 
             if (isStandalone) height += 44;
             return height;
