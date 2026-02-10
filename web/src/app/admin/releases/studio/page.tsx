@@ -8,12 +8,25 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 
 export default function ScreenshotStudio() {
+    const searchParams = useSearchParams();
+    const projectId = searchParams.get('projectId');
+    const [project, setProject] = useState<any>(null);
     const [activeTab, setActiveTab] = useState('design');
     const [selectedDevice, setSelectedDevice] = useState('iphone15');
     const [isSaving, setIsSaving] = useState(false);
+
+    // Fetch project if projectId is present
+    React.useEffect(() => {
+        if (projectId && projectId !== 'all') {
+            fetch(`/api/admin/kanban/project?id=${projectId}`)
+                .then(res => res.json())
+                .then(data => setProject(data.project))
+                .catch(err => console.error('Error fetching project:', err));
+        }
+    }, [projectId]);
 
     // In a real app, this would come from the project assets
     const [screenshots, setScreenshots] = useState([
@@ -39,7 +52,9 @@ export default function ScreenshotStudio() {
                         <ChevronLeft size={20} />
                     </Link>
                     <div>
-                        <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Studio Screenshots</h1>
+                        <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">
+                            {project ? `${project.name} - Studio` : 'Studio Screenshots'}
+                        </h1>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Editor Asset App Store & Play Store</p>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { KanbanProject } from '@/types/database';
-import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2, Loader2, Calculator, StickyNote } from 'lucide-react';
+import { ArrowLeft, Github, Calendar, Settings, Archive, CheckCircle2, Loader2, Calculator, StickyNote, Smartphone, Palette } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { KanbanBoard } from '@/components/admin/KanbanBoard';
@@ -199,6 +199,20 @@ export default function ProjectKanbanPage() {
                         <div className="flex items-center gap-2">
                             {project.status === 'active' && (
                                 <>
+                                    <button
+                                        onClick={() => router.push(`/admin/releases?projectId=${projectId}`)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 rounded-lg hover:bg-indigo-600 hover:text-white transition-all text-sm font-medium"
+                                    >
+                                        <Smartphone className="w-4 h-4" />
+                                        Gestisci Release
+                                    </button>
+                                    <button
+                                        onClick={() => router.push(`/admin/releases/studio?projectId=${projectId}`)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-sm font-medium"
+                                    >
+                                        <Palette className="w-4 h-4" />
+                                        Screenshot Studio
+                                    </button>
                                     <button
                                         onClick={handleComplete}
                                         className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"

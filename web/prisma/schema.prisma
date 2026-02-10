@@ -130,10 +130,14 @@ model Notification {
 
 model ApplicationRelease {
   id            String   @id @default(cuid())
-  projectName   String
+  projectName   String   @map("project_name")
   version       String
   platform      String   // ios, android
   status        String   // released, processing, pending, rejected
-  createdAt     DateTime @default(now())
+  createdAt     DateTime @default(now()) @map("created_at")
   assets        Json     // { screenshots: number, banner: boolean }
+  projectId     String?  @map("project_id")
+  submissionId  String?  @map("submission_id")
+
+  @@map("application_releases")
 }

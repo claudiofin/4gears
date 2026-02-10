@@ -24,32 +24,53 @@ interface ApplicationRelease {
     status: 'completed' | 'pending' | 'rejected' | 'processing';
     assets: ReleaseAsset;
     created_at: string;
+    project_id?: string;
+    submission_id?: string;
 }
 
+import { useSearchParams } from 'next/navigation';
+
 export default function AdminReleasesPage() {
+    const searchParams = useSearchParams();
+    const urlProjectId = searchParams.get('projectId');
+
     const [releases, setReleases] = useState<ApplicationRelease[]>([]);
+    const [projects, setProjects] = useState<any[]>([]); // Added for projects
+    const [selectedProjectId, setSelectedProjectId] = useState<string>(urlProjectId || 'all'); // Modified for project filter
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [platformFilter, setPlatformFilter] = useState<'all' | 'iOS' | 'Android'>('all');
 
-    useEffect(() => {
-        const fetchReleases = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('/api/admin/releases');
-                const data = await response.json();
-                if (data.releases) {
-                    setReleases(data.releases);
-                }
-            } catch (error) {
-                console.error('Error fetching releases:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            // Fetch releases
+            const releasesUrl = selectedProjectId !== 'all'
+                ? `/api/admin/releases?projectId=${selectedProjectId}`
+                : '/api/admin/releases';
 
-        fetchReleases();
-    }, []);
+            const [releasesRes, projectsRes] = await Promise.all([
+                fetch(releasesUrl),
+                fetch('/api/admin/kanban/project')
+            ]);
+
+            const [releasesData, projectsData] = await Promise.all([
+                releasesRes.json(),
+                projectsRes.json()
+            ]);
+
+            if (releasesData.releases) setReleases(releasesData.releases);
+            if (projectsData.projects) setProjects(projectsData.projects);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [selectedProjectId]);
 
     const filteredReleases = releases.filter(rel => {
         const matchesPlatform = platformFilter === 'all' || rel.platform === platformFilter;
@@ -77,7 +98,7 @@ export default function AdminReleasesPage() {
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Main Header */}
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-2">
+                <div className="space-y-4">
                     <div className="flex items-center gap-2 text-slate-500 mb-1">
                         <Link href="/admin" className="hover:text-white transition-colors">Admin</Link>
                         <span>/</span>
@@ -86,7 +107,23 @@ export default function AdminReleasesPage() {
                     <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic leading-none">
                         Release Coordination
                     </h1>
-                    <p className="text-slate-400 font-medium">Gestione globale delle versioni e distribuzione asset marketing.</p>
+
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2">
+                            <Layout size={14} className="text-indigo-400" />
+                            <select
+                                value={selectedProjectId}
+                                onChange={(e) => setSelectedProjectId(e.target.value)}
+                                className="bg-transparent text-xs font-bold text-white outline-none min-w-[200px]"
+                            >
+                                <option value="all">Tutti i Progetti</option>
+                                {projects.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <p className="text-slate-400 font-medium text-sm">Gestione globale delle versioni e distribuzione asset marketing.</p>
+                    </div>
                 </div>
 
                 <div className="flex gap-3">
@@ -222,12 +259,12 @@ export default function AdminReleasesPage() {
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-2 h-2 rounded-full animate-pulse ${release.status === 'completed' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                                                        release.status === 'processing' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' :
-                                                            'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                                                    release.status === 'processing' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' :
+                                                        'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
                                                     }`} />
                                                 <span className={`text-[10px] font-black uppercase tracking-widest ${release.status === 'completed' ? 'text-emerald-400' :
-                                                        release.status === 'processing' ? 'text-blue-400' :
-                                                            'text-amber-400'
+                                                    release.status === 'processing' ? 'text-blue-400' :
+                                                        'text-amber-400'
                                                     }`}>
                                                     {release.status}
                                                 </span>
@@ -258,9 +295,8 @@ export default function AdminReleasesPage() {
                     </div>
                 </div>
 
-                {/* Right: Studio & Automation Cards */}
                 <div className="lg:col-span-4 space-y-6">
-                    <Link href="/admin/releases/studio" className="block group">
+                    <Link href={`/admin/releases/studio?projectId=${selectedProjectId}`} className="block group">
                         <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-500/20 h-full min-h-[300px] flex flex-col justify-between border border-white/10 hover:scale-[1.01] transition-transform">
                             <div className="absolute top-0 right-0 p-8 opacity-20 transform group-hover:scale-110 group-hover:rotate-12 transition-all">
                                 <Palette size={120} strokeWidth={1} />
@@ -271,7 +307,7 @@ export default function AdminReleasesPage() {
                                     <Smartphone size={28} className="text-white" />
                                 </div>
                                 <h3 className="text-3xl font-black uppercase italic italic leading-none tracking-tighter">
-                                    Screenshot Editor
+                                    {selectedProjectId !== 'all' ? `${projects.find(p => p.id === selectedProjectId)?.name || 'Project'} Assets` : 'Screenshot Editor'}
                                 </h3>
                                 <p className="text-indigo-100/70 text-sm font-medium leading-relaxed max-w-[200px]">
                                     Progetta asset grafici per App Store e Play Store in pochi secondi.

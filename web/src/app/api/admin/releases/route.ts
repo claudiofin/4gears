@@ -8,11 +8,22 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 export async function GET(request: NextRequest) {
     try {
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+        const searchParams = request.nextUrl.searchParams;
+        const projectId = searchParams.get('projectId');
+        const submissionId = searchParams.get('submissionId');
 
-        const { data: releases, error } = await supabase
+        let query = supabase
             .from('application_releases')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('*');
+
+        if (projectId) {
+            query = query.eq('project_id', projectId);
+        }
+        if (submissionId) {
+            query = query.eq('submission_id', submissionId);
+        }
+
+        const { data: releases, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
 
@@ -31,7 +42,7 @@ export async function POST(request: NextRequest) {
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
         const body = await request.json();
 
-        const { projectName, version, platform, status, assets } = body;
+        const { projectName, version, platform, status, assets, projectId, submissionId } = body;
 
         const { data: release, error } = await supabase
             .from('application_releases')
@@ -40,7 +51,9 @@ export async function POST(request: NextRequest) {
                 version,
                 platform,
                 status: status || 'pending',
-                assets: assets || { screenshots: 0, banner: false }
+                assets: assets || { screenshots: 0, banner: false },
+                project_id: projectId,
+                submission_id: submissionId
             })
             .select()
             .single();

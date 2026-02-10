@@ -715,6 +715,8 @@ export type Database = {
                     status: string
                     updated_at: string
                     version: string
+                    project_id: string | null
+                    submission_id: string | null
                 }
                 Insert: {
                     assets?: Json
@@ -725,6 +727,8 @@ export type Database = {
                     status?: string
                     updated_at?: string
                     version: string
+                    project_id?: string | null
+                    submission_id?: string | null
                 }
                 Update: {
                     assets?: Json
@@ -735,8 +739,25 @@ export type Database = {
                     status?: string
                     updated_at?: string
                     version?: string
+                    project_id?: string | null
+                    submission_id?: string | null
                 }
-                Relationships: []
+                Relationships: [
+                    {
+                        foreignKeyName: "application_releases_project_id_fkey"
+                        columns: ["project_id"]
+                        isOneToOne: false
+                        referencedRelation: "kanban_projects"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "application_releases_submission_id_fkey"
+                        columns: ["submission_id"]
+                        isOneToOne: false
+                        referencedRelation: "submission_requests"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
         }
         Views: {
