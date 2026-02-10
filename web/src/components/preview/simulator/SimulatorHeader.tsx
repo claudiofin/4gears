@@ -80,8 +80,8 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
     // Dynamic height based on mode
     const getHeaderHeight = () => {
         if (isUnifiedHome) {
-            // Mega Header: StatusBar (44) + LogoRow (66) + Menu (70) + Hero (160)
-            return 340;
+            // Mega Header: compact layout - pt(56) + Logo(48) + Menu(44) + Hero(72) = ~220
+            return 260;
         }
 
         // Standard logic
@@ -239,11 +239,11 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                         </div>
                     </div>
 
-                    <div className="flex-1" />
+
 
                     {/* Universal Menu Row - Persistent */}
                     {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
-                        <div className="relative z-10 pb-4 pt-4 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
+                        <div className="relative z-10 pb-2 pt-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
                             <AnimatePresence mode="popLayout">
                                 <motion.div className="flex items-center gap-2 px-0 min-w-max">
                                     {themeConfig.header.universalMenuItems.map(itemId => {
@@ -323,7 +323,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
                     {/* UNIFIED HERO CONTENT (Only here if isUnifiedHome) */}
                     {isUnifiedHome && (
-                        <div className="relative z-10 pb-10 pt-2 px-0">
+                        <div className="relative z-10 pb-4 pt-1 px-0">
                             <Selectable
                                 id="header_welcome"
                                 type="text"
