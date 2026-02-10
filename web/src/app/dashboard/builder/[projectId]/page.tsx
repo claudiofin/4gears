@@ -23,7 +23,8 @@ import {
     generateSponsors,
     generateHistory,
     generateNotifications,
-    generateConversations
+    generateConversations,
+    generateAdminData
 } from '@/constants/sports';
 import { ArrowLeft, Save, Send, Loader2, Check, AlertCircle, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,8 +55,8 @@ export default function BuilderPage() {
     const [viewMode, setViewMode] = useState<ViewMode>('USER');
     const [notchStyle, setNotchStyle] = useState<NotchStyle>('STANDARD');
     const [deviceType, setDeviceType] = useState<'IPHONE' | 'ANDROID'>('IPHONE');
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const [mockScenario, setMockScenario] = useState<MockScenario>('STANDARD');
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [mockScenario, setMockScenario] = useState<MockScenario>('CROWDED');
     const [isMarketingOpen, setIsMarketingOpen] = useState(false);
     const [marketingConfig, setMarketingConfig] = useState({
         quote: 'Il Tuo Team, La Tua App.',
@@ -96,15 +97,15 @@ export default function BuilderPage() {
             { id: 'home', label: 'Home', icon: 'Layout', enabled: true, order: 0 },
             { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: true, order: 1 },
             { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 2 },
-            { id: 'roster', label: 'Roster', icon: 'Users', enabled: false, order: 3 },
-            { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: false, order: 4 },
+            { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 3 },
+            { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: true, order: 4 },
             { id: 'video', label: 'Video Analisi', icon: 'Video', enabled: false, order: 5 },
             { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 6 },
-            { id: 'chat', label: 'Team Chat', icon: 'MessageSquare', enabled: false, order: 7 },
+            { id: 'chat', label: 'Team Chat', icon: 'MessageSquare', enabled: true, order: 7 },
             { id: 'lineup', label: 'Formazioni', icon: 'Layout', enabled: false, order: 8 },
-            { id: 'sponsors', label: 'Sponsor & Partner', icon: 'Award', enabled: false, order: 9 },
+            { id: 'sponsors', label: 'Sponsor & Partner', icon: 'Award', enabled: true, order: 9 },
             { id: 'chants', label: 'Cori & Tifoseria', icon: 'Music', enabled: false, order: 10 },
-            { id: 'staff', label: 'Staff Tecnico', icon: 'Users', enabled: false, order: 11 },
+            { id: 'staff', label: 'Staff Tecnico', icon: 'Users', enabled: true, order: 11 },
             { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 12 },
         ],
         componentOverrides: {}
@@ -132,6 +133,7 @@ export default function BuilderPage() {
     const [mockHistory] = useState<any>(generateHistory());
     const [mockNotifications, setMockNotifications] = useState<any[]>([]);
     const [mockConversations, setMockConversations] = useState<any[]>([]);
+    const [mockAdminData, setMockAdminData] = useState<any>(null);
 
     // Build current config for saving
     const currentConfig = {
@@ -168,6 +170,9 @@ export default function BuilderPage() {
         setMockEvents(generateEvents(currentTeam.sportType, isCrowded));
         setMockNotifications(generateNotifications(currentTeam.sportType, isCrowded));
         setMockConversations(generateConversations(currentTeam.sportType));
+        if (typeof generateAdminData === 'function') {
+            setMockAdminData(generateAdminData());
+        }
     }, [currentTeam.sportType, mockScenario]);
 
     // Handle View Mode changes for special screens
@@ -182,6 +187,15 @@ export default function BuilderPage() {
             setPreviewPage('home');
         }
     }, [viewMode]);
+
+    // Automatically switch to ADMIN view mode when Persona is ADMIN
+    useEffect(() => {
+        if (userPersona === 'ADMIN') {
+            setViewMode('ADMIN');
+        } else if (viewMode === 'ADMIN') {
+            setViewMode('USER');
+        }
+    }, [userPersona]);
 
     const loadProject = async () => {
         if (!user) return;
@@ -535,6 +549,7 @@ export default function BuilderPage() {
                                         history: mockHistory,
                                         notifications: mockNotifications,
                                         conversations: mockConversations,
+                                        adminData: mockAdminData,
                                         activeChat,
                                         cart,
                                     }}

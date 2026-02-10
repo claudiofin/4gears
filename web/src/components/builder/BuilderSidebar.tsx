@@ -73,7 +73,7 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     // Context-Aware Render: Splash
     if (viewMode === 'SPLASH') {
         return (
-            <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
+            <div className="w-[420px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
                 <div className="p-4 border-b border-slate-800 bg-slate-950">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
@@ -95,7 +95,7 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     // Context-Aware Render: Login
     if (viewMode === 'LOGIN') {
         return (
-            <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
+            <div className="w-[420px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
                 <div className="p-4 border-b border-slate-800 bg-slate-950">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-pink-600 flex items-center justify-center">
@@ -115,7 +115,7 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
     }
 
     return (
-        <div className="w-[360px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
+        <div className="w-[420px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shadow-2xl h-full">
             {/* Header */}
             <div className="p-4 border-b border-slate-800 bg-slate-950">
                 <div className="flex items-center gap-2 mb-4">
@@ -129,7 +129,7 @@ export const BuilderSidebar: React.FC<BuilderSidebarProps> = ({
                 </div>
 
                 {/* Editor Tabs */}
-                <div className="flex p-1 bg-slate-800/50 rounded-lg">
+                <div className="flex p-1 bg-slate-800/50 rounded-lg overflow-x-auto hide-scrollbar gap-0.5">
                     <button
                         onClick={() => setActiveTab('THEME')}
                         className={`flex-1 py-2 rounded-md text-[10px] font-bold flex flex-col items-center gap-1 transition-all ${activeTab === 'THEME' ? 'bg-slate-700 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}

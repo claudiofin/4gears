@@ -91,12 +91,12 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
             case 'glass':
             case 'modern':
                 // Premium floating pill
-                return `mx-4 mb-4 flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/10 transition-all duration-500`;
+                return `mx-4 mb-[calc(1rem+10px)] flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/10 transition-all duration-500`;
             case 'liquid':
                 // Liquid style - squircle shape
-                return `mx-4 mb-6 flex items-center justify-around px-4 py-3 rounded-[2rem] border shadow-[0_-20px_60px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-slate-900/80 border-slate-700/50' : 'bg-white/90 border-slate-200/50'} backdrop-blur-2xl`;
+                return `mx-4 mb-[calc(1.5rem+10px)] flex items-center justify-around px-4 py-3 rounded-[2rem] border shadow-[0_-20px_60px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-slate-900/80 border-slate-700/50' : 'bg-white/90 border-slate-200/50'} backdrop-blur-2xl`;
             default:
-                return `mx-4 mb-4 flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-t transition-all duration-500`;
+                return `mx-4 mb-[calc(1rem+10px)] flex items-center justify-around px-4 py-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-t transition-all duration-500`;
         }
     };
 

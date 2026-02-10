@@ -70,7 +70,7 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                             </span>
                         </Selectable>
                     </div>
-                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_fans')?.text || '45.2K'}</div>
+                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_fans')?.text || mockData?.adminData?.stats?.fans || '45.2K'}</div>
                     <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
                         <Plus size={10} /> +12% VS IERI
                     </div>
@@ -95,7 +95,7 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                         </div>
                         <span className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>Entrate</span>
                     </div>
-                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_revenue')?.text || '€8.2K'}</div>
+                    <div className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{getOverride('admin_kpi_revenue')?.text || mockData?.adminData?.stats?.revenue || '€8.2K'}</div>
                     <div className="text-emerald-500 text-[9px] font-black flex items-center gap-1 mt-2 tracking-wide">
                         <Plus size={10} /> +5% VS TARGET
                     </div>
@@ -121,23 +121,23 @@ export const AdminDashboardScreen: React.FC<InteractiveScreenProps> = ({
                     </button>
                 </div>
                 <div className="space-y-2">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isDarkMode ? 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'} `}>
+                    {(mockData?.adminData?.orders || [1, 2, 3]).map((order: any, i: number) => (
+                        <div key={order.id || i} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isDarkMode ? 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'} `}>
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">
-                                    #{1000 + i}
+                                    #{order.id || 1000 + i}
                                 </div>
                                 <div>
-                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>Cliente #{i}</div>
+                                    <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{order.customer || `Cliente #${i}`}</div>
                                     <div className="flex items-center gap-2 mt-0.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">In elaborazione</span>
+                                        <div className={`w-1.5 h-1.5 rounded-full ${order.status === 'Spedito' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">{order.status || 'In elaborazione'}</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>€{(45.50 * i).toFixed(2)}</div>
-                                <div className="text-[8px] text-slate-500 font-medium">Oggi, 12:45</div>
+                                <div className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{order.amount || `€${(45.50 * i).toFixed(2)}`}</div>
+                                <div className="text-[8px] text-slate-500 font-medium">{order.time || 'Oggi, 12:45'}</div>
                             </div>
                         </div>
                     ))}

@@ -304,3 +304,20 @@ export const generateConversations = (sport: SportType) => {
         }
     ];
 };
+export const generateAdminData = () => {
+    return {
+        stats: {
+            fans: '48.2K',
+            revenue: '€12.4K',
+            activeUsers: '1.2K',
+            conversions: '3.4%'
+        },
+        orders: [
+            { id: 1024, customer: 'Marco Rossi', amount: '€89.90', status: 'In elaborazione', time: '10 min fa' },
+            { id: 1023, customer: 'Giuseppe Verdi', amount: '€24.50', status: 'Spedito', time: '1 ora fa' },
+            { id: 1022, customer: 'Anna Neri', amount: '€120.00', status: 'Consegnato', time: '3 ore fa' },
+            { id: 1021, customer: 'Luca Bianchi', amount: '€45.00', status: 'Pagato', time: '5 ore fa' },
+            { id: 1020, customer: 'Silvia Gialli', amount: '€19.99', status: 'In elaborazione', time: '8 ore fa' }
+        ]
+    };
+};
