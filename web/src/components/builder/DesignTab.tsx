@@ -269,8 +269,8 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
 
                 <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl">
                     <div>
-                        <div className="text-xs font-bold text-slate-200 mb-0.5">Abilita Menu Header</div>
-                        <div className="text-[9px] text-slate-500">Mostra menu di accesso rapido sotto la tagline</div>
+                        <div className="text-xs font-bold text-slate-200 mb-0.5">Abilita Menu Rapido</div>
+                        <div className="text-[9px] text-slate-500">Mostra scorciatoie per navigazione e feature</div>
                     </div>
                     <button
                         onClick={() => onUpdate({
@@ -279,7 +279,9 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                 ...config.header,
                                 showNotifications: config.header?.showNotifications ?? true,
                                 showSupport: config.header?.showSupport ?? true,
-                                enableUniversalMenu: !config.header?.enableUniversalMenu
+                                enableUniversalMenu: !config.header?.enableUniversalMenu,
+                                universalMenuPlacement: config.header?.universalMenuPlacement || 'header',
+                                headerStyle: config.header?.headerStyle || 'minimal'
                             }
                         })}
                         className={`w-8 h-4 rounded-full relative transition-colors ${config.header?.enableUniversalMenu ? 'bg-indigo-500' : 'bg-slate-600'}`}
@@ -289,92 +291,129 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                 </div>
 
                 {config.header?.enableUniversalMenu && (
-                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
-                        <div className="text-[10px] text-slate-400 font-medium mb-3">
-                            Seleziona gli elementi da mostrare nel menu universale:
-                            {(!config.header?.universalMenuItems || config.header.universalMenuItems.length === 0) && (
-                                <span className="block mt-1 text-amber-400 text-[9px]">
-                                    ⚠️ Seleziona almeno un elemento per vedere il menu nell'header
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Navigation Items */}
-                        <div className="space-y-2">
-                            <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Navigation</div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {config.navigation.filter(item => item.enabled).map(item => {
-                                    const itemId = `nav:${item.id}`;
-                                    const isSelected = config.header?.universalMenuItems?.includes(itemId) ?? false;
-                                    return (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {/* Placement Selector */}
+                        <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Posizionamento Menu</label>
+                                <div className="grid grid-cols-2 gap-2 bg-slate-800/50 p-1 rounded-xl">
+                                    {[
+                                        { id: 'header', label: 'In Header' },
+                                        { id: 'body', label: 'Home & Menu' }
+                                    ].map(opt => (
                                         <button
-                                            key={itemId}
-                                            onClick={() => {
-                                                const current = config.header?.universalMenuItems || [];
-                                                const updated = isSelected
-                                                    ? current.filter(id => id !== itemId)
-                                                    : [...current, itemId];
-                                                onUpdate({
-                                                    ...config,
-                                                    header: {
-                                                        ...config.header,
-                                                        showNotifications: config.header?.showNotifications ?? true,
-                                                        showSupport: config.header?.showSupport ?? true,
-                                                        enableUniversalMenu: true,
-                                                        universalMenuItems: updated
-                                                    }
-                                                });
-                                            }}
-                                            className={`p-2.5 rounded-xl text-[10px] font-bold transition-all border ${isSelected
-                                                ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-300'
-                                                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
+                                            key={opt.id}
+                                            onClick={() => onUpdate({
+                                                ...config,
+                                                header: {
+                                                    ...config.header!,
+                                                    universalMenuPlacement: opt.id as any
+                                                }
+                                            })}
+                                            className={`py-2 text-[10px] font-bold rounded-lg transition-all ${((config.header?.universalMenuPlacement || 'header') === opt.id)
+                                                ? 'bg-slate-700 text-white shadow-sm'
+                                                : 'text-slate-500 hover:text-slate-300'
                                                 }`}
                                         >
-                                            {item.label}
+                                            {opt.label}
                                         </button>
-                                    );
-                                })}
+                                    ))}
+                                </div>
+                                <p className="text-[9px] text-slate-500 italic px-1">
+                                    {config.header?.universalMenuPlacement === 'header'
+                                        ? 'Il menu sarà una barra orizzontale persistente nell\'header.'
+                                        : 'Il menu apparirà come widget circolare nella Home e nel Menu Tab.'}
+                                </p>
                             </div>
-                        </div>
 
-                        {/* Features */}
-                        <div className="space-y-2">
-                            <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Features</div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {Object.values(featureFlags).filter(feature => feature.enabled).map(feature => {
-                                    const itemId = `feature:${feature.id}`;
-                                    const isSelected = config.header?.universalMenuItems?.includes(itemId) ?? false;
-                                    return (
-                                        <button
-                                            key={itemId}
-                                            onClick={() => {
-                                                const current = config.header?.universalMenuItems || [];
-                                                const updated = isSelected
-                                                    ? current.filter(id => id !== itemId)
-                                                    : [...current, itemId];
-                                                onUpdate({
-                                                    ...config,
-                                                    header: {
-                                                        ...config.header,
-                                                        showNotifications: config.header?.showNotifications ?? true,
-                                                        showSupport: config.header?.showSupport ?? true,
-                                                        enableUniversalMenu: true,
-                                                        universalMenuItems: updated
-                                                    }
-                                                });
-                                            }}
-                                            className={`p-2.5 rounded-xl text-[10px] font-bold transition-all border flex flex-col items-start ${isSelected
-                                                ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-300'
-                                                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
-                                                }`}
-                                        >
-                                            <span>{feature.label}</span>
-                                            <span className={`text-[8px] mt-0.5 ${feature.minTier === 'FREE' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                                                {feature.minTier}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
+                            <div className="h-px bg-slate-800/50" />
+
+                            <div className="text-[10px] text-slate-400 font-medium mb-3">
+                                Seleziona gli elementi da mostrare:
+                                {(!config.header?.universalMenuItems || config.header.universalMenuItems.length === 0) && (
+                                    <span className="block mt-1 text-amber-400 text-[9px]">
+                                        ⚠️ Seleziona almeno un elemento per attivare il menu
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Navigation Items */}
+                            <div className="space-y-2">
+                                <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Navigation</div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {config.navigation.filter(item => item.enabled).map(item => {
+                                        const itemId = `nav:${item.id}`;
+                                        const isSelected = config.header?.universalMenuItems?.includes(itemId) ?? false;
+                                        return (
+                                            <button
+                                                key={itemId}
+                                                onClick={() => {
+                                                    const current = config.header?.universalMenuItems || [];
+                                                    const updated = isSelected
+                                                        ? current.filter(id => id !== itemId)
+                                                        : [...current, itemId];
+                                                    onUpdate({
+                                                        ...config,
+                                                        header: {
+                                                            ...config.header,
+                                                            showNotifications: config.header?.showNotifications ?? true,
+                                                            showSupport: config.header?.showSupport ?? true,
+                                                            enableUniversalMenu: true,
+                                                            universalMenuItems: updated
+                                                        }
+                                                    });
+                                                }}
+                                                className={`p-2.5 rounded-xl text-[10px] font-bold transition-all border ${isSelected
+                                                    ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-300'
+                                                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
+                                                    }`}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Features */}
+                            <div className="space-y-2">
+                                <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Features</div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {Object.values(featureFlags).filter(feature => feature.enabled).map(feature => {
+                                        const itemId = `feature:${feature.id}`;
+                                        const isSelected = config.header?.universalMenuItems?.includes(itemId) ?? false;
+                                        return (
+                                            <button
+                                                key={itemId}
+                                                onClick={() => {
+                                                    const current = config.header?.universalMenuItems || [];
+                                                    const updated = isSelected
+                                                        ? current.filter(id => id !== itemId)
+                                                        : [...current, itemId];
+                                                    onUpdate({
+                                                        ...config,
+                                                        header: {
+                                                            ...config.header,
+                                                            showNotifications: config.header?.showNotifications ?? true,
+                                                            showSupport: config.header?.showSupport ?? true,
+                                                            enableUniversalMenu: true,
+                                                            universalMenuItems: updated
+                                                        }
+                                                    });
+                                                }}
+                                                className={`p-2.5 rounded-xl text-[10px] font-bold transition-all border flex flex-col items-start ${isSelected
+                                                    ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-300'
+                                                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
+                                                    }`}
+                                            >
+                                                <span>{feature.label}</span>
+                                                <span className={`text-[8px] mt-0.5 ${feature.minTier === 'FREE' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                                    {feature.minTier}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -390,8 +429,38 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                     Header Styling
                 </h3>
 
-                <div className="space-y-3 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
-                    <div className="text-[10px] text-slate-400 font-medium mb-2">Personalizza il background dell'header</div>
+                <div className="space-y-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                    <div className="space-y-2">
+                        <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Design Header</label>
+                        <div className="grid grid-cols-2 gap-2 bg-slate-800/50 p-1 rounded-xl">
+                            {[
+                                { id: 'minimal', label: 'Minimal (Top Bar)' },
+                                { id: 'unified', label: 'Unified (Hero + Bar)' }
+                            ].map(opt => (
+                                <button
+                                    key={opt.id}
+                                    onClick={() => onUpdate({
+                                        ...config,
+                                        header: {
+                                            ...config.header!,
+                                            headerStyle: opt.id as any
+                                        }
+                                    })}
+                                    className={`py-3 px-2 text-[10px] font-bold rounded-lg transition-all flex flex-col items-center gap-1 ${((config.header?.headerStyle || 'minimal') === opt.id)
+                                        ? 'bg-slate-700 text-white shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300'
+                                        }`}
+                                >
+                                    <span>{opt.label}</span>
+                                    {opt.id === 'unified' && <span className="text-[8px] opacity-70 font-normal italic">Best for Home</span>}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-slate-800/50 my-2" />
+
+                    <div className="text-[10px] text-slate-400 font-medium mb-1">Personalizza il background</div>
 
                     {/* Gradient Colors */}
                     <div className="grid grid-cols-2 gap-3">
@@ -427,7 +496,7 @@ export const DesignTab: React.FC<DesignTabProps> = ({ config, onUpdate, featureF
                                             customGradientStart: e.target.value
                                         }
                                     })}
-                                    placeholder="Auto (Team Color)"
+                                    placeholder="Auto (Team)"
                                     className="flex-1 bg-transparent text-[9px] text-slate-300 font-mono outline-none"
                                 />
                             </div>

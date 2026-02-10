@@ -36,8 +36,10 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
     sportConfig,
     featureFlags
 }) => {
+    const isUnified = themeConfig.header?.headerStyle === 'unified';
+
     return (
-        <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
+        <div className="pb-32 space-y-6" style={{ paddingTop: isUnified ? '0px' : `${topPaddingValue}px` }}>
             <SimulatorHero
                 themeConfig={themeConfig}
                 currentTeam={currentTeam}
@@ -50,73 +52,75 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
             />
 
             <div className="px-6 space-y-6">
-                {/* Universal Menu Items in Home */}
-                {themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0 && (
-                    <div className="grid grid-cols-4 gap-4 py-2">
-                        {themeConfig.header.universalMenuItems?.map((itemId: any) => {
-                            let type = 'nav';
-                            let id = itemId;
-                            let label = '';
-                            let iconName = 'Layout';
-                            let pageId = '';
+                {/* Universal Menu Items in Home (Widget Mode) */}
+                {themeConfig.header?.enableUniversalMenu &&
+                    themeConfig.header?.universalMenuPlacement === 'body' &&
+                    (themeConfig.header?.universalMenuItems?.length ?? 0) > 0 && (
+                        <div className="grid grid-cols-4 gap-4 py-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {themeConfig.header.universalMenuItems?.map((itemId: any) => {
+                                let type = 'nav';
+                                let id = itemId;
+                                let label = '';
+                                let iconName = 'Layout';
+                                let pageId = '';
 
-                            if (typeof itemId === 'string' && itemId.includes(':')) {
-                                const parts = itemId.split(':');
-                                type = parts[0];
-                                id = parts[1];
-                            }
+                                if (typeof itemId === 'string' && itemId.includes(':')) {
+                                    const parts = itemId.split(':');
+                                    type = parts[0];
+                                    id = parts[1];
+                                }
 
-                            if (type === 'nav') {
-                                const navItem = (themeConfig.navigation || []).find(n => n.id === id);
-                                if (!navItem) return null;
-                                label = navItem.label;
-                                iconName = navItem.icon;
-                                pageId = navItem.id;
-                            } else {
-                                const feature = Object.values(featureFlags || {}).find((f: any) => f && typeof f === 'object' && f.id === id);
-                                if (!feature) return null;
-                                label = (feature as any).label;
-                                const featureIconMap: Record<string, string> = {
-                                    news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
-                                    events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
-                                    sponsors: 'Shield', chants: 'Music', staff: 'Users'
-                                };
-                                iconName = featureIconMap[id] || 'Layout';
-                                pageId = id;
-                            }
+                                if (type === 'nav') {
+                                    const navItem = (themeConfig.navigation || []).find(n => n.id === id);
+                                    if (!navItem) return null;
+                                    label = navItem.label;
+                                    iconName = navItem.icon;
+                                    pageId = navItem.id;
+                                } else {
+                                    const feature = Object.values(featureFlags || {}).find((f: any) => f && typeof f === 'object' && f.id === id);
+                                    if (!feature) return null;
+                                    label = (feature as any).label;
+                                    const featureIconMap: Record<string, string> = {
+                                        news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
+                                        events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
+                                        sponsors: 'Shield', chants: 'Music', staff: 'Users'
+                                    };
+                                    iconName = featureIconMap[id] || 'Layout';
+                                    pageId = id;
+                                }
 
-                            return (
-                                <div key={itemId} className="flex flex-col items-center gap-2">
-                                    <div
-                                        onClick={() => pageId && setPreviewPage(pageId)}
-                                        className={`w-12 h-12 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border ${isDarkMode
-                                            ? 'bg-slate-800 text-slate-300 border-white/10'
-                                            : 'bg-white text-slate-600 border-slate-100'
-                                            }`}
-                                    >
-                                        {renderMenuIcon(iconName, isDarkMode)}
+                                return (
+                                    <div key={itemId} className="flex flex-col items-center gap-2">
+                                        <div
+                                            onClick={() => pageId && setPreviewPage(pageId)}
+                                            className={`w-12 h-12 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border ${isDarkMode
+                                                ? 'bg-slate-800 text-slate-300 border-white/10'
+                                                : 'bg-white text-slate-600 border-slate-100'
+                                                }`}
+                                        >
+                                            {renderMenuIcon(iconName, isDarkMode)}
+                                        </div>
+                                        <Selectable
+                                            id={`home_quick_${id}`}
+                                            type="text"
+                                            label={`Etichetta ${label}`}
+                                            isInspectorActive={isInspectorActive}
+                                            isSelected={activeSelectionId === `home_quick_${id}`}
+                                            onSelect={onSelect}
+                                            overrides={getOverride(`home_quick_${id}`)}
+                                            traits={['content', 'typography', 'interaction']}
+                                        >
+                                            {(getOverride(`home_quick_${id}`)?.visible !== false || isInspectorActive) && (
+                                                <span className={`text-[9px] font-bold text-center leading-tight uppercase tracking-tight ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>
+                                                    {getOverride(`home_quick_${id}`)?.text || label}
+                                                </span>
+                                            )}
+                                        </Selectable>
                                     </div>
-                                    <Selectable
-                                        id={`home_quick_${id}`}
-                                        type="text"
-                                        label={`Etichetta ${label}`}
-                                        isInspectorActive={isInspectorActive}
-                                        isSelected={activeSelectionId === `home_quick_${id}`}
-                                        onSelect={onSelect}
-                                        overrides={getOverride(`home_quick_${id}`)}
-                                        traits={['content', 'typography', 'interaction']}
-                                    >
-                                        {(getOverride(`home_quick_${id}`)?.visible !== false || isInspectorActive) && (
-                                            <span className={`text-[9px] font-bold text-center leading-tight uppercase tracking-tight ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>
-                                                {getOverride(`home_quick_${id}`)?.text || label}
-                                            </span>
-                                        )}
-                                    </Selectable>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+                                );
+                            })}
+                        </div>
+                    )}
 
                 {/* Additional Layout Elements (Widgets) */}
                 {activeFeatures.video && (

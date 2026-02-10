@@ -149,6 +149,8 @@ export type ThemeConfig = {
         showNotifications: boolean;
         showSupport: boolean;
         enableUniversalMenu?: boolean;
+        universalMenuPlacement?: 'header' | 'body'; // New: Where to show the menu
+        headerStyle?: 'minimal' | 'unified'; // New: Unified hero design vs simple top bar
         universalMenuItems?: string[]; // IDs with prefix: 'nav:home', 'feature:news', etc.
         customGradientStart?: string; // Custom gradient start color
         customGradientEnd?: string; // Custom gradient end color

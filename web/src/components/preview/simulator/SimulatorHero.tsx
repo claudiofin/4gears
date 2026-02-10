@@ -35,11 +35,14 @@ export const SimulatorHero: React.FC<SimulatorHeroProps> = ({
 
     const Icon = sportConfig.icon;
 
+    const isUnified = themeConfig.header?.headerStyle === 'unified';
+
     return (
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative -mt-2 pb-8 px-6 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate"
+            className={`relative pb-8 px-6 mb-6 rounded-b-[40px] shadow-sm overflow-hidden isolate transition-all duration-300 ${isUnified ? 'pt-32 -mt-0' : '-mt-2 pt-4'
+                }`}
         >
 
             {/* Dynamic Gradient Background */}

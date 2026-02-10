@@ -78,24 +78,36 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
         // Base height: status bar (44px) + logo row (66px)
         let height = 110;
 
+        // If unified, we might want a slightly more compact header row? 
+        // For now let's keep it consistent.
+
         // Add header tabs if enabled
         if (showHeaderTabs) height += 50;
 
-        // Add universal menu ONLY on subpages (not home)
-        if (enableUniversalMenu && !isHome) height += 50;
+        // Universal Menu logic:
+        // - If placement is 'header', show it always (including home)
+        // - If placement is 'body', show it ONLY on subpages (not home)
+        const showUniversalMenuInHeader = enableUniversalMenu && (
+            themeConfig.header?.universalMenuPlacement === 'header' || !isHome
+        );
+
+        if (showUniversalMenuInHeader) height += 50;
 
         return height;
     };
 
     const targetHeight = getHeaderHeight();
+    const isUnified = themeConfig.header?.headerStyle === 'unified';
+    const showUniversalMenuInHeader = enableUniversalMenu && (
+        themeConfig.header?.universalMenuPlacement === 'header' || !isHome
+    );
 
-    // Use ResizeObserver to detect the REAL height
+    // Use ResizeObserver... (same logic)
     React.useLayoutEffect(() => {
         if (!headerRef.current) return;
 
         const observer = new ResizeObserver((entries) => {
             for (let entry of entries) {
-                // Use getBoundingClientRect for the full border-box height including padding
                 const height = entry.target.getBoundingClientRect().height;
                 onHeightChange?.(height);
             }
@@ -103,7 +115,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
         observer.observe(headerRef.current);
         return () => observer.disconnect();
-    }, [onHeightChange, enableUniversalMenu, showHeaderTabs, isHome, isStandalone]);
+    }, [onHeightChange, enableUniversalMenu, themeConfig.header?.universalMenuPlacement, showHeaderTabs, isHome, isStandalone, isUnified]);
 
     const renderIcon = (item: any, isActive: boolean) => {
         const iconMap: Record<string, React.ElementType> = {
@@ -126,7 +138,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             isInspectorActive={isInspectorActive}
             isSelected={activeSelectionId === 'header_main'}
             onSelect={onSelect}
-            className="absolute top-0 left-0 right-0 z-40 overflow-hidden shadow-2xl"
+            className="absolute top-0 left-0 right-0 z-40 overflow-hidden"
             overrides={headerOverride}
             traits={['background', 'layout']}
         >
@@ -136,15 +148,16 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     height: targetHeight,
                     minHeight: targetHeight
                 }}
-                className={`relative w-full px-6 flex flex-col justify-end overflow-hidden backdrop-blur-md ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'}`}
+                className={`relative w-full px-6 flex flex-col justify-end overflow-hidden transition-all duration-300 ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'
+                    } ${!isUnified ? 'backdrop-blur-md shadow-2xl' : ''}`}
                 style={{
-                    borderRadius: themeConfig.borderRadius === 'full' ? '0 0 40px 40px' : '0'
+                    borderRadius: (themeConfig.borderRadius === 'full' && !isUnified) ? '0 0 40px 40px' : '0'
                 }}
             >
-                <div className="absolute inset-0 z-0">
+                <div className={`absolute inset-0 z-0 transition-opacity duration-500 ${isUnified && isHome ? 'opacity-0' : 'opacity-100'}`}>
                     {/* Primary Gradient Layer */}
                     <div
-                        className="absolute inset-0 transition-colors duration-500"
+                        className="absolute inset-0 transition-all duration-500"
                         style={{
                             background: `linear-gradient(135deg, 
                                 ${headerOverride?.customGradientStart || themeConfig.header?.customGradientStart || currentTeam.colors.primary}, 
@@ -170,7 +183,6 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light" />
                 </div>
 
-
                 {/* Top Row: Brand & Actions */}
                 <div className="relative z-10 flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -182,7 +194,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                 <Menu size={20} />
                             </button>
                         )}
-                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg overflow-hidden">
+                        <div className={`w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shadow-lg overflow-hidden transition-all duration-300 ${!isUnified ? 'backdrop-blur-md border border-white/30' : 'border border-white/10'}`}>
                             {canGoBack ? (
                                 <button onClick={onBackClick} className="text-white hover:scale-110"><ArrowLeft size={18} /></button>
                             ) : (
@@ -218,7 +230,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                             >
                                 {(getOverride('header_team_name')?.visible !== false || isInspectorActive) && (
                                     <h1
-                                        className={`text-sm font-black text-white tracking-tight leading-none uppercase ${getOverride('header_team_name')?.fontSize || ''} ${getOverride('header_team_name')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                        className={`text-sm font-black text-white tracking-tight leading-none uppercase drop-shadow-sm ${getOverride('header_team_name')?.fontSize || ''} ${getOverride('header_team_name')?.visible === false ? 'opacity-30 grayscale' : ''}`}
                                         style={{ color: getOverride('header_team_name')?.textColor }}
                                     >
                                         {getOverride('header_team_name')?.text || currentTeam.name}
@@ -240,7 +252,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                 >
                                     {(getOverride('header_sport_type')?.visible !== false || isInspectorActive) && (
                                         <p
-                                            className={`text-[10px] font-bold text-white/70 uppercase tracking-widest ${getOverride('header_sport_type')?.fontSize || ''} ${getOverride('header_sport_type')?.visible === false ? 'opacity-30 grayscale' : ''}`}
+                                            className={`text-[10px] font-bold text-white/70 uppercase tracking-widest drop-shadow-sm ${getOverride('header_sport_type')?.fontSize || ''} ${getOverride('header_sport_type')?.visible === false ? 'opacity-30 grayscale' : ''}`}
                                             style={{ color: getOverride('header_sport_type')?.textColor }}
                                         >
                                             {getOverride('header_sport_type')?.text || currentTeam.sportType}
@@ -253,107 +265,100 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
                     <div className="flex items-center gap-2">
                         {!!themeConfig.header?.showSupport && (
-                            <button onClick={onChatClick} className="p-2 rounded-xl bg-white/10 backdrop-blur-md text-white border border-white/10 hover:bg-white/20 transition-all">
+                            <button onClick={onChatClick} className={`p-2 rounded-xl text-white transition-all ${!isUnified ? 'bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20' : 'bg-black/20 hover:bg-black/30'}`}>
                                 <MessageSquare size={16} />
                             </button>
                         )}
                         {!!themeConfig.header?.showNotifications && (
-                            <button onClick={onNotificationsClick} className="p-2 rounded-xl bg-white/10 backdrop-blur-md text-white border border-white/10 hover:bg-white/20 transition-all">
+                            <button onClick={onNotificationsClick} className={`p-2 rounded-xl text-white transition-all ${!isUnified ? 'bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20' : 'bg-black/20 hover:bg-black/30'}`}>
                                 <Bell size={16} />
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Welcome Text removed from Header - Handled by Hero in HomeScreen */}
-
-                {/* Universal Menu - Persistent (Only on subpages) */}
-                {enableUniversalMenu && !isHome && themeConfig.header?.universalMenuItems && (
+                {/* Universal Menu - Persistent */}
+                {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
                     <div className="relative z-10 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
-                        {themeConfig.header.universalMenuItems.map(itemId => {
-                            let type = 'nav';
-                            let id = itemId;
+                        <AnimatePresence mode="popLayout">
+                            {themeConfig.header.universalMenuItems.map(itemId => {
+                                let type = 'nav';
+                                let id = itemId;
 
-                            if (itemId.includes(':')) {
-                                const parts = itemId.split(':');
-                                type = parts[0];
-                                id = parts[1];
-                            } else {
-                                // Guess if no prefix
-                                const featureExists = Object.values(featureFlags).some(f => f.id === itemId);
-                                type = featureExists ? 'feature' : 'nav';
-                                id = itemId;
-                            }
+                                if (itemId.includes(':')) {
+                                    const parts = itemId.split(':');
+                                    type = parts[0];
+                                    id = parts[1];
+                                }
 
-                            if (type === 'nav') {
-                                // Use the full list of navigation items from config, not just the enabled filters
-                                // to allow "Home" or other items even if they are special-cased elsewhere
-                                const navItemData = (themeConfig.navigation || []).find(item => item.id === id);
-                                if (!navItemData) return null;
+                                if (type === 'nav') {
+                                    const navItemData = (themeConfig.navigation || []).find(item => item.id === id);
+                                    if (!navItemData) return null;
 
-                                return (
-                                    <button
-                                        key={itemId}
-                                        onClick={() => {
-                                            if (isInspectorActive) return;
-                                            id && setPreviewPage(id);
-                                        }}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
-                                            ? 'bg-white text-slate-900 border-white shadow-lg'
-                                            : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                                            }`}
-                                    >
-                                        <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
-                                            {renderIcon(navItemData, previewPage === id)}
-                                        </span>
-                                        <span className="text-[9px] font-bold uppercase tracking-wide">{navItemData.label}</span>
-                                    </button>
-                                );
-                            } else if (type === 'feature') {
-                                const featureData = Object.values(featureFlags || {}).find(f => f && typeof f === 'object' && f.id === id);
-                                const isAccessible = activeFeatures[id] !== false; // Check boolean map
-
-                                if (!featureData) return null;
-                                // Still show the button if it's explicitly enabled in the Universal Menu, 
-                                // but we might want to grey it out or hide if not accessible.
-                                // The user wants to SEE the icons they selected.
-                                if (!featureData.enabled) return null;
-
-                                const featureIconMap: Record<string, string> = {
-                                    news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
-                                    events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
-                                    sponsors: 'Shield', chants: 'Music', staff: 'Users'
-                                };
-                                const iconName = featureIconMap[id] || 'Layout';
-
-                                return (
-                                    <button
-                                        key={itemId}
-                                        onClick={() => {
-                                            if (isInspectorActive) return;
-                                            if (!isAccessible) return; // Disable click if not accessible
-                                            id && setPreviewPage(id);
-                                        }}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
-                                            ? 'bg-white text-slate-900 border-white shadow-lg'
-                                            : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                                            } ${!isAccessible ? 'opacity-40 grayscale' : ''}`}
-                                    >
-                                        <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
-                                            {renderIcon({ icon: iconName }, previewPage === id)}
-                                        </span>
-                                        <div className="flex flex-col items-start leading-none text-left">
-                                            <span className="text-[9px] font-bold uppercase tracking-wide">{featureData.label}</span>
-                                            <span className={`text-[6px] font-black uppercase tracking-widest mt-0.5 ${previewPage === id ? 'opacity-50' : (featureData.minTier === 'FREE' ? 'text-emerald-400' : 'text-amber-400')
-                                                }`}>
-                                                {featureData.minTier}
+                                    return (
+                                        <motion.button
+                                            key={itemId}
+                                            layout
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            onClick={() => {
+                                                if (isInspectorActive) return;
+                                                id && setPreviewPage(id);
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
+                                                ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
+                                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                                                }`}
+                                        >
+                                            <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
+                                                {renderIcon(navItemData, previewPage === id)}
                                             </span>
-                                        </div>
-                                    </button>
-                                );
-                            }
-                            return null;
-                        })}
+                                            <span className="text-[9px] font-bold uppercase tracking-wide">{navItemData.label}</span>
+                                        </motion.button>
+                                    );
+                                } else if (type === 'feature') {
+                                    const featureData = Object.values(featureFlags || {}).find(f => f && typeof f === 'object' && f.id === id);
+                                    const isAccessible = activeFeatures[id] !== false;
+
+                                    if (!featureData || !featureData.enabled) return null;
+
+                                    const featureIconMap: Record<string, string> = {
+                                        news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
+                                        events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
+                                        sponsors: 'Shield', chants: 'Music', staff: 'Users'
+                                    };
+                                    const iconName = featureIconMap[id] || 'Layout';
+
+                                    return (
+                                        <motion.button
+                                            key={itemId}
+                                            layout
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            onClick={() => {
+                                                if (isInspectorActive) return;
+                                                if (!isAccessible) return;
+                                                id && setPreviewPage(id);
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
+                                                ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
+                                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                                                } ${!isAccessible ? 'opacity-40 grayscale' : ''}`}
+                                        >
+                                            <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
+                                                {renderIcon({ icon: iconName }, previewPage === id)}
+                                            </span>
+                                            <div className="flex flex-col items-start leading-none text-left">
+                                                <span className="text-[9px] font-bold uppercase tracking-wide">{featureData.label}</span>
+                                            </div>
+                                        </motion.button>
+                                    );
+                                }
+                                return null;
+                            })}
+                        </AnimatePresence>
                     </div>
                 )}
 
