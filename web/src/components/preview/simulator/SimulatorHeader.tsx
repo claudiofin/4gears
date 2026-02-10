@@ -80,8 +80,11 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
     // Dynamic height based on mode
     const getHeaderHeight = () => {
         if (isUnifiedHome) {
-            // Mega Header: compact layout - pt(56) + Logo(48) + Menu(44) + Hero(72) = ~220
-            return 260;
+            // Compact without menu; taller with universal menu row
+            const hasMenu = enableUniversalMenu && (
+                themeConfig.header?.universalMenuPlacement === 'header' || !isHome
+            );
+            return hasMenu ? 230 : 180;
         }
 
         // Standard logic

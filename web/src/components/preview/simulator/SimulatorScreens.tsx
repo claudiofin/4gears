@@ -78,7 +78,7 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
         // Home page ALWAYS uses the unified mega-header (340px)
         if (isHome) {
-            return headerHeight || 260;
+            return headerHeight || 180;
         }
 
         const getHeaderHeight = () => {
