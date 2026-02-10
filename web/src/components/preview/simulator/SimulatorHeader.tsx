@@ -184,7 +184,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                 </div>
 
                 {/* Top Row: Brand & Actions */}
-                <div className="relative z-10 flex items-center justify-between mb-4">
+                <div className="relative z-10 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {themeConfig.navigationType === 'burger' && (
                             <button
@@ -277,87 +277,91 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     </div>
                 </div>
 
+                <div className="h-4 shrink-0" />
+
                 {/* Universal Menu - Persistent */}
                 {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
-                    <div className="relative z-10 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
+                    <div className="relative z-10 pb-4 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto touch-pan-x">
                         <AnimatePresence mode="popLayout">
-                            {themeConfig.header.universalMenuItems.map(itemId => {
-                                let type = 'nav';
-                                let id = itemId;
+                            <motion.div className="flex items-center gap-2 px-1 min-w-max">
+                                {themeConfig.header.universalMenuItems.map(itemId => {
+                                    let type = 'nav';
+                                    let id = itemId;
 
-                                if (itemId.includes(':')) {
-                                    const parts = itemId.split(':');
-                                    type = parts[0];
-                                    id = parts[1];
-                                }
+                                    if (itemId.includes(':')) {
+                                        const parts = itemId.split(':');
+                                        type = parts[0];
+                                        id = parts[1];
+                                    }
 
-                                if (type === 'nav') {
-                                    const navItemData = (themeConfig.navigation || []).find(item => item.id === id);
-                                    if (!navItemData) return null;
+                                    if (type === 'nav') {
+                                        const navItemData = (themeConfig.navigation || []).find(item => item.id === id);
+                                        if (!navItemData) return null;
 
-                                    return (
-                                        <motion.button
-                                            key={itemId}
-                                            layout
-                                            initial={{ opacity: 0, x: 20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            onClick={() => {
-                                                if (isInspectorActive) return;
-                                                id && setPreviewPage(id);
-                                            }}
-                                            className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
-                                                ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
-                                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                                                }`}
-                                        >
-                                            <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
-                                                {renderIcon(navItemData, previewPage === id)}
-                                            </span>
-                                            <span className="text-[9px] font-bold uppercase tracking-wide">{navItemData.label}</span>
-                                        </motion.button>
-                                    );
-                                } else if (type === 'feature') {
-                                    const featureData = Object.values(featureFlags || {}).find(f => f && typeof f === 'object' && f.id === id);
-                                    const isAccessible = activeFeatures[id] !== false;
+                                        return (
+                                            <motion.button
+                                                key={itemId}
+                                                layout
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                onClick={() => {
+                                                    if (isInspectorActive) return;
+                                                    id && setPreviewPage(id);
+                                                }}
+                                                className={`flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto shadow-sm ${previewPage === id
+                                                    ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
+                                                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                                                    }`}
+                                            >
+                                                <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
+                                                    {renderIcon(navItemData, previewPage === id)}
+                                                </span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{navItemData.label}</span>
+                                            </motion.button>
+                                        );
+                                    } else if (type === 'feature') {
+                                        const featureData = Object.values(featureFlags || {}).find(f => f && typeof f === 'object' && f.id === id);
+                                        const isAccessible = activeFeatures[id] !== false;
 
-                                    if (!featureData || !featureData.enabled) return null;
+                                        if (!featureData || !featureData.enabled) return null;
 
-                                    const featureIconMap: Record<string, string> = {
-                                        news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
-                                        events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
-                                        sponsors: 'Shield', chants: 'Music', staff: 'Users'
-                                    };
-                                    const iconName = featureIconMap[id] || 'Layout';
+                                        const featureIconMap: Record<string, string> = {
+                                            news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
+                                            events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
+                                            sponsors: 'Shield', chants: 'Music', staff: 'Users'
+                                        };
+                                        const iconName = featureIconMap[id] || 'Layout';
 
-                                    return (
-                                        <motion.button
-                                            key={itemId}
-                                            layout
-                                            initial={{ opacity: 0, x: 20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            onClick={() => {
-                                                if (isInspectorActive) return;
-                                                if (!isAccessible) return;
-                                                id && setPreviewPage(id);
-                                            }}
-                                            className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
-                                                ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
-                                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                                                } ${!isAccessible ? 'opacity-40 grayscale' : ''}`}
-                                        >
-                                            <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
-                                                {renderIcon({ icon: iconName }, previewPage === id)}
-                                            </span>
-                                            <div className="flex flex-col items-start leading-none text-left">
-                                                <span className="text-[9px] font-bold uppercase tracking-wide">{featureData.label}</span>
-                                            </div>
-                                        </motion.button>
-                                    );
-                                }
-                                return null;
-                            })}
+                                        return (
+                                            <motion.button
+                                                key={itemId}
+                                                layout
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                onClick={() => {
+                                                    if (isInspectorActive) return;
+                                                    if (!isAccessible) return;
+                                                    id && setPreviewPage(id);
+                                                }}
+                                                className={`flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto shadow-sm ${previewPage === id
+                                                    ? 'bg-white text-slate-900 border-white shadow-lg scale-105'
+                                                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                                                    } ${!isAccessible ? 'opacity-40 grayscale' : ''}`}
+                                            >
+                                                <span className={previewPage === id ? 'text-slate-900' : 'text-white'}>
+                                                    {renderIcon({ icon: iconName }, previewPage === id)}
+                                                </span>
+                                                <div className="flex flex-col items-start leading-none text-left">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{featureData.label}</span>
+                                                </div>
+                                            </motion.button>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </motion.div>
                         </AnimatePresence>
                     </div>
                 )}
