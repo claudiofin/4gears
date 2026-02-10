@@ -75,13 +75,18 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
     // Calculate top padding to match header height
     const getTopPadding = () => {
         const isHome = currentPage === 'home';
+
+        // Home page ALWAYS uses the unified mega-header (340px)
+        if (isHome) {
+            return headerHeight || 340;
+        }
+
         const getHeaderHeight = () => {
-            // Match logic in SimulatorHeader.tsx
+            // Match logic in SimulatorHeader.tsx for non-home pages
             let height = 110;
 
             if (showHeaderTabs) height += 50;
 
-            // Sync with SimulatorHeader.tsx logic
             const enableUniversalMenu = themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0;
             const showUniversalMenuInHeader = enableUniversalMenu && (
                 themeConfig.header?.universalMenuPlacement === 'header' || !isHome

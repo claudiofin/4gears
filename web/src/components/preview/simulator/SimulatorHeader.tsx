@@ -74,7 +74,8 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
     const headerOverride = getOverride('header_main');
 
     const isUnified = themeConfig.header?.headerStyle === 'unified';
-    const isUnifiedHome = isUnified && isHome;
+    // ALWAYS use unified mega-header on home page - no exceptions
+    const isUnifiedHome = isHome;
 
     // Dynamic height based on mode
     const getHeaderHeight = () => {
