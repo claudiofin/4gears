@@ -7,6 +7,22 @@ export type NotchStyle = 'NONE' | 'STANDARD' | 'FLOATING';
 export type DeviceType = 'IPHONE' | 'ANDROID';
 export type MockScenario = 'STANDARD' | 'CROWDED';
 
+export type PermissionKey =
+    | 'view_federation'
+    | 'view_secretariat'
+    | 'manage_team'
+    | 'view_stats'
+    | 'access_medical'
+    | 'edit_content'
+    | 'view_own_data';
+
+export interface PersonaConfig {
+    id: UserPersona;
+    label: string;
+    enabled: boolean;
+    permissions: PermissionKey[];
+}
+
 export interface FeatureFlag {
     id: string;
     label: string;
@@ -153,6 +169,7 @@ export type ThemeConfig = {
     registrationForm?: RegistrationFormConfig;
     navigation: NavItem[];
     componentOverrides: Record<string, ComponentOverride>;
+    personas?: PersonaConfig[];
 };
 
 export interface MemberCardConfig {

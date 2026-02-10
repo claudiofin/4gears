@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge, Info, BookOpen, Music, Award, Bell, MessageSquare, Menu } from 'lucide-react';
-import { ThemeConfig, NavItem, ViewMode } from '@/types/builder';
+import { ThemeConfig, NavItem, ViewMode, UserPersona, PermissionKey } from '@/types/builder';
 import { TeamConfig } from '@/constants/teams';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
 import { ComponentMetadata } from '@/types/inspector';
@@ -18,6 +18,7 @@ interface SimulatorBottomNavProps {
     activeSelectionId?: string | null;
     onSelect: (metadata: ComponentMetadata) => void;
     isStandalone?: boolean;
+    rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
 }
 
 export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
@@ -30,7 +31,8 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
     isInspectorActive,
     activeSelectionId,
     onSelect,
-    isStandalone = false
+    isStandalone = false,
+    rolePreview
 }) => {
     const { getOverride } = useSimulatorStyles(themeConfig, isDarkMode);
 
@@ -129,7 +131,20 @@ export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({
                     style={getNavBarInlineStyles()}
                 >
                     {(themeConfig.navigation || [])
-                        .filter(item => item.enabled)
+                        .filter(item => {
+                            if (!item.enabled) return false;
+                            if (!rolePreview) return true;
+
+                            const mappedPersona = (rolePreview === 'athlete' ? 'PLAYER' : rolePreview.toUpperCase()) as UserPersona;
+                            const personaConfig = themeConfig.personas?.find(p => p.id === mappedPersona);
+
+                            if (personaConfig) {
+                                if (item.id === 'admin' || item.id === 'admin_dashboard') return personaConfig.permissions.includes('view_stats');
+                                if (item.id === 'secretariat') return personaConfig.permissions.includes('view_secretariat');
+                                if (item.id === 'federation') return personaConfig.permissions.includes('view_federation');
+                            }
+                            return true;
+                        })
                         .sort((a, b) => (a.order || 0) - (b.order || 0))
                         .slice(0, 5)
                         .map((item) => {

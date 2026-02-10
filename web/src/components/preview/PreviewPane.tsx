@@ -231,6 +231,12 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 activeSelectionId={activeSelectionId}
                                 onSelect={handleElementClick}
                                 isStandalone={isStandalone}
+                                rolePreview={
+                                    userPersona === 'ADMIN' ? 'admin' :
+                                        userPersona === 'COACH' ? 'coach' :
+                                            userPersona === 'PLAYER' ? 'athlete' :
+                                                userPersona === 'FAN' ? 'fan' : null
+                                }
                             />
                         )
                     }
@@ -290,6 +296,12 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         headerHeight={headerHeight}
                         deviceType={deviceType}
                         multiTeamMode={multiTeamMode}
+                        rolePreview={
+                            userPersona === 'ADMIN' ? 'admin' :
+                                userPersona === 'COACH' ? 'coach' :
+                                    userPersona === 'PLAYER' ? 'athlete' :
+                                        userPersona === 'FAN' ? 'fan' : null
+                        }
                     />
                 </SimulatorLayout>
 

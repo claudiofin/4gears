@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ThemeConfig } from '@/types/builder';
 import { Selectable } from '../builder/VisualInspector';
-import { ComponentMetadata } from '@/types/inspector';
+import { ComponentMetadata, PropertyTrait } from '@/types/inspector';
 import { getDesignTokens } from '@/styles/design-system';
 
 interface PremiumCardProps {
@@ -17,6 +17,7 @@ interface PremiumCardProps {
     isInspectorActive?: boolean;
     isSelected?: boolean;
     onElementSelect?: (metadata: ComponentMetadata) => void;
+    traits?: PropertyTrait[];
 }
 
 export const PremiumCard: React.FC<PremiumCardProps> = ({
@@ -29,7 +30,8 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
     id,
     isInspectorActive,
     isSelected,
-    onElementSelect
+    onElementSelect,
+    traits
 }) => {
     // 1. Get Overrides
     const override = id && themeConfig.componentOverrides ? themeConfig.componentOverrides[id] : undefined;
@@ -119,7 +121,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
             onSelect={onElementSelect || (() => { })}
             className="block h-full"
             overrides={override}
-            traits={['background', 'border', 'spacing', 'glass']}
+            traits={traits || ['background', 'border', 'spacing', 'glass']}
         >
             <motion.div
                 whileHover={isInteractive ? { y: -2, scale: 1.01 } : {}}

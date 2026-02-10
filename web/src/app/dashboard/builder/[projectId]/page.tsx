@@ -176,7 +176,9 @@ export default function BuilderPage() {
             setPreviewPage('splash');
         } else if (viewMode === 'LOGIN') {
             setPreviewPage('login');
-        } else if (previewPage === 'splash' || previewPage === 'login') {
+        } else if (viewMode === 'ADMIN') {
+            setPreviewPage('admin_dashboard');
+        } else if (previewPage === 'splash' || previewPage === 'login' || previewPage === 'admin_dashboard') {
             setPreviewPage('home');
         }
     }, [viewMode]);

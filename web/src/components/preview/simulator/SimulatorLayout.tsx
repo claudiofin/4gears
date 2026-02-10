@@ -57,7 +57,7 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     const simulatorContent = (
         <div className={`relative transition-all duration-500 shrink-0 ${isStandalone || marketingMode
             ? 'w-full h-full'
-            : `w-[375px] h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`
+            : `${rolePreview === 'admin' ? 'w-[800px]' : 'w-[375px]'} h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`
             }`}>
 
             {/* Internal App Content */}

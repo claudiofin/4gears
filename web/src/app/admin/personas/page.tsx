@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Shield, UserCheck, Star, Search, Filter, MoreHorizontal, Loader2 } from 'lucide-react';
+import { Users, Shield, UserCheck, Star, Search, Filter, MoreHorizontal, Loader2, X, Check, Lock, Eye, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 
@@ -14,11 +14,62 @@ export default function PersonasPage() {
     });
 
     const [personas, setPersonas] = useState([
-        { id: 'coach', name: 'Coach', users: 0, description: 'Accesso completo alla gestione squadra, allenamenti e statistiche match.', color: 'text-indigo-400 bg-indigo-500/10' },
-        { id: 'athlete', name: 'Atleta', users: 0, description: 'Visualizzazione statistiche personali, calendario e comunicazione col team.', color: 'text-emerald-400 bg-emerald-500/10' },
-        { id: 'admin', name: 'Admin Club', users: 0, description: 'Gestione abbonamenti, anagrafiche soci e configurazione brand societario.', color: 'text-amber-400 bg-amber-500/10' },
-        { id: 'fan', name: 'Fan', users: 0, description: 'Accesso ai contenuti premium, news e live tracking della squadra preferita.', color: 'text-rose-400 bg-rose-500/10' },
+        {
+            id: 'COACH',
+            name: 'Coach',
+            users: 0,
+            description: 'Accesso alla gestione squadra, statistiche e strumenti federazione.',
+            color: 'text-indigo-400 bg-indigo-500/10',
+            permissions: [
+                { id: 'view_stats', label: 'Statistiche Team', enabled: true },
+                { id: 'manage_team', label: 'Gestione Atleti', enabled: true },
+                { id: 'view_federation', label: 'Strumenti Federazione', enabled: true },
+                { id: 'view_secretariat', label: 'Gestione Segreteria', enabled: true },
+                { id: 'view_own_data', label: 'Dati Personali', enabled: true },
+            ]
+        },
+        {
+            id: 'PLAYER',
+            name: 'Atleta',
+            users: 0,
+            description: 'Visualizzazione statistiche personali e documenti.',
+            color: 'text-emerald-400 bg-emerald-500/10',
+            permissions: [
+                { id: 'view_own_data', label: 'I Miei Documenti', enabled: true },
+                { id: 'view_stats', label: 'Mie Statistiche', enabled: true },
+                { id: 'manage_team', label: 'Gestione Squadra', enabled: false },
+                { id: 'view_federation', label: 'Export Federazione', enabled: false },
+            ]
+        },
+        {
+            id: 'ADMIN',
+            name: 'Admin Club',
+            users: 0,
+            description: 'Controllo totale su brand, fatturazione e permessi.',
+            color: 'text-amber-400 bg-amber-500/10',
+            permissions: [
+                { id: 'view_stats', label: 'Statistiche Globali', enabled: true },
+                { id: 'manage_team', label: 'Gestione Team', enabled: true },
+                { id: 'view_federation', label: 'Export Federazione', enabled: true },
+                { id: 'view_secretariat', label: 'Segreteria', enabled: true },
+            ]
+        },
+        {
+            id: 'FAN',
+            name: 'Fan',
+            users: 0,
+            description: 'Accesso ai contenuti pubblici e store.',
+            color: 'text-rose-400 bg-rose-500/10',
+            permissions: [
+                { id: 'view_stats', label: 'Risultati Live', enabled: true },
+                { id: 'view_own_data', label: 'Profilo Personalizzato', enabled: true },
+                { id: 'view_federation', label: 'Dati Federazione', enabled: false },
+            ]
+        },
     ]);
+
+    const [selectedPersona, setSelectedPersona] = useState<any>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         const fetchPersonaData = async () => {
@@ -51,6 +102,19 @@ export default function PersonasPage() {
 
         fetchPersonaData();
     }, []);
+
+    const handleTogglePermission = (personaId: string, permId: string) => {
+        setPersonas(prev => prev.map(p => {
+            if (p.id !== personaId) return p;
+            return {
+                ...p,
+                permissions: p.permissions.map(perm => {
+                    if (perm.id !== permId) return perm;
+                    return { ...perm, enabled: !perm.enabled };
+                })
+            };
+        }));
+    };
 
     if (loading) {
         return (
@@ -110,7 +174,11 @@ export default function PersonasPage() {
             {/* Grid of Personas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {personas.map((persona) => (
-                    <div key={persona.id} className="bg-slate-900 border border-slate-800 rounded-[32px] p-8 hover:border-indigo-500/30 transition-all group cursor-pointer relative overflow-hidden">
+                    <div
+                        key={persona.id}
+                        onClick={() => setSelectedPersona(persona)}
+                        className="bg-slate-900 border border-slate-800 rounded-[32px] p-8 hover:border-indigo-500/30 transition-all group cursor-pointer relative overflow-hidden"
+                    >
                         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
                             <UserCheck size={64} />
                         </div>
@@ -139,6 +207,142 @@ export default function PersonasPage() {
                     </div>
                 ))}
             </div>
+
+            {/* Permission Detail Modal */}
+            {selectedPersona && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-slate-900 border border-slate-800 rounded-[40px] w-full max-w-2xl shadow-2xl overflow-hidden"
+                    >
+                        <div className="p-8 border-b border-slate-800 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className={`p-3 rounded-2xl ${selectedPersona.color}`}>
+                                    <Shield size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-white uppercase italic tracking-tight">Permessi {selectedPersona.name}</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Configura le capacità granulari di questo ruolo.</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedPersona(null)}
+                                className="p-2 text-slate-500 hover:text-white transition-colors bg-slate-800 rounded-xl"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-8 space-y-4 max-h-[60vh] overflow-y-auto">
+                            {selectedPersona.permissions?.map((perm: any) => (
+                                <div key={perm.id} className="flex items-center justify-between p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 hover:border-indigo-500/30 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        {perm.enabled ? (
+                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+                                                <Check size={12} strokeWidth={4} />
+                                            </div>
+                                        ) : (
+                                            <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-slate-500">
+                                                <Lock size={12} />
+                                            </div>
+                                        )}
+                                        <span className={`text-sm font-bold ${perm.enabled ? 'text-white' : 'text-slate-500'}`}>
+                                            {perm.label}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => handleTogglePermission(selectedPersona.id, perm.id)}
+                                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${perm.enabled ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                                            }`}
+                                    >
+                                        {perm.enabled ? 'Disabilita' : 'Abilita'}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="p-8 bg-slate-950/50 border-t border-slate-800 flex justify-end gap-3">
+                            <button
+                                onClick={() => setSelectedPersona(null)}
+                                className="px-6 py-3 text-slate-400 text-[11px] font-black uppercase tracking-widest hover:text-white transition-colors"
+                            >
+                                Annulla
+                            </button>
+                            <button
+                                onClick={() => setSelectedPersona(null)}
+                                className="px-8 py-3 bg-indigo-600 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-500 transition-all shadow-lg"
+                            >
+                                Salva Modifiche
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+            {/* Create Role Modal */}
+            {showCreateModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-slate-900 border border-slate-800 rounded-[40px] w-full max-w-lg shadow-2xl overflow-hidden"
+                    >
+                        {/* Modal Header */}
+                        <div className="p-8 border-b border-slate-800 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400">
+                                    <Plus size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-white uppercase italic tracking-tight">Nuovo Ruolo</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Crea una nuova categoria di utenza.</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowCreateModal(false)}
+                                className="p-2 text-slate-500 hover:text-white transition-colors bg-slate-800 rounded-xl"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Modal Form */}
+                        <div className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nome Ruolo</label>
+                                <input
+                                    type="text"
+                                    placeholder="es. Scout, Preparatore..."
+                                    className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-white font-bold placeholder:text-slate-600 focus:border-indigo-500 outline-none transition-all"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Descrizione</label>
+                                <textarea
+                                    placeholder="Cosa può fare questo utente?"
+                                    className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-white font-bold placeholder:text-slate-600 focus:border-indigo-500 outline-none transition-all h-32 resize-none"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-8 bg-slate-950/50 border-t border-slate-800 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowCreateModal(false)}
+                                className="px-6 py-3 text-slate-400 text-[11px] font-black uppercase tracking-widest hover:text-white transition-colors"
+                            >
+                                Annulla
+                            </button>
+                            <button
+                                onClick={() => setShowCreateModal(false)}
+                                className="px-8 py-3 bg-indigo-600 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-500 transition-all shadow-lg"
+                            >
+                                Crea Ruolo
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }

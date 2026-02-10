@@ -70,6 +70,22 @@ export const FloatingInspectorPanel: React.FC<FloatingInspectorPanelProps> = ({
                                 <X size={14} />
                                 Reset Customizations
                             </button>
+
+                            {/* Socratic Guidance */}
+                            <div className="mt-8 bg-blue-600/5 border border-blue-500/10 rounded-2xl p-4 space-y-3">
+                                <div className="flex items-center gap-2 text-blue-400">
+                                    <Target size={14} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Socratic Check</span>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-[10px] text-slate-400 italic">Considera:</p>
+                                    <ul className="text-[11px] text-slate-300 space-y-1.5 list-disc pl-4">
+                                        <li>Questo componente è leggibile con il contrasto attuale?</li>
+                                        <li>L'azione principale è chiara ad un primo sguardo?</li>
+                                        <li>C'è abbastanza "respiro" (spacing) tra gli elementi?</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-center p-6">
