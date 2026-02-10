@@ -40,17 +40,20 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
 
     return (
         <div className="pb-32 space-y-6" style={{ paddingTop: isUnified ? '0px' : `${topPaddingValue}px` }}>
-            <SimulatorHero
-                themeConfig={themeConfig}
-                currentTeam={currentTeam}
-                isDarkMode={isDarkMode}
-                isInspectorActive={isInspectorActive}
-                activeSelectionId={activeSelectionId}
-                onSelect={onSelect}
-                getOverride={getOverride}
-                sportConfig={sportConfig}
-                topPadding={topPaddingValue}
-            />
+            {/* Hero is now part of the SimulatorHeader in Unified mode */}
+            {!isUnified && (
+                <SimulatorHero
+                    themeConfig={themeConfig}
+                    currentTeam={currentTeam}
+                    isDarkMode={isDarkMode}
+                    isInspectorActive={isInspectorActive}
+                    activeSelectionId={activeSelectionId}
+                    onSelect={onSelect}
+                    getOverride={getOverride}
+                    sportConfig={sportConfig}
+                    topPadding={topPaddingValue}
+                />
+            )}
 
             <div className="px-6 space-y-6">
                 {/* Universal Menu Items in Home (Widget Mode) */}

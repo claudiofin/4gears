@@ -73,28 +73,27 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
     const enableUniversalMenu = themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0;
     const headerOverride = getOverride('header_main');
 
-    // Dynamic height based on Home mode and Navigation Type
+    const isUnified = themeConfig.header?.headerStyle === 'unified';
+    const isUnifiedHome = isUnified && isHome;
+
+    // Dynamic height based on mode
     const getHeaderHeight = () => {
-        // Base height: status bar (44px) + logo row (66px)
+        if (isUnifiedHome) {
+            // Mega Header: StatusBar (44) + LogoRow (66) + Menu (70) + Hero (160)
+            return 340;
+        }
+
+        // Standard logic
         let height = 110;
-
-        // Add header tabs if enabled
         if (showHeaderTabs) height += 50;
-
-        // Universal Menu logic:
-        // - If placement is 'header', show it always (including home)
-        // - If placement is 'body', show it ONLY on subpages (not home)
         const showUniversalMenuInHeader = enableUniversalMenu && (
             themeConfig.header?.universalMenuPlacement === 'header' || !isHome
         );
-
-        if (showUniversalMenuInHeader) height += 70; // Increased to 70 to avoid truncation
-
+        if (showUniversalMenuInHeader) height += 80; // Extra room for standard
         return height;
     };
 
     const targetHeight = getHeaderHeight();
-    const isUnified = themeConfig.header?.headerStyle === 'unified';
     const showUniversalMenuInHeader = enableUniversalMenu && (
         themeConfig.header?.universalMenuPlacement === 'header' || !isHome
     );
@@ -146,37 +145,26 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     minHeight: targetHeight
                 }}
                 className={`relative w-full px-6 flex flex-col justify-end transition-all duration-300 ${isStandalone ? 'pt-[calc(14px+var(--safe-area-top,0px))]' : 'pt-14'
-                    } ${!isUnified ? 'backdrop-blur-md shadow-2xl overflow-hidden' : ''}`}
+                    } ${!isUnifiedHome ? (isUnified ? '' : 'backdrop-blur-md shadow-2xl overflow-hidden') : ''}`}
                 style={{
-                    borderRadius: (themeConfig.borderRadius === 'full' && !isUnified) ? '0 0 40px 40px' : '0'
+                    borderRadius: (themeConfig.borderRadius === 'full' && !isUnifiedHome) ? '0 0 40px 40px' : '0'
                 }}
             >
-                <div className={`absolute inset-0 z-0 transition-opacity duration-500 ${isUnified && isHome ? 'opacity-0' : 'opacity-100'}`}>
-                    {/* Primary Gradient Layer */}
+                {/* SINGLE MASTER BACKGROUND LAYER */}
+                <div className="absolute inset-0 z-0">
                     <div
                         className="absolute inset-0 transition-all duration-500"
                         style={{
                             background: `linear-gradient(135deg, 
                                 ${headerOverride?.customGradientStart || themeConfig.header?.customGradientStart || currentTeam.colors.primary}, 
-                                ${headerOverride?.customGradientEnd || themeConfig.header?.customGradientEnd || currentTeam.colors.secondary || currentTeam.colors.primary}${!!(headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage) ? 'dd' : ''})`
+                                ${headerOverride?.customGradientEnd || themeConfig.header?.customGradientEnd || currentTeam.colors.secondary || currentTeam.colors.primary})`
                         }}
                     />
 
-                    {/* Gradient Mesh / Overlay */}
+                    {/* Unified Shadow/Overlay Mesh */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
 
-                    {/* Background Image Layer (Custom or Team) */}
-                    {(headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage) && (
-                        <motion.img
-                            initial={{ scale: 1.1, opacity: 0 }}
-                            animate={{ scale: 1, opacity: (headerOverride?.backgroundImage || themeConfig.header?.backgroundImage) ? 0.6 : 0.5 }}
-                            src={headerOverride?.backgroundImage || themeConfig.header?.backgroundImage || currentTeam.branding?.customHeroImage}
-                            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay brightness-110"
-                            alt="Header Background"
-                        />
-                    )}
-
-                    {/* Texture / Noise Layer */}
+                    {/* Background Texture - Unified opacity */}
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light" />
                 </div>
 
@@ -275,6 +263,40 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                 </div>
 
                 <div className="h-4 shrink-0" />
+
+                {/* UNIFIED HERO CONTENT (Only here if isUnifiedHome) */}
+                {isUnifiedHome && (
+                    <div className="relative z-10 px-0 pb-10 mt-2">
+                        <Selectable
+                            id="header_welcome"
+                            type="text"
+                            label="Welcome Text"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'header_welcome'}
+                            onSelect={onSelect}
+                            overrides={getOverride('welcome_text')}
+                            traits={['content', 'typography', 'interaction']}
+                        >
+                            <h2 className="text-xs font-bold uppercase tracking-widest mb-1 text-white/80">
+                                {getOverride('welcome_text')?.text || 'Benvenuto'}
+                            </h2>
+                        </Selectable>
+                        <Selectable
+                            id="header_team_mega"
+                            type="text"
+                            label="Team Name (Mega)"
+                            isInspectorActive={isInspectorActive}
+                            isSelected={activeSelectionId === 'header_team_mega'}
+                            onSelect={onSelect}
+                            overrides={getOverride('team_name')}
+                            traits={['content', 'typography', 'interaction']}
+                        >
+                            <h1 className="text-4xl font-black leading-tight tracking-tight text-white uppercase">
+                                {getOverride('team_name')?.text || currentTeam.name}
+                            </h1>
+                        </Selectable>
+                    </div>
+                )}
 
                 {/* Universal Menu - Persistent */}
                 {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
