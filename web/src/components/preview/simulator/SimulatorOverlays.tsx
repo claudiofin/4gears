@@ -480,17 +480,19 @@ export const FloatingCartButton: React.FC<FloatingCartButtonProps> = ({
                 >
                     <button
                         onClick={onClick}
-                        className="relative p-4 text-white rounded-full shadow-2xl transition-all active:scale-95 group overflow-hidden"
+                        className="relative p-4 text-white rounded-full shadow-2xl transition-all active:scale-95 group"
                         style={{
                             backgroundColor: currentTeam.colors.primary,
                             boxShadow: `0 10px 25px -5px ${currentTeam.colors.primary}40`
                         }}
                     >
-                        {/* Glow effect */}
-                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {/* Background & Glow with clipping */}
+                        <div className="absolute inset-0 rounded-full overflow-hidden">
+                            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
 
-                        <ShoppingBag size={24} />
-                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center animate-bounce shadow-lg">
+                        <ShoppingBag size={24} className="relative z-10" />
+                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center animate-bounce shadow-lg z-20">
                             {count}
                         </span>
                     </button>

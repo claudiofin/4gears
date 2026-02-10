@@ -75,15 +75,11 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
     // Dynamic height based on Home mode and Navigation Type
     const getHeaderHeight = () => {
-        let height = isHome ? 230 : 130;
+        // Slimmer base height
+        let height = 110;
 
-        if (isHome) {
-            if (enableUniversalMenu) height += 60;
-            if (showHeaderTabs) height += 50;
-        } else {
-            if (enableUniversalMenu) height += 45;
-            if (showHeaderTabs) height += 50;
-        }
+        if (showHeaderTabs) height += 50;
+        if (enableUniversalMenu && !isHome) height += 45; // Only show persistent menu on subpages
 
         // Add safe area if standalone
         if (isStandalone) {
@@ -271,60 +267,10 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                     </div>
                 </div>
 
-                {/* Welcome Text (Home Only) */}
-                <AnimatePresence mode="wait">
-                    {isHome && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="relative z-10 mb-2 mt-2"
-                        >
-                            <Selectable
-                                id="header_welcome_title"
-                                type="text"
-                                label="Titolo Benvenuto"
-                                isInspectorActive={isInspectorActive}
-                                isSelected={activeSelectionId === 'header_welcome_title'}
-                                onSelect={onSelect}
-                                overrides={getOverride('header_welcome_title')}
-                                traits={['content', 'typography', 'interaction']}
-                            >
-                                {(getOverride('header_welcome_title')?.visible !== false || isInspectorActive) && (
-                                    <h2
-                                        className={`text-2xl font-black text-white leading-tight ${getOverride('header_welcome_title')?.fontSize || ''} ${getOverride('header_welcome_title')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                        style={{ color: getOverride('header_welcome_title')?.textColor }}
-                                    >
-                                        {getOverride('header_welcome_title')?.text || "Benvenuto nel Club Digital"}
-                                    </h2>
-                                )}
-                            </Selectable>
+                {/* Welcome Text removed from Header - Handled by Hero in HomeScreen */}
 
-                            <Selectable
-                                id="header_welcome_subtitle"
-                                type="text"
-                                label="Sottotitolo Benvenuto"
-                                isInspectorActive={isInspectorActive}
-                                isSelected={activeSelectionId === 'header_welcome_subtitle'}
-                                onSelect={onSelect}
-                                overrides={getOverride('header_welcome_subtitle')}
-                                traits={['content', 'typography', 'interaction']}
-                            >
-                                {(getOverride('header_welcome_subtitle')?.visible !== false || isInspectorActive) && (
-                                    <p
-                                        className={`text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mt-2 mb-4 ${getOverride('header_welcome_subtitle')?.fontSize || ''} ${getOverride('header_welcome_subtitle')?.visible === false ? 'opacity-30 grayscale' : ''}`}
-                                        style={{ color: getOverride('header_welcome_subtitle')?.textColor }}
-                                    >
-                                        {getOverride('header_welcome_subtitle')?.text || "La tua passione, ovunque."}
-                                    </p>
-                                )}
-                            </Selectable>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Universal Menu - Persistent */}
-                {enableUniversalMenu && themeConfig.header?.universalMenuItems && (
+                {/* Universal Menu - Persistent (Only on subpages) */}
+                {enableUniversalMenu && !isHome && themeConfig.header?.universalMenuItems && (
                     <div className="relative z-10 my-1 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
                         {themeConfig.header.universalMenuItems.map(itemId => {
                             let type = 'nav';
@@ -352,7 +298,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                         key={itemId}
                                         onClick={() => {
                                             if (isInspectorActive) return;
-                                            setPreviewPage(id);
+                                            id && setPreviewPage(id);
                                         }}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
                                             ? 'bg-white text-slate-900 border-white shadow-lg'
@@ -388,7 +334,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                         onClick={() => {
                                             if (isInspectorActive) return;
                                             if (!isAccessible) return; // Disable click if not accessible
-                                            setPreviewPage(id);
+                                            id && setPreviewPage(id);
                                         }}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all shrink-0 pointer-events-auto ${previewPage === id
                                             ? 'bg-white text-slate-900 border-white shadow-lg'

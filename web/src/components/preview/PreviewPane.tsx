@@ -209,7 +209,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 pageTitle={
                                     previewPage === 'home'
                                         ? 'Home'
-                                        : previewPage.charAt(0).toUpperCase() + previewPage.slice(1)
+                                        : (previewPage || '').charAt(0).toUpperCase() + (previewPage || '').slice(1)
                                 }
                                 viewMode={viewMode}
                                 previewPage={previewPage}
@@ -287,6 +287,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         isDarkMode={isDarkMode}
                         currentTeam={currentTeam}
                         activeFeatures={activeFeatures}
+                        featureFlags={allFeatures}
                         mockData={mockData}
                         isInspectorActive={isInspectorActive}
                         activeSelectionId={activeSelectionId ?? null}

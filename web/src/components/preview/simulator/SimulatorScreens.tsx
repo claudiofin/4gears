@@ -38,6 +38,7 @@ interface SimulatorScreensProps {
     multiTeamMode?: boolean;
     rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
     isStandalone?: boolean;
+    featureFlags?: FeatureFlags;
 }
 
 export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
@@ -59,7 +60,8 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         headerHeight,
         deviceType = 'IPHONE',
         rolePreview,
-        isStandalone = false
+        isStandalone = false,
+        featureFlags
     } = props;
 
     const { getCardClass, getIconProps, getOverride } = useSimulatorStyles(themeConfig, isDarkMode);
@@ -74,14 +76,15 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
     const getTopPadding = () => {
         const isHome = currentPage === 'home';
         const getHeaderHeight = () => {
-            let height = isHome ? 230 : 130;
-            if (isHome) {
-                if (hasUniversalMenu) height += 60;
-                if (showHeaderTabs) height += 50;
-            } else {
-                if (hasUniversalMenu) height += 45;
-                if (showHeaderTabs) height += 50;
+            // Match logic in SimulatorHeader.tsx
+            let height = 110;
+
+            if (showHeaderTabs) height += 50;
+            // Persistent universal menu is only in header when NOT on home
+            if (themeConfig.header?.enableUniversalMenu && !isHome) {
+                height += 45;
             }
+
             if (isStandalone) height += 44;
             return height;
         };
@@ -112,7 +115,8 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         getIconProps,
         deviceType,
         onViewModeChange,
-        viewMode
+        viewMode,
+        featureFlags
     };
 
     const renderContent = () => {

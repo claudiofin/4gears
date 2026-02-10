@@ -4,9 +4,23 @@ import { SectionHeader } from './SharedComponents';
 import { PremiumCard } from '@/components/ui/PremiumCard';
 import { SimulatorHero } from '../SimulatorHero';
 import { Selectable } from '@/components/builder/VisualInspector';
-import { Play, Music, Clock, MapPin, ChevronRight } from 'lucide-react';
+import {
+    Play, Music, Clock, MapPin, ChevronRight,
+    Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge,
+    Info, BookOpen, MessageSquare, Menu, Award
+} from 'lucide-react';
 
-export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any; getIconProps: any }> = ({
+// Help helper for icons
+const renderMenuIcon = (iconName: string, isDarkMode: boolean) => {
+    const iconMap: Record<string, React.ElementType> = {
+        Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge,
+        Info, BookOpen, Music, Award, MessageSquare, Menu
+    };
+    const IconComponent = iconMap[iconName] || Layout;
+    return <IconComponent size={20} />;
+};
+
+export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any; getIconProps: any; featureFlags?: any }> = ({
     themeConfig,
     isDarkMode,
     currentTeam,
@@ -19,7 +33,8 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
     activeFeatures,
     getIconProps,
     setPreviewPage,
-    sportConfig
+    sportConfig,
+    featureFlags
 }) => {
     return (
         <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue}px` }}>
@@ -38,32 +53,68 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
                 {/* Universal Menu Items in Home */}
                 {themeConfig.header?.enableUniversalMenu && (themeConfig.header?.universalMenuItems?.length ?? 0) > 0 && (
                     <div className="grid grid-cols-4 gap-4 py-2">
-                        {themeConfig.header.universalMenuItems?.map((item: any) => (
-                            <div key={item.id} className="flex flex-col items-center gap-2">
-                                <div
-                                    onClick={() => setPreviewPage(item.pageId)}
-                                    className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-110 active:scale-95 transition-all cursor-pointer border border-white/10"
-                                >
-                                    <span className="text-xl">{item.icon}</span>
+                        {themeConfig.header.universalMenuItems?.map((itemId: any) => {
+                            let type = 'nav';
+                            let id = itemId;
+                            let label = '';
+                            let iconName = 'Layout';
+                            let pageId = '';
+
+                            if (typeof itemId === 'string' && itemId.includes(':')) {
+                                const parts = itemId.split(':');
+                                type = parts[0];
+                                id = parts[1];
+                            }
+
+                            if (type === 'nav') {
+                                const navItem = (themeConfig.navigation || []).find(n => n.id === id);
+                                if (!navItem) return null;
+                                label = navItem.label;
+                                iconName = navItem.icon;
+                                pageId = navItem.id;
+                            } else {
+                                const feature = Object.values(featureFlags || {}).find((f: any) => f && typeof f === 'object' && f.id === id);
+                                if (!feature) return null;
+                                label = (feature as any).label;
+                                const featureIconMap: Record<string, string> = {
+                                    news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
+                                    events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
+                                    sponsors: 'Shield', chants: 'Music', staff: 'Users'
+                                };
+                                iconName = featureIconMap[id] || 'Layout';
+                                pageId = id;
+                            }
+
+                            return (
+                                <div key={itemId} className="flex flex-col items-center gap-2">
+                                    <div
+                                        onClick={() => pageId && setPreviewPage(pageId)}
+                                        className={`w-12 h-12 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border ${isDarkMode
+                                            ? 'bg-slate-800 text-slate-300 border-white/10'
+                                            : 'bg-white text-slate-600 border-slate-100'
+                                            }`}
+                                    >
+                                        {renderMenuIcon(iconName, isDarkMode)}
+                                    </div>
+                                    <Selectable
+                                        id={`home_quick_${id}`}
+                                        type="text"
+                                        label={`Etichetta ${label}`}
+                                        isInspectorActive={isInspectorActive}
+                                        isSelected={activeSelectionId === `home_quick_${id}`}
+                                        onSelect={onSelect}
+                                        overrides={getOverride(`home_quick_${id}`)}
+                                        traits={['content', 'typography', 'interaction']}
+                                    >
+                                        {(getOverride(`home_quick_${id}`)?.visible !== false || isInspectorActive) && (
+                                            <span className={`text-[9px] font-bold text-center leading-tight uppercase tracking-tight ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>
+                                                {getOverride(`home_quick_${id}`)?.text || label}
+                                            </span>
+                                        )}
+                                    </Selectable>
                                 </div>
-                                <Selectable
-                                    id={`home_quick_${item.id}`}
-                                    type="text"
-                                    label={`Etichetta ${item.label}`}
-                                    isInspectorActive={isInspectorActive}
-                                    isSelected={activeSelectionId === `home_quick_${item.id}`}
-                                    onSelect={onSelect}
-                                    overrides={getOverride(`home_quick_${item.id}`)}
-                                    traits={['content', 'typography', 'interaction']}
-                                >
-                                    {(getOverride(`home_quick_${item.id}`)?.visible !== false || isInspectorActive) && (
-                                        <span className={`text-[10px] font-bold text-center leading-tight uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} `}>
-                                            {getOverride(`home_quick_${item.id}`)?.text || item.label}
-                                        </span>
-                                    )}
-                                </Selectable>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 
