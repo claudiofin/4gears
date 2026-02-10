@@ -49,13 +49,37 @@ export default function StandalonePreviewPage() {
     }, [projectId]);
 
     const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                // If Fullscreen API fails (like on iOS Safari), show PWA instructions
+        const doc = document.documentElement as any;
+        const body = document as any;
+
+        if (!document.fullscreenElement && !body.webkitFullscreenElement && !body.mozFullScreenElement && !body.msFullscreenElement) {
+            try {
+                if (doc.requestFullscreen) {
+                    doc.requestFullscreen();
+                } else if (doc.webkitRequestFullscreen) {
+                    doc.webkitRequestFullscreen();
+                } else if (doc.mozRequestFullScreen) {
+                    doc.mozRequestFullScreen();
+                } else if (doc.msRequestFullscreen) {
+                    doc.msRequestFullscreen();
+                } else {
+                    // Fallback for iOS
+                    setShowInstructions(true);
+                }
+            } catch (err) {
+                console.warn('Fullscreen request failed:', err);
                 setShowInstructions(true);
-            });
+            }
         } else {
-            document.exitFullscreen();
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (body.webkitExitFullscreen) {
+                body.webkitExitFullscreen();
+            } else if (body.mozCancelFullScreen) {
+                body.mozCancelFullScreen();
+            } else if (body.msExitFullscreen) {
+                body.msExitFullscreen();
+            }
         }
     };
 

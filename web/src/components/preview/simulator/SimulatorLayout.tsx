@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { DeviceType, NotchStyle, ThemeConfig } from '@/types/builder';
 import { TeamConfig } from '@/constants/teams';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
-import { RoleBasedExperience } from './RoleBasedExperience';
+
 
 interface SimulatorLayoutProps {
     deviceType: DeviceType;
@@ -47,18 +47,40 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
     const { getBodyFont, getHeadingFont } = useSimulatorStyles(themeConfig, isDarkMode);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const handleScroll = () => {
-        if (scrollRef.current) {
-            const isScrolled = scrollRef.current.scrollTop > 20;
-            onScrollChange?.(isScrolled);
+    const [scaleMultiplier, setScaleMultiplier] = useState(1);
+
+    useEffect(() => {
+        if (isStandalone || marketingMode) {
+            setScaleMultiplier(1);
+            return;
         }
-    };
+
+        const handleResize = () => {
+            const availableHeight = window.innerHeight - (isStandalone ? 0 : 150);
+            const simulatorHeight = 812 + (isStandalone ? 0 : 60); // Base height + padding/controls
+            if (availableHeight < simulatorHeight) {
+                setScaleMultiplier(Math.max(0.4, availableHeight / simulatorHeight));
+            } else {
+                setScaleMultiplier(1);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isStandalone, marketingMode]);
 
     const simulatorContent = (
-        <div className={`relative transition-all duration-500 shrink-0 ${isStandalone || marketingMode
-            ? 'w-full h-full'
-            : `${rolePreview === 'admin' ? 'w-[800px]' : 'w-[375px]'} h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`
-            }`}>
+        <div
+            className={`relative transition-all duration-500 shrink-0 ${isStandalone || marketingMode
+                ? 'w-full h-full'
+                : `w-[375px] h-[812px] bg-black shadow-2xl border-[8px] border-slate-900 ring-1 ring-slate-800 overflow-hidden ${deviceType === 'IPHONE' ? 'rounded-[50px]' : 'rounded-[24px]'}`
+                }`}
+            style={!isStandalone && !marketingMode ? {
+                transform: `scale(${scaleMultiplier})`,
+                transformOrigin: 'center center'
+            } : {}}
+        >
 
             {/* Internal App Content */}
             <div
@@ -126,25 +148,19 @@ export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({
                     </div>
                 )}
 
-                {!rolePreview && header}
+                {header}
 
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
                     className="w-full h-full overflow-y-auto relative hide-scrollbar z-10"
                 >
-                    {rolePreview ? (
-                        <RoleBasedExperience role={rolePreview} clubName={currentTeam.name} />
-                    ) : (
-                        children
-                    )}
+                    {children}
                 </div>
 
-                {!rolePreview && (
-                    <div className="absolute bottom-0 w-full z-40">
-                        {bottomNav}
-                    </div>
-                )}
+                <div className="absolute bottom-0 w-full z-40">
+                    {bottomNav}
+                </div>
 
                 {overlays}
 
