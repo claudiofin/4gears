@@ -2,23 +2,10 @@ import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
 import { PremiumCard } from '@/components/ui/PremiumCard';
-import { SimulatorHero } from '../SimulatorHero';
-import { Selectable } from '@/components/builder/VisualInspector';
 import {
-    Play, Music, Clock, MapPin, ChevronRight,
-    Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge,
-    Info, BookOpen, MessageSquare, Menu, Award
+    Play, Clock, MapPin, Calendar, ShoppingBag, Video
 } from 'lucide-react';
 
-// Help helper for icons
-const renderMenuIcon = (iconName: string, isDarkMode: boolean) => {
-    const iconMap: Record<string, React.ElementType> = {
-        Layout, Calendar, Users, ShoppingBag, Shield, Video, Gauge,
-        Info, BookOpen, Music, Award, MessageSquare, Menu
-    };
-    const IconComponent = iconMap[iconName] || Layout;
-    return <IconComponent size={20} />;
-};
 
 export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any; getIconProps: any; featureFlags?: any }> = ({
     themeConfig,
@@ -36,97 +23,12 @@ export const HomeScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
     sportConfig,
     featureFlags
 }) => {
-    const isUnified = themeConfig.header?.headerStyle === 'unified';
-
     return (
-        <div className="pb-32 space-y-6" style={{ paddingTop: '0px' }}>
+        <div className="pb-32 space-y-6" style={{ paddingTop: `${topPaddingValue + 16}px` }}>
             {/* Hero content is always integrated into the SimulatorHeader mega-header */}
 
             <div className="px-6 space-y-6">
-                {/* Universal Menu Items in Home (Widget Mode) */}
-                {themeConfig.header?.enableUniversalMenu &&
-                    themeConfig.header?.universalMenuPlacement === 'body' &&
-                    (themeConfig.header?.universalMenuItems?.length ?? 0) > 0 && (
-                        <div className="space-y-4">
-                            <SectionHeader
-                                id="home_quick_access"
-                                label="Menu Rapido Home"
-                                title="Accesso Rapido"
-                                isDarkMode={isDarkMode}
-                                isInspectorActive={isInspectorActive}
-                                activeSelectionId={activeSelectionId}
-                                onSelect={onSelect}
-                                getOverride={getOverride}
-                            />
-
-                            <div className="grid grid-cols-4 gap-4 py-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {themeConfig.header.universalMenuItems?.map((itemId: any) => {
-                                    let type = 'nav';
-                                    let id = itemId;
-                                    let label = '';
-                                    let iconName = 'Layout';
-                                    let pageId = '';
-
-                                    if (typeof itemId === 'string' && itemId.includes(':')) {
-                                        const parts = itemId.split(':');
-                                        type = parts[0];
-                                        id = parts[1];
-                                    }
-
-                                    if (type === 'nav') {
-                                        const navItem = (themeConfig.navigation || []).find(n => n.id === id);
-                                        if (!navItem) return null;
-                                        label = navItem.label;
-                                        iconName = navItem.icon;
-                                        pageId = navItem.id;
-                                    } else {
-                                        const feature = Object.values(featureFlags || {}).find((f: any) => f && typeof f === 'object' && f.id === id);
-                                        if (!feature) return null;
-                                        label = (feature as any).label;
-                                        const featureIconMap: Record<string, string> = {
-                                            news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
-                                            events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
-                                            sponsors: 'Shield', chants: 'Music', staff: 'Users'
-                                        };
-                                        iconName = featureIconMap[id] || 'Layout';
-                                        pageId = id;
-                                    }
-
-                                    return (
-                                        <div key={itemId} className="flex flex-col items-center gap-2 group">
-                                            <div
-                                                onClick={() => pageId && setPreviewPage(pageId)}
-                                                className={`w-14 h-14 rounded-2xl shadow-sm flex items-center justify-center group-hover:scale-110 group-active:scale-95 transition-all cursor-pointer border ${isDarkMode
-                                                    ? 'bg-slate-800/50 backdrop-blur-md text-slate-300 border-white/5 group-hover:border-white/20'
-                                                    : 'bg-white text-slate-600 border-slate-100 group-hover:border-slate-200 shadow-md'
-                                                    }`}
-                                            >
-                                                <div className="transition-transform duration-300 group-hover:rotate-6">
-                                                    {renderMenuIcon(iconName, isDarkMode)}
-                                                </div>
-                                            </div>
-                                            <Selectable
-                                                id={`home_quick_${id}`}
-                                                type="text"
-                                                label={`Etichetta ${label}`}
-                                                isInspectorActive={isInspectorActive}
-                                                isSelected={activeSelectionId === `home_quick_${id}`}
-                                                onSelect={onSelect}
-                                                overrides={getOverride(`home_quick_${id}`)}
-                                                traits={['content', 'typography', 'interaction']}
-                                            >
-                                                {(getOverride(`home_quick_${id}`)?.visible !== false || isInspectorActive) && (
-                                                    <span className={`text-[9px] font-black text-center leading-tight uppercase tracking-tight ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} transition-colors group-hover:text-primary`}>
-                                                        {getOverride(`home_quick_${id}`)?.text || label}
-                                                    </span>
-                                                )}
-                                            </Selectable>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
+                {/* Universal menu is always shown in the header on home — no duplication here */}
 
                 {/* WIDGET: NEXT MATCH (Only for Fans/Users if events active) */}
                 {activeFeatures.events && (
