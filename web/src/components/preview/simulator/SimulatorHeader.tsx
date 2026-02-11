@@ -84,7 +84,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
             const hasMenu = enableUniversalMenu && (
                 themeConfig.header?.universalMenuPlacement === 'header' || !isHome
             );
-            return hasMenu ? 230 : 180;
+            return hasMenu ? 250 : 180; // Increased to 250 for better breathing room
         }
 
         // Standard logic
@@ -93,7 +93,7 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
         const showUniversalMenuInHeader = enableUniversalMenu && (
             themeConfig.header?.universalMenuPlacement === 'header' || !isHome
         );
-        if (showUniversalMenuInHeader) height += 80; // Extra room for standard
+        if (showUniversalMenuInHeader) height += 70; // Standardized to 70
         return height;
     };
 
@@ -280,9 +280,9 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
                     {/* Universal Menu Row - Persistent - MOVED BELOW HERO */}
                     {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
-                        <div className="relative z-10 -mx-6 pb-2 pt-1 flex items-center overflow-x-auto no-scrollbar pointer-events-auto">
+                        <div className="relative z-10 -mx-6 py-2.5 flex items-center overflow-x-auto no-scrollbar pointer-events-auto">
                             <AnimatePresence mode="popLayout">
-                                <motion.div className="flex items-center gap-2.5 px-6 min-w-max">
+                                <motion.div className="flex items-center gap-3 px-6 min-w-max">
                                     {themeConfig.header.universalMenuItems.map(itemId => {
                                         let type = 'nav';
                                         let id = itemId;
