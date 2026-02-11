@@ -2,9 +2,8 @@ import React from 'react';
 import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
 import { PremiumCard } from '@/components/ui/PremiumCard';
-import { TacticsBoard } from '@/components/ui/TacticsBoard';
 import { PaymentConstants, ICheckoutService, PaymentIntent } from '@/services/PaymentInterfaces';
-import { Plus, Clock, MapPin, ChevronRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Plus, Clock, MapPin, ChevronRight, ShieldCheck, AlertCircle, Users, Music } from 'lucide-react';
 import { SmartCalendar } from '@/components/ui/SmartCalendar';
 
 export const NewsScreen: React.FC<InteractiveScreenProps & { getIconProps: any }> = ({
@@ -86,22 +85,6 @@ export const EventsScreen: React.FC<InteractiveScreenProps & { getIconProps: any
                         </div>
                     </PremiumCard>
                 ))}
-            </div>
-        </div>
-    );
-};
-
-export const TacticsScreen: React.FC<InteractiveScreenProps> = ({
-    themeConfig,
-    isDarkMode,
-    topPaddingValue,
-    currentTeam
-}) => {
-    return (
-        <div className="px-4 flex flex-col h-full overflow-hidden" style={{ paddingTop: `${topPaddingValue}px`, paddingBottom: '90px' }}>
-            <SectionHeader id="tactics_header" label="Titolo Tattica" title="Lavagna Tattica" isFirst={true} isDarkMode={isDarkMode} isInspectorActive={false} onSelect={() => { }} getOverride={() => ({})} />
-            <div className="flex-1 min-h-0 py-2">
-                <TacticsBoard sportType={currentTeam.sportType} themeConfig={themeConfig} isDarkMode={isDarkMode} />
             </div>
         </div>
     );
@@ -221,3 +204,39 @@ export const ShopScreen: React.FC<InteractiveScreenProps> = ({
         </div>
     );
 };
+
+// Generic Placeholder for missing features
+const PlaceholderScreen: React.FC<InteractiveScreenProps & { title: string; subtitle: string; icon: React.ReactNode }> = ({
+    isDarkMode,
+    topPaddingValue,
+    title,
+    subtitle,
+    icon
+}) => (
+    <div className="px-6 flex flex-col items-center justify-center text-center h-[calc(812px-200px)]" style={{ paddingTop: `${topPaddingValue}px` }}>
+        <div className={`w-20 h-20 rounded-[2.5rem] flex items-center justify-center mb-6 shadow-2xl transition-all duration-700 ${isDarkMode ? 'bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20' : 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100'}`}>
+            {icon}
+        </div>
+        <h3 className={`text-xl font-black uppercase tracking-tighter mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{title}</h3>
+        <p className={`text-xs font-bold leading-relaxed max-w-[200px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{subtitle}</p>
+
+        <div className="mt-12 w-full max-w-[240px] space-y-3">
+            {[1, 2, 3].map(i => (
+                <div key={i} className={`h-12 rounded-2xl w-full border border-dashed transition-opacity opacity-20 ${isDarkMode ? 'border-slate-700' : 'border-slate-300'}`} />
+            ))}
+        </div>
+    </div>
+);
+
+export const SponsorsScreen: React.FC<InteractiveScreenProps> = (props) => (
+    <PlaceholderScreen {...props} title="Sponsor & Partner" subtitle="Vetrina dedicata alle realtà che supportano il club." icon={<ShieldCheck size={32} />} />
+);
+
+export const ChantsScreen: React.FC<InteractiveScreenProps> = (props) => (
+    <PlaceholderScreen {...props} title="Cori & Tifoseria" subtitle="L'anima del club: inni, cori e contenuti per i tifosi." icon={<Music size={32} />} />
+);
+
+export const RosterScreen: React.FC<InteractiveScreenProps> = (props) => (
+    <PlaceholderScreen {...props} title="Rosa Atleti" subtitle="Elenco completo degli atleti iscritti e delle statistiche." icon={<Users size={32} />} />
+);
+

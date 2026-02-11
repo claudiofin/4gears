@@ -22,7 +22,7 @@ interface SimulatorLayoutProps {
     marketingQuote?: string;
     marketingBg?: string;
     marketingTemplate?: '3d' | 'front';
-    rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
 }
 
 export const SimulatorLayout: React.FC<SimulatorLayoutProps> = ({

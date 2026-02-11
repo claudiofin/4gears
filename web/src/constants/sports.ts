@@ -203,8 +203,6 @@ export const generateStaff = () => {
     return [
         { id: 'pres', name: 'Mario Draghi', role: 'Presidente', image: 'https://i.pravatar.cc/150?u=pres' },
         { id: 'ds', name: 'Giuseppe Rossi', role: 'Direttore Sportivo', image: 'https://i.pravatar.cc/150?u=ds' },
-        { id: 'coach', name: 'Antonio Conte', role: 'Allenatore', image: 'https://i.pravatar.cc/150?u=coach' },
-        { id: 'vice', name: 'Matteo Salvini', role: 'Vice Allenatore', image: 'https://i.pravatar.cc/150?u=vice' },
         { id: 'doc', name: 'Luca Ward', role: 'Medico Sociale', image: 'https://i.pravatar.cc/150?u=doc' },
     ];
 };
@@ -230,7 +228,7 @@ export const generateNotifications = (sport: SportType, isCrowded: boolean = fal
     const config = SPORT_CONFIG[sport] || SPORT_CONFIG['Calcio'];
     const standardInfos = [
         { id: 1, title: 'Nuovo Risultato', message: `La squadra ha concluso il match con un ${config.scoring.format}.`, time: '2h fa', type: 'info' },
-        { id: 2, title: 'Cambio Allenamento', message: `L'allenamento di ${config.events[1] || 'domani'} è stato posticipato alle 19:00.`, time: '5h fa', type: 'warning' },
+        { id: 2, title: 'Convocazioni Pronte', message: `Le convocazioni per il match di ${config.events[1] || 'domani'} sono state pubblicate.`, time: '5h fa', type: 'warning' },
         { id: 3, title: 'Nuovo Kit Disponibile', message: 'La nuova maglia è ora disponibile nello shop!', time: '1g fa', type: 'success' },
     ];
 
@@ -272,20 +270,6 @@ export const generateConversations = (sport: SportType) => {
             type: 'admin',
             messages: [
                 { id: 1, text: 'Ciao! Come possiamo aiutarti oggi?', sender: 'RC', time: '10:45' }
-            ]
-        },
-        {
-            id: 'coach',
-            name: 'Mister Antonio',
-            lastMessage: `Non dimenticate l'attrezzatura per il ${config.events[1] || 'prossimo match'}.`,
-            time: '09:30',
-            unread: 0,
-            online: false,
-            avatar: 'AC',
-            type: 'coach',
-            messages: [
-                { id: 1, text: 'Buongiorno a tutti.', sender: 'AC', time: '09:00' },
-                { id: 2, text: `Non dimenticate l'attrezzatura per il ${config.events[1] || 'prossimo match'}.`, sender: 'AC', time: '09:30' }
             ]
         },
         {

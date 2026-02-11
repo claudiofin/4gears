@@ -15,20 +15,6 @@ export default function PersonasPage() {
 
     const [personas, setPersonas] = useState([
         {
-            id: 'COACH',
-            name: 'Coach',
-            users: 0,
-            description: 'Accesso alla gestione squadra, statistiche e strumenti federazione.',
-            color: 'text-indigo-400 bg-indigo-500/10',
-            permissions: [
-                { id: 'view_stats', label: 'Statistiche Team', enabled: true },
-                { id: 'manage_team', label: 'Gestione Atleti', enabled: true },
-                { id: 'view_federation', label: 'Strumenti Federazione', enabled: true },
-                { id: 'view_secretariat', label: 'Gestione Segreteria', enabled: true },
-                { id: 'view_own_data', label: 'Dati Personali', enabled: true },
-            ]
-        },
-        {
             id: 'PLAYER',
             name: 'Atleta',
             users: 0,

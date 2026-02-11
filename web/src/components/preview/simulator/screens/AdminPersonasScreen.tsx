@@ -19,18 +19,6 @@ export const AdminPersonasScreen: React.FC<InteractiveScreenProps> = ({
 
     const [personas, setPersonas] = useState([
         {
-            id: 'COACH',
-            name: 'Coach',
-            users: 12,
-            description: 'Gestione squadra, statistiche e strumenti federazione.',
-            color: 'text-indigo-400 bg-indigo-500/10',
-            permissions: [
-                { id: 'view_stats', label: 'Statistiche Team', enabled: true },
-                { id: 'manage_team', label: 'Gestione Atleti', enabled: true },
-                { id: 'view_secretariat', label: 'Gestione Segreteria', enabled: true },
-            ]
-        },
-        {
             id: 'PLAYER',
             name: 'Atleta',
             users: 45,

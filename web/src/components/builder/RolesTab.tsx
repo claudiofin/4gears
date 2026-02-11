@@ -28,17 +28,6 @@ const DEFAULT_ROLES: RoleConfig[] = [
         ]
     },
     {
-        id: 'COACH',
-        name: 'Coach',
-        description: 'Gestione tecnica della squadra e degli atleti.',
-        color: 'text-indigo-400 bg-indigo-500/10',
-        permissions: [
-            { id: 'view_stats', label: 'Statistiche Team', enabled: true },
-            { id: 'manage_team', label: 'Convocazioni', enabled: true },
-            { id: 'tactics', label: 'Lavagna Tattica', enabled: true },
-        ]
-    },
-    {
         id: 'PLAYER',
         name: 'Atleta',
         description: 'Visualizzazione dati personali e team.',

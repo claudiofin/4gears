@@ -322,9 +322,9 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                             if (!featureData || !featureData.enabled) return null;
 
                                             const featureIconMap: Record<string, string> = {
-                                                news: 'BookOpen', tactics: 'Gauge', video: 'Video', shop: 'ShoppingBag',
-                                                events: 'Calendar', chat: 'MessageSquare', lineup: 'Users',
-                                                sponsors: 'Shield', chants: 'Music', staff: 'Users'
+                                                news: 'BookOpen', shop: 'ShoppingBag',
+                                                events: 'Calendar', sponsors: 'Shield',
+                                                chants: 'Music'
                                             };
                                             const iconName = featureIconMap[id] || 'Layout';
 

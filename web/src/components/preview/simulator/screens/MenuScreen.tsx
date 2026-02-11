@@ -79,8 +79,8 @@ export const MenuScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
                                 className="flex flex-col items-center gap-3 w-full"
                             >
                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${isDarkMode
-                                        ? 'bg-slate-700/50 text-slate-300 group-hover:bg-primary/20 group-hover:text-primary'
-                                        : 'bg-slate-100 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
+                                    ? 'bg-slate-700/50 text-slate-300 group-hover:bg-primary/20 group-hover:text-primary'
+                                    : 'bg-slate-100 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
                                     }`}>
                                     {renderIcon(item.icon)}
                                 </div>
@@ -125,8 +125,8 @@ export const MenuScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
                                         className="flex flex-col items-center gap-3 w-full"
                                     >
                                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${isDarkMode
-                                                ? 'bg-slate-700/50 text-slate-300 group-hover:bg-primary/20 group-hover:text-primary'
-                                                : 'bg-slate-100 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
+                                            ? 'bg-slate-700/50 text-slate-300 group-hover:bg-primary/20 group-hover:text-primary'
+                                            : 'bg-slate-100 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
                                             }`}>
                                             {renderIcon(item.icon)}
                                         </div>
@@ -166,15 +166,10 @@ export const MenuScreen: React.FC<InteractiveScreenProps & { activeFeatures: any
 function getFeatureIcon(featureId: string): string {
     const map: Record<string, string> = {
         news: 'BookOpen',
-        tactics: 'Gauge',
-        video: 'Video',
         shop: 'ShoppingBag',
         events: 'Calendar',
-        chat: 'MessageSquare',
-        lineup: 'Users',
         sponsors: 'Shield',
-        chants: 'Music',
-        staff: 'UserCheck'
+        chants: 'Music'
     };
     return map[featureId] || 'Layout';
 }

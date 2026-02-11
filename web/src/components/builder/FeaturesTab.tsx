@@ -66,7 +66,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ flags, onToggle, onUpd
                             <div className="px-2 py-1.5 bg-black/20 rounded flex items-center justify-between">
                                 <span className="text-slate-500">Roles</span>
                                 <div className="flex gap-1">
-                                    {(['FAN', 'PLAYER', 'COACH', 'ADMIN'] as const).map(role => (
+                                    {(['FAN', 'PLAYER', 'ADMIN'] as const).map(role => (
                                         <button
                                             key={role}
                                             onClick={() => {

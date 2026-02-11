@@ -20,6 +20,6 @@ export interface InteractiveScreenProps extends BaseScreenProps {
     mockData: any;
     setMockData: any;
     sportConfig: SportConfig;
-    rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
     viewMode: ViewMode;
 }

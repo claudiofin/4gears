@@ -1,7 +1,7 @@
 import { SportType } from "@/constants/sports";
 
 export type AppTier = 'FREE' | 'PREMIUM' | 'ELITE';
-export type UserPersona = 'ADMIN' | 'COACH' | 'PLAYER' | 'FAN';
+export type UserPersona = 'ADMIN' | 'PLAYER' | 'FAN';
 export type ViewMode = 'USER' | 'ADMIN' | 'SPLASH' | 'LOGIN';
 export type NotchStyle = 'NONE' | 'STANDARD' | 'FLOATING';
 export type DeviceType = 'IPHONE' | 'ANDROID';
@@ -33,15 +33,10 @@ export interface FeatureFlag {
 
 export interface FeatureFlags {
     news: FeatureFlag;
-    tactics: FeatureFlag;
-    video: FeatureFlag;
     shop: FeatureFlag;
     events: FeatureFlag;
-    chat: FeatureFlag;
-    lineup: FeatureFlag;
     sponsors: FeatureFlag;
     chants: FeatureFlag;
-    staff: FeatureFlag;
 }
 
 export type BurgerMenuStyle = 'sidebar' | 'fullscreen' | 'minimal';

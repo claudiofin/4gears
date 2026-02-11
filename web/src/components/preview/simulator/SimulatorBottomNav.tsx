@@ -18,7 +18,7 @@ interface SimulatorBottomNavProps {
     activeSelectionId?: string | null;
     onSelect: (metadata: ComponentMetadata) => void;
     isStandalone?: boolean;
-    rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
 }
 
 export const SimulatorBottomNav: React.FC<SimulatorBottomNavProps> = ({

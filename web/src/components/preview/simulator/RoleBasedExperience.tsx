@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 interface RoleBasedExperienceProps {
-    role: 'coach' | 'athlete' | 'fan' | 'admin';
+    role: 'athlete' | 'fan' | 'admin';
     clubName: string;
 }
 
@@ -29,13 +29,12 @@ export const RoleBasedExperience: React.FC<RoleBasedExperienceProps> = ({ role, 
 
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 hide-scrollbar">
-                {role === 'coach' && <CoachView />}
                 {role === 'athlete' && <AthleteView />}
                 {role === 'fan' && <FanView />}
                 {role === 'admin' && <AdminSystemView />}
             </div>
 
-            {/* Tab Bar */}
+            {/* Tab Bar placeholder for visual consistency */}
             <div className="p-4 bg-slate-900 border-t border-white/5 flex justify-around items-center">
                 <Users size={20} className="text-indigo-400" />
                 <Calendar size={20} className="text-slate-500" />
@@ -44,92 +43,6 @@ export const RoleBasedExperience: React.FC<RoleBasedExperienceProps> = ({ role, 
                     JD
                 </div>
             </div>
-        </div>
-    );
-};
-
-const CoachView = () => {
-    const [showAttendance, setShowAttendance] = useState(false);
-    const [attendanceList, setAttendanceList] = useState([
-        { name: 'Marco Rossi', status: 'pending' },
-        { name: 'Luca Bianchi', status: 'pending' },
-        { name: 'Simone Verdi', status: 'pending' },
-    ]);
-
-    const markAttendance = (index: number, status: 'present' | 'absent') => {
-        const newList = [...attendanceList];
-        newList[index].status = status;
-        setAttendanceList(newList);
-    };
-
-    return (
-        <div className="space-y-6">
-            <AnimatePresence mode="wait">
-                {!showAttendance ? (
-                    <motion.div
-                        key="coach-dashboard"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="p-5 rounded-3xl bg-indigo-600 shadow-xl shadow-indigo-600/20"
-                    >
-                        <h3 className="text-lg font-black uppercase italic leading-none mb-1">Allenamento Oggi</h3>
-                        <p className="text-xs text-indigo-100/70 font-medium tracking-wide">18:00 - Campo A</p>
-                        <button
-                            onClick={() => setShowAttendance(true)}
-                            className="mt-4 w-full py-3 bg-white text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest"
-                        >
-                            Segna Presenze
-                        </button>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="attendance-list"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-4"
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-black uppercase">Appello Operativo</h3>
-                            <button onClick={() => setShowAttendance(false)} className="text-[10px] text-slate-500 font-bold uppercase">Chiudi</button>
-                        </div>
-                        {attendanceList.map((player, i) => (
-                            <div key={i} className="p-4 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-between">
-                                <span className="text-xs font-bold">{player.name}</span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => markAttendance(i, 'present')}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase ${player.status === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'}`}
-                                    >
-                                        P
-                                    </button>
-                                    <button
-                                        onClick={() => markAttendance(i, 'absent')}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase ${player.status === 'absent' ? 'bg-red-500 text-white' : 'bg-slate-800 text-slate-400'}`}
-                                    >
-                                        A
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <section className="space-y-3">
-                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Azioni Rapide</h4>
-                <div className="grid grid-cols-2 gap-3">
-                    <button className="p-4 bg-slate-900 border border-white/5 rounded-2xl flex flex-col gap-2">
-                        <ClipboardList size={18} className="text-indigo-400" />
-                        <span className="text-[10px] font-black uppercase">Formazione</span>
-                    </button>
-                    <button className="p-4 bg-slate-900 border border-white/5 rounded-2xl flex flex-col gap-2">
-                        <Activity size={18} className="text-emerald-400" />
-                        <span className="text-[10px] font-black uppercase">Test Fisici</span>
-                    </button>
-                </div>
-            </section>
         </div>
     );
 };
@@ -151,7 +64,7 @@ const AthleteView = () => {
             <div className={`p-5 rounded-3xl border transition-colors duration-500 ${status === 'expired' ? 'bg-slate-900 border-amber-500/20' : status === 'pending' ? 'bg-indigo-900/20 border-indigo-500/20' : 'bg-emerald-900/20 border-emerald-500/20'}`}>
                 <div className={`flex items-center gap-3 mb-3 ${status === 'expired' ? 'text-amber-500' : status === 'pending' ? 'text-indigo-400' : 'text-emerald-400'}`}>
                     <ShieldCheck size={18} />
-                    <span className="text-[10px] font-black uppercase tracking-widest tracking-widest">
+                    <span className="text-[10px] font-black uppercase tracking-widest">
                         {status === 'expired' ? 'Compliance Alert' : status === 'pending' ? 'Verifica in Corso' : 'Status: OK'}
                     </span>
                 </div>

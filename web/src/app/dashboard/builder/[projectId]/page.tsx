@@ -26,6 +26,7 @@ import {
     generateConversations,
     generateAdminData
 } from '@/constants/sports';
+import { generatePreviewCode } from '@/lib/utils';
 import { ArrowLeft, Save, Send, Loader2, Check, AlertCircle, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PreviewQRCode } from '@/components/builder/PreviewQRCode';
@@ -98,30 +99,20 @@ export default function BuilderPage() {
             { id: 'news', label: 'News Feed', icon: 'Newspaper', enabled: true, order: 1 },
             { id: 'events', label: 'Events', icon: 'Calendar', enabled: true, order: 2 },
             { id: 'roster', label: 'Roster', icon: 'Users', enabled: true, order: 3 },
-            { id: 'tactics', label: 'Lavagna Tattica', icon: 'Shield', enabled: true, order: 4 },
-            { id: 'video', label: 'Video Analisi', icon: 'Video', enabled: false, order: 5 },
-            { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 6 },
-            { id: 'chat', label: 'Team Chat', icon: 'MessageSquare', enabled: true, order: 7 },
-            { id: 'lineup', label: 'Formazioni', icon: 'Layout', enabled: false, order: 8 },
-            { id: 'sponsors', label: 'Sponsor & Partner', icon: 'Award', enabled: true, order: 9 },
-            { id: 'chants', label: 'Cori & Tifoseria', icon: 'Music', enabled: false, order: 10 },
-            { id: 'staff', label: 'Staff Tecnico', icon: 'Users', enabled: true, order: 11 },
-            { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 12 },
+            { id: 'shop', label: 'Shop', icon: 'ShoppingBag', enabled: true, order: 4 },
+            { id: 'sponsors', label: 'Sponsor & Partner', icon: 'Award', enabled: true, order: 5 },
+            { id: 'chants', label: 'Cori & Tifoseria', icon: 'Music', enabled: false, order: 6 },
+            { id: 'menu', label: 'Menu', icon: 'Menu', enabled: true, order: 7 },
         ],
         componentOverrides: {}
     });
 
     const [featureFlags, setFeatureFlagsState] = useState<FeatureFlags>({
-        news: { id: 'news', label: 'News Feed', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
-        tactics: { id: 'tactics', label: 'Lavagna Tattica', enabled: true, minTier: 'PREMIUM', availableTo: ['COACH', 'PLAYER', 'ADMIN'] },
-        video: { id: 'video', label: 'Video Analisi', enabled: true, minTier: 'FREE', availableTo: ['COACH', 'PLAYER', 'ADMIN'] },
-        shop: { id: 'shop', label: 'Merchandising', enabled: true, minTier: 'PREMIUM', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
-        events: { id: 'events', label: 'Gestione Eventi', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
-        chat: { id: 'chat', label: 'Team Chat', enabled: true, minTier: 'PREMIUM', availableTo: ['PLAYER', 'COACH', 'ADMIN'] },
-        lineup: { id: 'lineup', label: 'Formazioni', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
-        sponsors: { id: 'sponsors', label: 'Sponsor & Partner', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
+        news: { id: 'news', label: 'News Feed', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'ADMIN'] },
+        shop: { id: 'shop', label: 'Merchandising', enabled: true, minTier: 'PREMIUM', availableTo: ['FAN', 'PLAYER', 'ADMIN'] },
+        events: { id: 'events', label: 'Gestione Eventi', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'ADMIN'] },
+        sponsors: { id: 'sponsors', label: 'Sponsor & Partner', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'ADMIN'] },
         chants: { id: 'chants', label: 'Cori & Tifoseria', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER'] },
-        staff: { id: 'staff', label: 'Staff Tecnico', enabled: true, minTier: 'FREE', availableTo: ['FAN', 'PLAYER', 'COACH', 'ADMIN'] },
     });
 
     // Mock data
@@ -211,8 +202,23 @@ export default function BuilderPage() {
 
             if (error) throw error;
 
-            const data = rawData as unknown as Project;
+            let data = rawData as unknown as Project;
             if (!data) return;
+
+            // Generate preview code if missing
+            if (!data.preview_code) {
+                const newCode = generatePreviewCode();
+                const { data: updatedData, error: updateError } = await (supabase as any)
+                    .from('projects')
+                    .update({ preview_code: newCode })
+                    .eq('id', projectId)
+                    .select()
+                    .single();
+
+                if (!updateError && updatedData) {
+                    data = updatedData as unknown as Project;
+                }
+            }
 
             setProject(data);
             if (data.user_notes) setUserNotes(data.user_notes);
@@ -603,6 +609,7 @@ export default function BuilderPage() {
                 isOpen={showQRCode}
                 onClose={() => setShowQRCode(false)}
                 projectId={projectId}
+                previewCode={project?.preview_code || ''}
             />
 
             <MarketingStudioPanel

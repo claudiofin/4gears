@@ -140,7 +140,7 @@ export default function StandalonePreviewPage() {
     const config = (project as any).config;
 
     return (
-        <div className="fixed inset-0 bg-slate-950 overflow-hidden select-none">
+        <div className="fixed inset-0 h-[100dvh] bg-slate-950 overflow-hidden select-none flex flex-col items-center justify-center">
             <PreviewPane
                 isStandalone={true}
                 deviceType={config.simulator?.deviceType || 'IPHONE'}

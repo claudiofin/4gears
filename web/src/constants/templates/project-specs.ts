@@ -23,18 +23,12 @@ This document outlines the core behaviors, use cases, and success criteria for t
 - **Commercial Management**: Manage orders and sponsor tiers.
 - **Success Link**: Real-time visibility into all club operations via the Console.
 
-### 3. Coach (Technical Staff)
-*Field management and team strategy.*
-- **Operations**: Manage field occupancy and training schedules.
-- **Roster Management**: Monitor athlete status (Injuries, availability).
-- **Technical Tools**: Use the interactive Tactics Board to explain match strategies.
-- **Success Link**: Faster communication of match-day tactical changes.
 
-### 4. Athlete (Player)
+### 3. Athlete (Player)
 *The active core of the club.*
 - **Personal Center**: View personal performance stats and training goals.
 - **Logistics**: Respond to event RSVPs (Match/Training attendance).
-- **Communication**: Receive direct instructions and tactical updates from the Coach.
+- **Communication**: Receive direct instructions and updates from the Management.
 - **Success Link**: 100% RSVP rate and improved personal performance tracking.
 
 ---
@@ -42,7 +36,7 @@ This document outlines the core behaviors, use cases, and success criteria for t
 ## 🛠️ Behavioral Rules & Requirements
 
 ### Access Control (RBAC)
-- **Role Isolation**: Only 'Coach' and 'Admin' personas can access the Tactics board and deep roster management.
+- **Role Isolation**: Only 'Admin' personas can access the Tactics board and deep roster management.
 - **Tiered Access**: 'Premium' and 'Elite' fans unlock exclusive video content and detailed match stats.
 
 ### Data Synchronization
@@ -59,7 +53,7 @@ This document outlines the core behaviors, use cases, and success criteria for t
 
 1. **Visual Fidelity**: The app branding matches the 4Gears Builder configuration with 0 pixel drift.
 2. **Performance**: Splash-to-Dashboard transition in under 1.5 seconds on standard devices.
-3. **Robustness**: 100% functionality of the Coach Dashboard regardless of offline state (Cached data).
+3. **Robustness**: 100% functionality of the Athlete Dashboard regardless of offline state (Cached data).
 4. **Security**: Role-based routing prevents unauthorized access to Admin panels.
 
 ---

@@ -10,9 +10,8 @@ import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
 import { HomeScreen } from './screens/HomeScreen';
 import { AdminDashboardScreen } from './screens/AdminDashboardScreen';
 import { SecretariatScreen, FederationToolsScreen } from './screens/ManagementScreens';
-import { CoachDashboardScreen } from './screens/CoachDashboardScreen';
 import { AthleteDashboardScreen } from './screens/AthleteDashboardScreen';
-import { NewsScreen, EventsScreen, TacticsScreen, ShopScreen } from './screens/FeatureScreens';
+import { NewsScreen, EventsScreen, ShopScreen, SponsorsScreen, ChantsScreen, RosterScreen } from './screens/FeatureScreens';
 import { MatchDetailScreen } from './screens/MatchDetailScreen';
 import { SplashScreen } from './screens/SplashScreen';
 import { LoginScreen } from './screens/LoginScreen';
@@ -37,7 +36,7 @@ interface SimulatorScreensProps {
     headerHeight?: number;
     deviceType?: DeviceType;
     multiTeamMode?: boolean;
-    rolePreview?: 'coach' | 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
     isStandalone?: boolean;
     featureFlags?: FeatureFlags;
 }
@@ -155,10 +154,14 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
             case 'calendar':
             case 'events':
                 return <EventsScreen {...screenProps} />;
-            case 'tactics':
-                return <TacticsScreen {...screenProps} />;
             case 'shop':
                 return <ShopScreen {...screenProps} />;
+            case 'sponsors':
+                return <SponsorsScreen {...screenProps} />;
+            case 'chants':
+                return <ChantsScreen {...screenProps} />;
+            case 'roster':
+                return <RosterScreen {...screenProps} />;
             case 'match_detail':
                 return <MatchDetailScreen {...screenProps} />;
             case 'admin_secretariat':
@@ -169,8 +172,6 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                 return <FederationToolsScreen {...screenProps} />;
             case 'admin_personas':
                 return <AdminPersonasScreen {...screenProps} />;
-            case 'coach_dashboard':
-                return <CoachDashboardScreen {...screenProps} />;
             case 'athlete_dashboard':
                 return <AthleteDashboardScreen {...screenProps} />;
             default:

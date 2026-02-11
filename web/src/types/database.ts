@@ -575,6 +575,7 @@ export type Database = {
                     updated_at: string
                     user_id: string
                     user_notes: string | null
+                    preview_code: string | null
                 }
                 Insert: {
                     config: Json
@@ -585,6 +586,7 @@ export type Database = {
                     updated_at?: string
                     user_id: string
                     user_notes?: string | null
+                    preview_code?: string | null
                 }
                 Update: {
                     config?: Json
@@ -595,6 +597,7 @@ export type Database = {
                     updated_at?: string
                     user_id?: string
                     user_notes?: string | null
+                    preview_code?: string | null
                 }
                 Relationships: []
             }
@@ -777,7 +780,7 @@ export type Database = {
             match_status: "scheduled" | "live" | "potential" | "final"
             task_priority: "low" | "medium" | "high" | "urgent"
             task_status: "todo" | "in_progress" | "review" | "done"
-            user_role: "admin" | "user" | "coach" | "athlete" | "fan"
+            user_role: "admin" | "user" | "athlete" | "fan"
         }
         CompositeTypes: {
             [_ in never]: never

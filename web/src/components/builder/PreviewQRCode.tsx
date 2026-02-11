@@ -9,11 +9,14 @@ interface PreviewQRCodeProps {
     isOpen: boolean;
     onClose: () => void;
     projectId: string;
+    previewCode?: string;
 }
 
-export const PreviewQRCode: React.FC<PreviewQRCodeProps> = ({ isOpen, onClose, projectId }) => {
+export const PreviewQRCode: React.FC<PreviewQRCodeProps> = ({ isOpen, onClose, projectId, previewCode }) => {
     // Generate the full URL for preview
-    const previewUrl = `${window.location.origin}/preview/${projectId}`;
+    const previewUrl = previewCode
+        ? `${window.location.origin}/preview?code=${previewCode}`
+        : `${window.location.origin}/preview/${projectId}`;
 
     return (
         <AnimatePresence>
@@ -52,22 +55,32 @@ export const PreviewQRCode: React.FC<PreviewQRCodeProps> = ({ isOpen, onClose, p
                                 </button>
                             </div>
 
-                            <div className="bg-white p-6 rounded-2xl flex items-center justify-center mb-6">
+                            <div className="bg-white p-6 rounded-2xl flex items-center justify-center mb-4 leading-none">
                                 <QRCodeSVG
                                     value={previewUrl}
-                                    size={200}
+                                    size={180}
                                     level="H"
                                     includeMargin={false}
-                                    imageSettings={{
-                                        src: "/favicon.ico", // Attempt to use favicon as logo in QR
-                                        x: undefined,
-                                        y: undefined,
-                                        height: 40,
-                                        width: 40,
-                                        excavate: true,
-                                    }}
                                 />
                             </div>
+
+                            {previewCode && (
+                                <div className="mb-6">
+                                    <div className="flex flex-col items-center bg-slate-950/50 border border-slate-800 rounded-2xl p-4">
+                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">Accesso Rapido</span>
+                                        <div className="flex gap-2">
+                                            {previewCode.split('').map((char, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="w-10 h-12 flex items-center justify-center bg-slate-800 rounded-xl text-xl font-black text-indigo-400 border border-slate-700 shadow-inner"
+                                                >
+                                                    {char}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <a
                                 href={previewUrl}

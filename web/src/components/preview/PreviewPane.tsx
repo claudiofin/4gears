@@ -43,7 +43,7 @@ interface PreviewPaneProps {
     setPreviewPage: (page: string) => void;
 
     // Role Preview Props
-    userPersona?: 'ADMIN' | 'COACH' | 'PLAYER' | 'FAN';
+    userPersona?: 'ADMIN' | 'PLAYER' | 'FAN';
     multiTeamMode?: boolean;
 
     // Marketing Studio Props
@@ -170,9 +170,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     marketingTemplate={marketingTemplate}
                     rolePreview={
                         userPersona === 'ADMIN' ? 'admin' :
-                            userPersona === 'COACH' ? 'coach' :
-                                userPersona === 'PLAYER' ? 'athlete' :
-                                    userPersona === 'FAN' ? 'fan' : null
+                            userPersona === 'PLAYER' ? 'athlete' :
+                                userPersona === 'FAN' ? 'fan' : null
                     }
                     inspector={
                         onInspectorToggle && (
@@ -233,9 +232,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 isStandalone={isStandalone}
                                 rolePreview={
                                     userPersona === 'ADMIN' ? 'admin' :
-                                        userPersona === 'COACH' ? 'coach' :
-                                            userPersona === 'PLAYER' ? 'athlete' :
-                                                userPersona === 'FAN' ? 'fan' : null
+                                        userPersona === 'PLAYER' ? 'athlete' :
+                                            userPersona === 'FAN' ? 'fan' : null
                                 }
                             />
                         )
@@ -299,9 +297,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         multiTeamMode={multiTeamMode}
                         rolePreview={
                             userPersona === 'ADMIN' ? 'admin' :
-                                userPersona === 'COACH' ? 'coach' :
-                                    userPersona === 'PLAYER' ? 'athlete' :
-                                        userPersona === 'FAN' ? 'fan' : null
+                                userPersona === 'PLAYER' ? 'athlete' :
+                                    userPersona === 'FAN' ? 'fan' : null
                         }
                     />
                 </SimulatorLayout>
