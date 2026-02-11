@@ -244,7 +244,41 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
 
 
 
-                    {/* Universal Menu Row - Persistent */}
+                    {/* UNIFIED HERO CONTENT (Only here if isUnifiedHome) */}
+                    {isUnifiedHome && (
+                        <div className="relative z-10 pb-4 pt-1 px-0">
+                            <Selectable
+                                id="header_welcome"
+                                type="text"
+                                label="Welcome Text"
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'header_welcome'}
+                                onSelect={onSelect}
+                                overrides={getOverride('welcome_text')}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                <h2 className="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">
+                                    {getOverride('welcome_text')?.text || 'Benvenuto'}
+                                </h2>
+                            </Selectable>
+                            <Selectable
+                                id="header_team_mega"
+                                type="text"
+                                label="Team Name (Mega)"
+                                isInspectorActive={isInspectorActive}
+                                isSelected={activeSelectionId === 'header_team_mega'}
+                                onSelect={onSelect}
+                                overrides={getOverride('team_name')}
+                                traits={['content', 'typography', 'interaction']}
+                            >
+                                <h1 className="text-4xl font-black leading-none tracking-tight text-white uppercase break-all line-clamp-2">
+                                    {getOverride('team_name')?.text || currentTeam.name}
+                                </h1>
+                            </Selectable>
+                        </div>
+                    )}
+
+                    {/* Universal Menu Row - Persistent - MOVED BELOW HERO */}
                     {showUniversalMenuInHeader && themeConfig.header?.universalMenuItems && (
                         <div className="relative z-10 pb-2 pt-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
                             <AnimatePresence mode="popLayout">
@@ -321,40 +355,6 @@ export const SimulatorHeader: React.FC<SimulatorHeaderProps> = ({
                                     })}
                                 </motion.div>
                             </AnimatePresence>
-                        </div>
-                    )}
-
-                    {/* UNIFIED HERO CONTENT (Only here if isUnifiedHome) */}
-                    {isUnifiedHome && (
-                        <div className="relative z-10 pb-4 pt-1 px-0">
-                            <Selectable
-                                id="header_welcome"
-                                type="text"
-                                label="Welcome Text"
-                                isInspectorActive={isInspectorActive}
-                                isSelected={activeSelectionId === 'header_welcome'}
-                                onSelect={onSelect}
-                                overrides={getOverride('welcome_text')}
-                                traits={['content', 'typography', 'interaction']}
-                            >
-                                <h2 className="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">
-                                    {getOverride('welcome_text')?.text || 'Benvenuto'}
-                                </h2>
-                            </Selectable>
-                            <Selectable
-                                id="header_team_mega"
-                                type="text"
-                                label="Team Name (Mega)"
-                                isInspectorActive={isInspectorActive}
-                                isSelected={activeSelectionId === 'header_team_mega'}
-                                onSelect={onSelect}
-                                overrides={getOverride('team_name')}
-                                traits={['content', 'typography', 'interaction']}
-                            >
-                                <h1 className="text-4xl font-black leading-none tracking-tight text-white uppercase break-all line-clamp-2">
-                                    {getOverride('team_name')?.text || currentTeam.name}
-                                </h1>
-                            </Selectable>
                         </div>
                     )}
 

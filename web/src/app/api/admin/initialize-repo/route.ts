@@ -124,7 +124,54 @@ export async function POST(req: Request) {
             console.error('Failed to create SPECS.md', await createSpecsResponse.json());
         }
 
-        // 6. Update submission in database
+        // 6. Create GitHub Action if handoff_mode is 'github_action'
+        if (submission.handoff_mode === 'github_action') {
+            const workflowContent = `name: 4Gears AI Generator
+on:
+  push:
+    paths:
+      - 'config.json'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: AI Generation
+        env:
+          GEMINI_API_KEY: \${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo "Starting AI Orchestration for $(repoName)..."
+          echo "Config detected. Triggering mobile agent..."
+          # Future: npx @4gears/ai-orchestrator run --config config.json
+`;
+
+            const createWorkflowResponse = await fetch(`https://api.github.com/repos/${owner}/${name}/contents/.github/workflows/generate.yml`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${PAT}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json',
+                    'X-GitHub-Api-Version': '2022-11-28'
+                },
+                body: JSON.stringify({
+                    message: 'Initialize AI Generator workflow',
+                    content: Buffer.from(workflowContent).toString('base64'),
+                    branch: 'main'
+                })
+            });
+
+            if (!createWorkflowResponse.ok) {
+                console.error('Failed to create workflow', await createWorkflowResponse.json());
+            }
+        }
+
+        // 7. Update submission in database
         const { error: updateError } = await supabase
             .from('submission_requests')
             .update({
@@ -139,7 +186,8 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             repoUrl: repoFullUrl,
-            repoName: repoData.full_name
+            repoName: repoData.full_name,
+            mode: submission.handoff_mode
         });
 
     } catch (error: any) {

@@ -11,6 +11,7 @@ import {
     Activity, ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { HandoverEngine } from '@/services/HandoverEngine';
 
 export type ExtendedSubmission = SubmissionRequest & {
     profiles: { email: string | null } | null;
@@ -19,6 +20,7 @@ export type ExtendedSubmission = SubmissionRequest & {
     phone_number?: string;
     github_repo_url?: string;
     github_repo_name?: string;
+    handoff_mode?: 'bot' | 'github_action';
 };
 
 export default function SubmissionsPage() {
@@ -27,7 +29,8 @@ export default function SubmissionsPage() {
     const [selectedSubmission, setSelectedSubmission] = useState<ExtendedSubmission | null>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setTab] = useState<'info' | 'team' | 'design' | 'features' | 'raw'>('info');
+    const [activeTab, setTab] = useState<'info' | 'team' | 'design' | 'features' | 'handover' | 'raw'>('info');
+    const [handoffMode, setHandoffMode] = useState<'bot' | 'github_action'>('bot');
 
     const fetchSubmissions = async () => {
         try {
@@ -58,10 +61,13 @@ export default function SubmissionsPage() {
     const handleUpdateStatus = async (id: string, newStatus: 'completed' | 'rejected') => {
         setProcessingId(id);
         try {
-            // Update submission status
+            // Update submission status and handoff mode
             const { error } = await supabase
                 .from('submission_requests')
-                .update({ status: newStatus })
+                .update({
+                    status: newStatus,
+                    handoff_mode: handoffMode
+                })
                 .eq('id', id);
 
             if (error) {
@@ -249,6 +255,7 @@ export default function SubmissionsPage() {
                                 { id: 'team', label: 'Team & Sport', icon: Trophy },
                                 { id: 'design', label: 'Design System', icon: Palette },
                                 { id: 'features', label: 'Funzionalità', icon: Layers },
+                                { id: 'handover', label: 'Handover Context', icon: Activity },
                                 { id: 'raw', label: 'Dati JSON', icon: Code },
                             ].map((t) => (
                                 <button
@@ -449,6 +456,75 @@ export default function SubmissionsPage() {
                                     </motion.div>
                                 )}
 
+                                {activeTab === 'handover' && (
+                                    <motion.div
+                                        key="handover"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6"
+                                    >
+                                        {(selectedSubmission.config as any)?.identitySnapshot ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-3xl">
+                                                    <p className="text-[10px] text-blue-400 uppercase font-black mb-4">Precision Design Tokens</p>
+                                                    <div className="space-y-3">
+                                                        <div className="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                                            <span className="text-xs text-slate-500">Border Radius</span>
+                                                            <span className="text-xs text-white font-black uppercase">{(selectedSubmission.config as any).identitySnapshot.designBox.tokens.borderRadius}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                                            <span className="text-xs text-slate-500">Shadows</span>
+                                                            <span className="text-xs text-white font-black uppercase">{(selectedSubmission.config as any).identitySnapshot.designBox.tokens.shadows}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                                            <span className="text-xs text-slate-500">Spacing Level</span>
+                                                            <span className="text-xs text-white font-black uppercase">{(selectedSubmission.config as any).identitySnapshot.designBox.tokens.spacing}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-3xl">
+                                                    <p className="text-[10px] text-indigo-400 uppercase font-black mb-4 flex items-center gap-2">
+                                                        <ShieldCheck size={12} /> AI Technical Directives
+                                                    </p>
+                                                    <ul className="space-y-2">
+                                                        {HandoverEngine.generateAgentTechnicalSheet(selectedSubmission.config as any).coreDirectives.map((rule: string, i: number) => (
+                                                            <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                                                                <div className="w-1 h-1 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                                                                {rule}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+
+                                                <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-3xl md:col-span-2">
+                                                    <p className="text-[10px] text-slate-500 uppercase font-black mb-4">Color Palette Snapshot</p>
+                                                    <div className="flex gap-4">
+                                                        <div className="flex-1 p-3 bg-slate-900 rounded-2xl border border-slate-800">
+                                                            <div
+                                                                className="w-full h-12 rounded-lg mb-2"
+                                                                style={{ backgroundColor: (selectedSubmission.config as any).identitySnapshot.club.colors.primary }}
+                                                            />
+                                                            <p className="text-[10px] text-slate-500 text-center font-mono">Primary: {(selectedSubmission.config as any).identitySnapshot.club.colors.primary}</p>
+                                                        </div>
+                                                        <div className="flex-1 p-3 bg-slate-900 rounded-2xl border border-slate-800">
+                                                            <div
+                                                                className="w-full h-12 rounded-lg mb-2"
+                                                                style={{ backgroundColor: (selectedSubmission.config as any).identitySnapshot.club.colors.secondary }}
+                                                            />
+                                                            <p className="text-[10px] text-slate-500 text-center font-mono">Secondary: {(selectedSubmission.config as any).identitySnapshot.club.colors.secondary}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-12 text-center text-slate-500 italic">
+                                                Nessun snapshot di handover disponibile per questa richiesta (vecchio formato).
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
                                 {activeTab === 'raw' && (
                                     <motion.div
                                         key="raw"
@@ -464,6 +540,39 @@ export default function SubmissionsPage() {
                                 )}
                             </AnimatePresence>
                         </div>
+
+                        {/* Mode Choice Bar */}
+                        {selectedSubmission.status === 'pending' && (
+                            <div className="px-8 py-3 bg-slate-900/50 border-t border-slate-800 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${handoffMode === 'bot' ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'}`}>
+                                        <Activity size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-wider">Metodo di Automazione</p>
+                                        <p className="text-xs text-white font-bold">Scegli come generare l'app</p>
+                                    </div>
+                                </div>
+                                <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                                    <button
+                                        onClick={() => setHandoffMode('bot')}
+                                        className={`px-4 py-2 rounded-lg text-[10px] font-black transition-all ${handoffMode === 'bot'
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                                            : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        BOT ESTERNO
+                                    </button>
+                                    <button
+                                        onClick={() => setHandoffMode('github_action')}
+                                        className={`px-4 py-2 rounded-lg text-[10px] font-black transition-all ${handoffMode === 'github_action'
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                                            : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        GITHUB ACTION (INTERNO)
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Action Bar */}
                         <div className="p-8 border-t border-slate-800 flex gap-4 bg-slate-950/80 backdrop-blur-xl">

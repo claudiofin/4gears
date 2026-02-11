@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { HandoverEngine } from '@/services/HandoverEngine';
+import { TeamConfig } from '@/constants/teams';
 
 interface SubmissionModalProps {
     isOpen: boolean;
@@ -11,10 +13,11 @@ interface SubmissionModalProps {
     projectId: string;
     projectName: string;
     config: any;
+    currentTeam: TeamConfig;
     userNotes?: string;
 }
 
-export default function SubmissionModal({ isOpen, onClose, projectId, projectName: initialProjectName, config, userNotes }: SubmissionModalProps) {
+export default function SubmissionModal({ isOpen, onClose, projectId, projectName: initialProjectName, config, currentTeam, userNotes }: SubmissionModalProps) {
     const { session } = useAuth();
     const [projectName, setProjectName] = useState(initialProjectName);
     const [notes, setNotes] = useState(userNotes || '');
@@ -57,7 +60,10 @@ export default function SubmissionModal({ isOpen, onClose, projectId, projectNam
                     notes,
                     testEmail,
                     phoneNumber: phone,
-                    config
+                    config: {
+                        ...config,
+                        identitySnapshot: HandoverEngine.generateIdentitySnapshot(currentTeam, config)
+                    }
                 })
             });
 

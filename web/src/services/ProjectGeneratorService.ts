@@ -1,6 +1,7 @@
 import { TeamConfig } from "@/constants/teams";
 import { LocalizationService } from "./LocalizationService";
 import { BrandIdentityService } from "./BrandIdentityService";
+import { HandoverEngine } from "./HandoverEngine";
 
 export const ProjectGeneratorService = {
     /**
@@ -13,8 +14,10 @@ export const ProjectGeneratorService = {
         const appTranslations = LocalizationService.generateAppTranslations(team, features);
         const storeMetadata = LocalizationService.generateStoreMetadata(team, features);
 
-        // 2. Generazione Brand Assets (AI)
+        // 2. Generazione Brand Assets (AI) & Handover Snapshot
         const brandingAssets = await BrandIdentityService.generateFullIdentity(team);
+        const identitySnapshot = HandoverEngine.generateIdentitySnapshot(team, features.themeConfig || {});
+        const agentTechnicalSheet = HandoverEngine.generateAgentTechnicalSheet(features.themeConfig || {});
 
         // 3. Struttura del progetto finale
         const projectPackage = {
@@ -30,11 +33,13 @@ export const ProjectGeneratorService = {
                 }
             },
             assets: brandingAssets,
+            identitySnapshot,
             metadata: storeMetadata,
             agentInstructions: {
-                role: "Senior React Native Developer",
+                ...agentTechnicalSheet,
                 context: `Questo è un progetto professionale per il club ${team.name}.`,
                 rules: [
+                    ...agentTechnicalSheet.coreDirectives,
                     "Mantieni la coerenza con il design system NativeWind.",
                     "Usa i DataProvider per switchare tra Mock e Real data.",
                     "Usa i18n per ogni stringa visualizzata."

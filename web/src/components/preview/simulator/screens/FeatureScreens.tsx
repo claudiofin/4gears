@@ -3,8 +3,8 @@ import { InteractiveScreenProps } from './types';
 import { SectionHeader } from './SharedComponents';
 import { PremiumCard } from '@/components/ui/PremiumCard';
 import { TacticsBoard } from '@/components/ui/TacticsBoard';
-import { Selectable } from '@/components/builder/VisualInspector';
-import { ShoppingBag, Plus, Clock, MapPin, ChevronRight, Newspaper, Calendar } from 'lucide-react';
+import { PaymentConstants, ICheckoutService, PaymentIntent } from '@/services/PaymentInterfaces';
+import { Plus, Clock, MapPin, ChevronRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { SmartCalendar } from '@/components/ui/SmartCalendar';
 
 export const NewsScreen: React.FC<InteractiveScreenProps & { getIconProps: any }> = ({
@@ -14,8 +14,7 @@ export const NewsScreen: React.FC<InteractiveScreenProps & { getIconProps: any }
     isInspectorActive,
     activeSelectionId,
     onSelect,
-    getOverride,
-    getIconProps
+    getOverride
 }) => {
     return (
         <div className="px-4 pb-24" style={{ paddingTop: `${topPaddingValue}px` }}>
@@ -52,7 +51,6 @@ export const EventsScreen: React.FC<InteractiveScreenProps & { getIconProps: any
     activeSelectionId,
     onSelect,
     getOverride,
-    getIconProps,
     mockData,
     viewMode
 }) => {
@@ -116,44 +114,110 @@ export const ShopScreen: React.FC<InteractiveScreenProps> = ({
     isInspectorActive,
     activeSelectionId,
     onSelect,
-    getOverride,
-    mockData,
-    setMockData
+    getOverride
 }) => {
+    const [isCheckoutLoading, setIsCheckoutLoading] = React.useState(false);
+    const [paymentStatus, setPaymentStatus] = React.useState<'idle' | 'success' | 'configured_missing'>('idle');
+
     const shopProducts = [
-        { id: 1, name: 'Kit Gara Home 24/25', price: '€89.90', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80' },
-        { id: 2, name: 'Sciarpa Ufficiale', price: '€19.90', image: 'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=400&q=80' },
-        { id: 3, name: 'Cappellino Team', price: '€24.90', image: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&w=400&q=80' },
-        { id: 4, name: 'Zaino Tecnico', price: '€49.90', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80' }
+        { id: 'p1', name: 'Kit Gara Home 24/25', price: 89.90, image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80' },
+        { id: 'p2', name: 'Sciarpa Ufficiale', price: 19.90, image: 'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=400&q=80' },
+        { id: 'p3', name: 'Cappellino Team', price: 24.90, image: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&w=400&q=80' },
+        { id: 'p4', name: 'Zaino Tecnico', price: 49.90, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80' }
     ];
 
-    const handleAddToCart = (product: any) => {
+    const mockCheckoutService: ICheckoutService = {
+        isConfigured: () => {
+            return !PaymentConstants.STRIPE_KEY_PLACEHOLDER.includes("ADD_YOUR");
+        },
+        getProvider: () => 'STRIPE',
+        processPayment: async (productId: string, amount: number): Promise<PaymentIntent> => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        id: `pi_${Math.random().toString(36).substr(2, 9)}`,
+                        amount,
+                        currency: 'EUR',
+                        status: 'success',
+                        provider: 'STRIPE'
+                    });
+                }, 1500);
+            });
+        }
+    };
+
+    const handleBuyNow = async (product: any) => {
         if (isInspectorActive) return;
-        setMockData?.setCart((prev: any[]) => [...prev, product]);
+
+        if (!mockCheckoutService.isConfigured()) {
+            setPaymentStatus('configured_missing');
+            setTimeout(() => setPaymentStatus('idle'), 4000);
+            return;
+        }
+
+        setIsCheckoutLoading(true);
+        try {
+            const result = await mockCheckoutService.processPayment(product.id, product.price);
+            if (result.status === 'success') {
+                setPaymentStatus('success');
+                setTimeout(() => setPaymentStatus('idle'), 3000);
+            }
+        } catch (error) {
+            console.error("Payment failed", error);
+        } finally {
+            setIsCheckoutLoading(false);
+        }
     };
 
     return (
         <div className="px-4 pb-24" style={{ paddingTop: `${topPaddingValue}px` }}>
             <SectionHeader id="shop_header" label="Titolo Shop" title="Official Store" isFirst={true} isDarkMode={isDarkMode} isInspectorActive={isInspectorActive} activeSelectionId={activeSelectionId} onSelect={onSelect} getOverride={getOverride} />
+
             <div className="grid grid-cols-2 gap-4 mt-4">
                 {shopProducts.map((product, i) => (
                     <PremiumCard key={product.id} themeConfig={themeConfig} isDarkMode={isDarkMode} className="p-0 overflow-hidden group" id={`shop_item_${i}`} isInspectorActive={isInspectorActive} isSelected={activeSelectionId === `shop_item_${i}`} onElementSelect={onSelect}>
                         <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
                             <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+
                             <button
-                                onClick={() => handleAddToCart(product)}
-                                className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-slate-900 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-110 active:scale-95 transition-all"
+                                onClick={() => handleBuyNow(product)}
+                                disabled={isCheckoutLoading}
+                                className={`absolute bottom-3 right-3 px-3 h-8 rounded-full shadow-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${isDarkMode ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-slate-900 text-white hover:bg-slate-800'
+                                    } active:scale-95 disabled:opacity-50`}
                             >
-                                <Plus size={16} />
+                                {isCheckoutLoading ? '...' : (
+                                    <>
+                                        <Plus size={12} /> Buy Now
+                                    </>
+                                )}
                             </button>
                         </div>
                         <div className="p-3">
                             <div className="text-[10px] font-black tracking-tight truncate">{product.name}</div>
-                            <div className="text-xs font-black text-indigo-500 mt-0.5">{product.price}</div>
+                            <div className="text-xs font-black text-indigo-500 mt-0.5">€{product.price.toFixed(2)}</div>
                         </div>
                     </PremiumCard>
                 ))}
             </div>
+
+            {paymentStatus === 'configured_missing' && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[85%] bg-amber-500 text-white p-4 rounded-2xl shadow-2xl z-50 flex items-start gap-3 animate-in fade-in slide-in-from-bottom-5">
+                    <AlertCircle className="shrink-0" size={18} />
+                    <div>
+                        <div className="text-xs font-black uppercase tracking-widest">Handover Ready</div>
+                        <div className="text-[10px] font-bold opacity-90 mt-1">
+                            Questo pulsante è già collegato! Per attivarlo nell'app reale, inserisci la tua chiave Stripe in `PaymentInterfaces.ts`.
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {paymentStatus === 'success' && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[80%] bg-emerald-500 text-white p-4 rounded-2xl shadow-2xl z-50 flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-5">
+                    <ShieldCheck size={20} />
+                    <div className="text-xs font-black uppercase tracking-widest">Acquisto Simulato!</div>
+                </div>
+            )}
         </div>
     );
 };

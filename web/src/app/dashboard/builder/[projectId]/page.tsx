@@ -594,6 +594,7 @@ export default function BuilderPage() {
                 projectId={projectId}
                 projectName={project?.name || 'Progetto'}
                 config={currentConfig}
+                currentTeam={currentTeam}
                 userNotes={userNotes}
             />
 
