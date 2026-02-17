@@ -289,7 +289,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                 </SimulatorLayout>
             </div>
 
-            <div className={`absolute left-[calc(100%+24px)] top-1/2 -translate-y-1/2 transition-all duration-300 w-[320px] h-[812px] bg-slate-950/95 border border-slate-800 shadow-2xl z-[100] flex flex-col rounded-[32px] overflow-hidden backdrop-blur-xl ${isInspectorActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+            <div className={`absolute right-8 top-1/2 -translate-y-1/2 transition-all duration-300 w-[320px] h-[min(812px,90%)] bg-slate-950/95 border border-slate-800 shadow-2xl z-[100] flex flex-col rounded-[32px] overflow-hidden backdrop-blur-xl ${isInspectorActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                 <FloatingInspectorPanel
                     metadata={selectedMetadata}
                     config={themeConfig}
