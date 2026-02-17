@@ -73,7 +73,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         onChange={(e) => onPersonaChange(e.target.value as UserPersona)}
                         className="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none focus:border-blue-500"
                     >
-                        {['ADMIN', 'PLAYER', 'FAN'].map(p => (
+                        {['ADMIN', 'PLAYER', 'FAN', 'COACH'].map(p => (
                             <option key={p} value={p}>{p}</option>
                         ))}
                     </select>
