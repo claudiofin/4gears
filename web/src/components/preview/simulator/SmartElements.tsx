@@ -61,7 +61,7 @@ export const SmartText: React.FC<SmartElementBaseProps & {
                     style={textStyle}
                     onClick={onClick}
                 >
-                    {overrides.content !== undefined ? overrides.content : fallback}
+                    {overrides.text !== undefined ? overrides.text : (overrides.content !== undefined ? overrides.content : fallback)}
                 </Component>
             </Selectable>
         );
