@@ -22,7 +22,8 @@ export type PropertyTrait =
     | 'icon'
     | 'interaction'
     | 'glass'
-    | 'content';
+    | 'content'
+    | 'visible';
 
 export interface EditableProperty {
     key: string;
@@ -118,5 +119,8 @@ export const TRAIT_CONFIGS: Record<PropertyTrait, Omit<EditableProperty, 'value'
     ],
     content: [
         { key: 'text', label: 'Contenuto Testo', type: 'text' },
+    ],
+    visible: [
+        { key: 'visible', label: 'Visibile', type: 'toggle' },
     ]
 };

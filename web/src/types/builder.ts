@@ -1,7 +1,7 @@
 import { SportType } from "@/constants/sports";
 
 export type AppTier = 'FREE' | 'PREMIUM' | 'ELITE';
-export type UserPersona = 'ADMIN' | 'PLAYER' | 'FAN';
+export type UserPersona = 'ADMIN' | 'PLAYER' | 'FAN' | 'COACH';
 export type ViewMode = 'USER' | 'ADMIN' | 'SPLASH' | 'LOGIN';
 export type NotchStyle = 'NONE' | 'STANDARD' | 'FLOATING';
 export type DeviceType = 'IPHONE' | 'ANDROID';
@@ -208,15 +208,22 @@ export interface RegistrationFormConfig {
 
 export type ComponentOverride = {
     textColor?: string;
+    color?: string; // Alias for textColor
     backgroundColor?: string;
-    fontSize?: string;
+    bg?: string; // Alias for backgroundColor
+    fontSize?: string | number;
     fontWeight?: string;
+    textAlign?: 'left' | 'center' | 'right' | 'justify';
+    letterSpacing?: number;
+    lineHeight?: number;
     borderColor?: string;
+    borderWidth?: number;
     text?: string; // Content override
+    content?: string; // Alias for text
     visible?: boolean;
     icon?: string; // Icon override
     customIconUrl?: string; // New: Custom asset override
-    borderRadius?: string;
+    borderRadius?: string | number;
     // Advanced Styles
     customGradientStart?: string;
     customGradientEnd?: string;
@@ -224,10 +231,10 @@ export type ComponentOverride = {
     backdropBlur?: string;
     opacity?: number;
     // Spacing & Layout
-    padding?: string;
-    margin?: string;
-    width?: string;
-    height?: string;
+    padding?: string | number;
+    margin?: string | number;
+    width?: string | number;
+    height?: string | number;
 };
 
 export type NavItem = {

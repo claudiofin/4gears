@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Settings } from 'lucide-react';
-
 import { DeviceType, NotchStyle, ViewMode, ThemeConfig, FeatureFlags } from '@/types/builder';
 import { TeamConfig } from '@/constants/teams';
-import { SPORT_CONFIG } from '@/constants/sports'; // Import SPORT_CONFIG
-import { ComponentMetadata, EditableProperty } from '@/types/inspector';
+import { SPORT_CONFIG } from '@/constants/sports';
+import { ComponentMetadata } from '@/types/inspector';
 import { FloatingInspectorPanel } from '../builder/FloatingInspectorPanel';
 import { VisualInspector } from '../builder/VisualInspector';
 import { SimulatorLayout } from './simulator/SimulatorLayout';
 import { SimulatorHeader } from './simulator/SimulatorHeader';
-import { SimulatorHero } from './simulator/SimulatorHero';
 import { SimulatorScreens } from './simulator/SimulatorScreens';
 import { SimulatorBottomNav } from './simulator/SimulatorBottomNav';
-import { BurgerMenuOverlay, ChatOverlay, NotificationsOverlay, FloatingCartButton } from './simulator/SimulatorOverlays';
+import {
+    BurgerMenuOverlay,
+    ChatOverlay,
+    NotificationsOverlay,
+    FloatingCartButton,
+    LockedFeatureOverlay
+} from './simulator/SimulatorOverlays';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
 import { MarketingStudioPanel } from '../builder/MarketingStudioPanel';
+import { FEATURE_LIMITS } from '@/lib/tierSystem';
+import { ScenarioControl } from './simulator/ScenarioControl';
 
 interface PreviewPaneProps {
     deviceType: DeviceType;
@@ -24,37 +28,27 @@ interface PreviewPaneProps {
     viewMode: ViewMode;
     themeConfig: ThemeConfig;
     currentTeam: TeamConfig;
-
     isStandalone?: boolean;
     activeSelectionId?: string | null | undefined;
-    onElementSelect: (metadata: ComponentMetadata) => void; // Matched page.tsx
+    onElementSelect: (metadata: ComponentMetadata) => void;
     onThemeUpdate: (updates: Partial<ThemeConfig>) => void;
-
     isInspectorActive: boolean;
     onInspectorClose?: () => void;
     onInspectorToggle?: () => void;
-
-    // State props from page.tsx
     activeFeatures: Record<string, boolean>;
     allFeatures: FeatureFlags;
     mockData: any;
     setMockData: any;
     previewPage: string;
     setPreviewPage: (page: string) => void;
-
-    // Role Preview Props
-    userPersona?: 'ADMIN' | 'PLAYER' | 'FAN';
+    userPersona?: 'ADMIN' | 'PLAYER' | 'FAN' | 'COACH';
     multiTeamMode?: boolean;
-
-    // Marketing Studio Props
     marketingMode?: boolean;
     marketingQuote?: string;
     marketingBg?: string;
     marketingTemplate?: '3d' | 'front';
     onMarketingUpdate?: (updates: any) => void;
-
-    // Ignored props or add if needed: appTier, userPersona, etc.
-    [key: string]: any; // Allow other props to pass through without error
+    [key: string]: any;
 }
 
 export const PreviewPane: React.FC<PreviewPaneProps> = ({
@@ -85,21 +79,19 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     onMarketingUpdate,
     multiTeamMode
 }) => {
-    // Scroll state is local
     const [isScrolled, setIsScrolled] = useState(false);
-    const [headerHeight, setHeaderHeight] = useState<number | undefined>(undefined); // Use undefined to let screens predict initially
+    const [headerHeight, setHeaderHeight] = useState<number | undefined>(undefined);
     const [showBurgerMenu, setShowBurgerMenu] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
     const [selectedMetadata, setSelectedMetadata] = useState<ComponentMetadata | null>(null);
+    const [lockedFeature, setLockedFeature] = useState<{ id: string; name: string; tier: 'PREMIUM' | 'ELITE' } | null>(null);
+    const [currentScenario, setCurrentScenario] = useState<'DEFAULT' | 'LIVE_MATCH' | 'EVENT'>('DEFAULT');
 
     const { getOverride } = useSimulatorStyles(themeConfig, isDarkMode);
-
-    // Derive SportConfig
     const sportConfig = SPORT_CONFIG[currentTeam.sportType] || SPORT_CONFIG['Calcio'];
 
-    // Reset scroll when changing pages
     useEffect(() => {
         setIsScrolled(false);
     }, [previewPage]);
@@ -111,50 +103,52 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
 
     const handleInspectorUpdate = (id: string, key: string, value: any) => {
         if (key === 'RESET') {
-            // Reset: remove overrides for this component
             const newOverrides = { ...themeConfig.componentOverrides };
             delete newOverrides[id];
             onThemeUpdate({ componentOverrides: newOverrides });
-
-            // Refresh metadata to show default values
             if (selectedMetadata && selectedMetadata.id === id) {
-                const refreshedProps = selectedMetadata.editableProps.map(prop => ({
-                    ...prop,
-                    value: '' // Reset to default
-                }));
-                setSelectedMetadata({
-                    ...selectedMetadata,
-                    editableProps: refreshedProps
-                });
+                const refreshedProps = selectedMetadata.editableProps.map(prop => ({ ...prop, value: '' }));
+                setSelectedMetadata({ ...selectedMetadata, editableProps: refreshedProps });
             }
         } else {
-            // Update specific property
             onThemeUpdate({
                 componentOverrides: {
                     ...themeConfig.componentOverrides,
-                    [id]: {
-                        ...themeConfig.componentOverrides[id],
-                        [key]: value
-                    }
+                    [id]: { ...themeConfig.componentOverrides[id], [key]: value }
                 }
             });
-
-            // Update local metadata state to keep values in sync (Critical for text inputs)
             if (selectedMetadata && selectedMetadata.id === id) {
                 const refreshedProps = selectedMetadata.editableProps.map(prop =>
                     prop.key === key ? { ...prop, value } : prop
                 );
-                setSelectedMetadata({
-                    ...selectedMetadata,
-                    editableProps: refreshedProps
-                });
+                setSelectedMetadata({ ...selectedMetadata, editableProps: refreshedProps });
             }
         }
     };
 
+    const handleLockedAction = (featureId: string, featureName: string) => {
+        const requirement = FEATURE_LIMITS[featureId];
+        if (requirement) {
+            setLockedFeature({
+                id: featureId,
+                name: featureName,
+                tier: requirement.minTier as 'PREMIUM' | 'ELITE'
+            });
+        }
+    };
+
+
+    const rolePreviewMap = {
+        'ADMIN': 'admin',
+        'PLAYER': 'athlete',
+        'COACH': 'coach',
+        'FAN': 'fan'
+    } as const;
+
+    const currentRolePreview = userPersona ? rolePreviewMap[userPersona] : null;
+
     return (
         <div className={`relative w-full h-full ${isStandalone ? 'bg-black' : 'bg-[#020617]'} overflow-hidden transition-colors duration-300 flex items-center justify-center`}>
-            {/* Simulator + Inspector Container */}
             <div className={`relative flex items-center justify-center ${isStandalone ? 'p-0 w-full h-full' : 'p-4'}`}>
                 <SimulatorLayout
                     isStandalone={isStandalone}
@@ -168,19 +162,18 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     marketingQuote={marketingQuote}
                     marketingBg={marketingBg}
                     marketingTemplate={marketingTemplate}
-                    rolePreview={
-                        userPersona === 'ADMIN' ? 'admin' :
-                            userPersona === 'PLAYER' ? 'athlete' :
-                                userPersona === 'FAN' ? 'fan' : null
-                    }
+                    rolePreview={currentRolePreview as any}
                     inspector={
-                        onInspectorToggle && (
-                            <VisualInspector
-                                isActive={isInspectorActive}
-                                onToggle={onInspectorToggle}
-                                activeSelectionId={activeSelectionId ?? null}
-                            />
-                        )
+                        <div className="flex items-center gap-4">
+                            {onInspectorToggle && (
+                                <VisualInspector
+                                    isActive={isInspectorActive}
+                                    onToggle={onInspectorToggle}
+                                    activeSelectionId={activeSelectionId ?? null}
+                                />
+                            )}
+                            <ScenarioControl current={currentScenario} onChange={setCurrentScenario} />
+                        </div>
                     }
                     header={
                         previewPage !== 'splash' && previewPage !== 'login' && (
@@ -201,15 +194,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 onChatClick={() => setIsChatOpen(true)}
                                 onNotificationsClick={() => setIsNotificationsOpen(true)}
                                 onBackClick={() => setPreviewPage('home')}
-                                canGoBack={
-                                    previewPage !== 'home' &&
-                                    themeConfig.navigationType === 'header_tabs'
-                                }
-                                pageTitle={
-                                    previewPage === 'home'
-                                        ? 'Home'
-                                        : (previewPage || '').charAt(0).toUpperCase() + (previewPage || '').slice(1)
-                                }
+                                canGoBack={previewPage !== 'home' && themeConfig.navigationType === 'header_tabs'}
+                                pageTitle={previewPage === 'home' ? 'Home' : (previewPage || '').charAt(0).toUpperCase() + (previewPage || '').slice(1)}
                                 viewMode={viewMode}
                                 previewPage={previewPage}
                                 setPreviewPage={setPreviewPage}
@@ -230,11 +216,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 activeSelectionId={activeSelectionId}
                                 onSelect={handleElementClick}
                                 isStandalone={isStandalone}
-                                rolePreview={
-                                    userPersona === 'ADMIN' ? 'admin' :
-                                        userPersona === 'PLAYER' ? 'athlete' :
-                                            userPersona === 'FAN' ? 'fan' : null
-                                }
+                                rolePreview={currentRolePreview as any}
                             />
                         )
                     }
@@ -252,14 +234,12 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 activeSelectionId={activeSelectionId}
                                 onSelect={handleElementClick}
                             />
-
                             <NotificationsOverlay
                                 isOpen={isNotificationsOpen}
                                 onClose={() => setIsNotificationsOpen(false)}
                                 notifications={mockData.notifications || []}
                                 isDarkMode={isDarkMode}
                             />
-
                             <ChatOverlay
                                 isOpen={isChatOpen}
                                 onClose={() => setIsChatOpen(false)}
@@ -273,6 +253,13 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                                 count={mockData.cart?.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0) || 0}
                                 onClick={() => { }}
                                 currentTeam={currentTeam}
+                            />
+                            <LockedFeatureOverlay
+                                isOpen={!!lockedFeature}
+                                onClose={() => setLockedFeature(null)}
+                                tierRequired={lockedFeature?.tier || 'PREMIUM'}
+                                featureName={lockedFeature?.name || ''}
+                                isDarkMode={isDarkMode}
                             />
                         </>
                     }
@@ -295,35 +282,31 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                         headerHeight={headerHeight}
                         deviceType={deviceType}
                         multiTeamMode={multiTeamMode}
-                        rolePreview={
-                            userPersona === 'ADMIN' ? 'admin' :
-                                userPersona === 'PLAYER' ? 'athlete' :
-                                    userPersona === 'FAN' ? 'fan' : null
-                        }
+                        onLockedAction={handleLockedAction}
+                        rolePreview={currentRolePreview as any}
+                        currentScenario={currentScenario}
                     />
                 </SimulatorLayout>
+            </div>
 
-                {/* Unified Inspector Panel */}
-                <div className={`absolute left-[calc(100%+24px)] top-1/2 -translate-y-1/2 transition-all duration-300 w-[320px] h-[812px] bg-slate-950/95 border border-slate-800 shadow-2xl z-[100] flex flex-col rounded-[32px] overflow-hidden backdrop-blur-xl ${isInspectorActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <FloatingInspectorPanel
-                        metadata={selectedMetadata}
-                        config={themeConfig}
-                        onUpdate={handleInspectorUpdate}
-                        onClose={onInspectorClose || (() => { })}
-                    />
-                </div>
-
-                {/* Marketing Studio Panel */}
-                <MarketingStudioPanel
-                    isOpen={!!marketingMode}
-                    onClose={() => onMarketingUpdate?.({ mode: false })}
-                    quote={marketingQuote || ''}
-                    bg={marketingBg || ''}
-                    template={marketingTemplate || '3d'}
-                    currentTeam={currentTeam}
-                    onUpdate={onMarketingUpdate || (() => { })}
+            <div className={`absolute left-[calc(100%+24px)] top-1/2 -translate-y-1/2 transition-all duration-300 w-[320px] h-[812px] bg-slate-950/95 border border-slate-800 shadow-2xl z-[100] flex flex-col rounded-[32px] overflow-hidden backdrop-blur-xl ${isInspectorActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <FloatingInspectorPanel
+                    metadata={selectedMetadata}
+                    config={themeConfig}
+                    onUpdate={handleInspectorUpdate}
+                    onClose={onInspectorClose || (() => { })}
                 />
             </div>
+
+            <MarketingStudioPanel
+                isOpen={!!marketingMode}
+                onClose={() => onMarketingUpdate?.({ mode: false })}
+                quote={marketingQuote || ''}
+                bg={marketingBg || ''}
+                template={marketingTemplate || '3d'}
+                currentTeam={currentTeam}
+                onUpdate={onMarketingUpdate || (() => { })}
+            />
         </div>
     );
 };

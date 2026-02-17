@@ -51,6 +51,17 @@ export const AdminPersonasScreen: React.FC<InteractiveScreenProps> = ({
                 { id: 'view_own_data', label: 'Profilo Personalizzato', enabled: true },
             ]
         },
+        {
+            id: 'COACH',
+            name: 'Coach / Allenatore',
+            users: 8,
+            description: 'Gestione tecnica della squadra e convocazioni.',
+            color: 'text-blue-400 bg-blue-500/10',
+            permissions: [
+                { id: 'manage_team', label: 'Gestione Convocazioni', enabled: true },
+                { id: 'edit_content', label: 'Caricamento Video Tattici', enabled: true },
+            ]
+        },
     ]);
 
     const [selectedPersona, setSelectedPersona] = useState<any>(null);

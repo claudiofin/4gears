@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Info, Shield, Award, CheckCheck, Plus, Send, X, Edit2, Search, User, LogOut, Settings, Bell, Layout, CreditCard, HelpCircle, FileText, ChevronRight, Calendar, Users, ShoppingBag, Video, Gauge, BookOpen, Music, MessageSquare, Menu } from 'lucide-react';
+import { ArrowLeft, Info, Shield, Award, CheckCheck, Plus, Send, X, Edit2, Search, User, LogOut, Settings, Bell, Layout, CreditCard, HelpCircle, FileText, ChevronRight, Calendar, Users, ShoppingBag, Video, Gauge, BookOpen, Music, MessageSquare, Menu, Lock } from 'lucide-react';
 import { NavItem, ThemeConfig } from '@/types/builder';
 import { TeamConfig } from '@/constants/teams';
 import { useSimulatorStyles } from '@/hooks/useSimulatorStyles';
@@ -501,3 +501,71 @@ export const FloatingCartButton: React.FC<FloatingCartButtonProps> = ({
         </AnimatePresence>
     );
 };
+// --- Locked Feature Overlay (Paywall Simulator) ---
+
+interface LockedFeatureOverlayProps {
+    isOpen: boolean;
+    onClose: () => void;
+    tierRequired: 'PREMIUM' | 'ELITE';
+    featureName: string;
+    isDarkMode: boolean;
+}
+
+export const LockedFeatureOverlay: React.FC<LockedFeatureOverlayProps> = ({
+    isOpen, onClose, tierRequired, featureName, isDarkMode
+}) => (
+    <AnimatePresence>
+        {isOpen && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/40 backdrop-blur-md"
+            >
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className={`w-full max-w-sm rounded-[2.5rem] p-8 text-center relative overflow-hidden border ${isDarkMode ? 'bg-slate-900 border-white/10' : 'bg-white border-slate-200 shadow-2xl'
+                        }`}
+                >
+                    {/* Decorative background */}
+                    <div className="absolute -top-12 -right-12 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full" />
+
+                    <div className="relative z-10">
+                        <div className="w-20 h-20 rounded-[2rem] bg-indigo-500/10 flex items-center justify-center mb-6 mx-auto">
+                            <Lock size={32} className="text-indigo-500" />
+                        </div>
+
+                        <div className="px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase tracking-widest inline-block mb-4">
+                            Feature {tierRequired}
+                        </div>
+
+                        <h2 className="text-2xl font-black mb-3 tracking-tight leading-tight">
+                            {featureName} <br /> <span className="text-slate-500">non disponibile</span>
+                        </h2>
+
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed mb-10">
+                            Questa funzionalità richiede un abbonamento <span className="text-indigo-500 font-bold">{tierRequired}</span> per il club.
+                        </p>
+
+                        <div className="space-y-3">
+                            <button
+                                onClick={onClose}
+                                className="w-full py-4 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-95 transition-all"
+                            >
+                                Passa a {tierRequired}
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-400 transition-colors"
+                            >
+                                Maggiori Informazioni
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+            </motion.div>
+        )}
+    </AnimatePresence>
+);

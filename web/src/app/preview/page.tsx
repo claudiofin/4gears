@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 
-export default function PreviewLandingPage() {
+function PreviewLandingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialCode = searchParams.get('code') || '';
@@ -58,7 +58,7 @@ export default function PreviewLandingPage() {
     };
 
     return (
-        <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center p-6 select-none overflow-hidden">
+        <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center p-6 select-none overflow-hidden text-slate-100">
             {/* Background Effects */}
             <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
 
@@ -83,8 +83,8 @@ export default function PreviewLandingPage() {
                             <div
                                 key={i}
                                 className={`w-12 h-16 rounded-2xl border-2 flex items-center justify-center text-2xl font-black transition-all duration-300 ${code[i]
-                                    ? 'bg-white text-slate-950 border-white shadow-xl scale-105'
-                                    : 'bg-slate-900/50 border-slate-800 text-slate-700'
+                                        ? 'bg-white text-slate-950 border-white shadow-xl scale-105'
+                                        : 'bg-slate-900/50 border-slate-800 text-slate-700'
                                     }`}
                             >
                                 {code[i] || ''}
@@ -139,5 +139,17 @@ export default function PreviewLandingPage() {
                 </p>
             </motion.div>
         </div>
+    );
+}
+
+export default function PreviewLandingPage() {
+    return (
+        <Suspense fallback={
+            <div className="fixed inset-0 bg-slate-950 flex items-center justify-center">
+                <Loader2 className="text-indigo-500 animate-spin" size={32} />
+            </div>
+        }>
+            <PreviewLandingContent />
+        </Suspense>
     );
 }

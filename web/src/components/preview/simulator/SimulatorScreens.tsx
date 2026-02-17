@@ -11,6 +11,8 @@ import { HomeScreen } from './screens/HomeScreen';
 import { AdminDashboardScreen } from './screens/AdminDashboardScreen';
 import { SecretariatScreen, FederationToolsScreen } from './screens/ManagementScreens';
 import { AthleteDashboardScreen } from './screens/AthleteDashboardScreen';
+import { CoachDashboardScreen } from './screens/CoachDashboardScreen';
+import { FanDashboardScreen } from './screens/FanDashboardScreen';
 import { NewsScreen, EventsScreen, ShopScreen, SponsorsScreen, ChantsScreen, RosterScreen } from './screens/FeatureScreens';
 import { MatchDetailScreen } from './screens/MatchDetailScreen';
 import { SplashScreen } from './screens/SplashScreen';
@@ -36,9 +38,11 @@ interface SimulatorScreensProps {
     headerHeight?: number;
     deviceType?: DeviceType;
     multiTeamMode?: boolean;
-    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | 'coach' | null;
     isStandalone?: boolean;
     featureFlags?: FeatureFlags;
+    onLockedAction?: (featureId: string, featureName: string) => void;
+    currentScenario?: 'DEFAULT' | 'LIVE_MATCH' | 'EVENT';
 }
 
 export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
@@ -125,7 +129,9 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
         deviceType,
         onViewModeChange,
         viewMode,
-        featureFlags
+        featureFlags,
+        onLockedAction: props.onLockedAction,
+        currentScenario: props.currentScenario
     };
 
     const renderContent = () => {
@@ -146,6 +152,10 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
 
         switch (currentPage) {
             case 'home':
+                // Role-based Home Screens
+                if (rolePreview === 'athlete') return <AthleteDashboardScreen {...screenProps} />;
+                if (rolePreview === 'coach') return <CoachDashboardScreen {...screenProps} />;
+                if (rolePreview === 'fan') return <FanDashboardScreen {...screenProps} />;
                 return <HomeScreen {...screenProps} />;
             case 'menu':
                 return <MenuScreen {...screenProps} />;
@@ -162,6 +172,10 @@ export const SimulatorScreens: React.FC<SimulatorScreensProps> = (props) => {
                 return <ChantsScreen {...screenProps} />;
             case 'roster':
                 return <RosterScreen {...screenProps} />;
+            case 'training':
+                return <AthleteDashboardScreen {...screenProps} initialTab="training" />;
+            case 'nutrition':
+                return <AthleteDashboardScreen {...screenProps} initialTab="nutrition" />;
             case 'match_detail':
                 return <MatchDetailScreen {...screenProps} />;
             case 'admin_secretariat':

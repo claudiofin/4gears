@@ -20,6 +20,9 @@ export interface InteractiveScreenProps extends BaseScreenProps {
     mockData: any;
     setMockData: any;
     sportConfig: SportConfig;
-    rolePreview?: 'athlete' | 'fan' | 'admin' | null;
+    rolePreview?: 'athlete' | 'fan' | 'admin' | 'coach' | null;
     viewMode: ViewMode;
+    onLockedAction?: (featureId: string, featureName: string) => void;
+    currentScenario?: 'DEFAULT' | 'LIVE_MATCH' | 'EVENT';
+    initialTab?: string;
 }
