@@ -39,6 +39,8 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
 }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const tokens = getDesignTokens(isDarkMode ? 'dark' : 'light', themeConfig);
+    const componentId = 'smart_calendar';
+    const overrides = themeConfig.componentOverrides?.[componentId] || {};
 
     // --- CALENDAR LOGIC ---
     const days = useMemo(() => {
@@ -55,26 +57,34 @@ export const SmartCalendar: React.FC<SmartCalendarProps> = ({
     // --- STYLES ---
     const isFloating = themeConfig.cardStyle === 'glass' || themeConfig.cardStyle === 'minimal';
 
+    const isTailwindClass = (val: any) => typeof val === 'string' && val.startsWith('rounded');
+    const borderRadiusClass = (overrides.borderRadius && isTailwindClass(overrides.borderRadius))
+        ? overrides.borderRadius
+        : (themeConfig.borderRadius === 'full' ? 'rounded-3xl' :
+            themeConfig.borderRadius === 'none' ? 'rounded-none' :
+                themeConfig.borderRadius === 'sm' ? 'rounded-sm' :
+                    themeConfig.borderRadius === 'md' ? 'rounded-md' :
+                        themeConfig.borderRadius === 'lg' ? 'rounded-lg' :
+                            'rounded-xl');
+
     return (
         <Selectable
-            id="smart_calendar"
+            id={componentId}
             type="card"
             label="Calendario"
             isInspectorActive={isInspectorActive}
-            isSelected={activeSelectionId === 'smart_calendar'}
+            isSelected={activeSelectionId === componentId}
             onSelect={onElementSelect || (() => { })}
+            overrides={overrides}
             className={`w-full p-4 transition-all duration-300 relative overflow-hidden
                 ${isFloating ? 'shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm'}
-                ${themeConfig.borderRadius === 'full' ? 'rounded-3xl' :
-                    themeConfig.borderRadius === 'none' ? 'rounded-none' :
-                        themeConfig.borderRadius === 'sm' ? 'rounded-sm' :
-                            themeConfig.borderRadius === 'md' ? 'rounded-md' :
-                                themeConfig.borderRadius === 'lg' ? 'rounded-lg' :
-                                    'rounded-xl'}
+                ${borderRadiusClass}
                 ${themeConfig.cardStyle === 'glass' ? 'backdrop-blur-md bg-white/40 dark:bg-slate-900/40 border border-white/20' : ''}
             `}
             style={{
-                fontFamily: themeConfig.fontFamily
+                fontFamily: themeConfig.fontFamily,
+                backgroundColor: overrides.backgroundColor || overrides.bg || undefined,
+                borderColor: overrides.borderColor || undefined,
             }}
             traits={['background', 'border', 'spacing', 'glass']}
         >

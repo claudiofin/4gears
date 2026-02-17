@@ -25,11 +25,19 @@ export const SmartText: React.FC<SmartElementBaseProps & {
 }) => {
         const Component = as;
 
+        // Separate overrides into styles and classes
+        const isTailwindClass = (val: any) => typeof val === 'string' && (val.startsWith('text-') || val.startsWith('font-'));
+
+        const overrideClasses = [
+            overrides.fontSize && isTailwindClass(overrides.fontSize) ? overrides.fontSize : '',
+            overrides.fontWeight && isTailwindClass(overrides.fontWeight) ? overrides.fontWeight : '',
+            overrides.textAlign ? `text-${overrides.textAlign}` : ''
+        ].filter(Boolean).join(' ');
+
         const textStyle: React.CSSProperties = {
-            color: overrides.color || undefined,
-            fontSize: overrides.fontSize !== undefined ? (typeof overrides.fontSize === 'number' ? `${overrides.fontSize}px` : overrides.fontSize) : undefined,
-            fontWeight: overrides.fontWeight || undefined,
-            textAlign: overrides.textAlign || undefined,
+            color: overrides.textColor || overrides.color || undefined,
+            fontSize: overrides.fontSize && !isTailwindClass(overrides.fontSize) ? (typeof overrides.fontSize === 'number' ? `${overrides.fontSize}px` : overrides.fontSize) : undefined,
+            fontWeight: overrides.fontWeight && !isTailwindClass(overrides.fontWeight) ? overrides.fontWeight : undefined,
             letterSpacing: overrides.letterSpacing !== undefined ? `${overrides.letterSpacing}px` : undefined,
             lineHeight: overrides.lineHeight !== undefined ? overrides.lineHeight : undefined,
             opacity: overrides.visible === false ? 0.3 : (overrides.opacity !== undefined ? overrides.opacity : undefined),
@@ -46,10 +54,10 @@ export const SmartText: React.FC<SmartElementBaseProps & {
                 isSelected={isSelected}
                 onSelect={onSelect}
                 overrides={overrides}
-                className={className}
+                className={`${className} ${overrideClasses}`}
             >
                 <Component
-                    className={className}
+                    className={`${className} ${overrideClasses}`}
                     style={textStyle}
                     onClick={onClick}
                 >
@@ -69,13 +77,22 @@ export const SmartCard: React.FC<SmartElementBaseProps & {
 }> = ({
     id, label, type, traits, isInspectorActive, isSelected, onSelect, overrides = {}, children, className = "", onClick, isInteractive, style = {}
 }) => {
+        // Separate overrides into styles and classes
+        const isTailwindClass = (val: any) => typeof val === 'string' && (val.startsWith('rounded') || val.startsWith('backdrop-blur'));
+
+        const overrideClasses = [
+            overrides.borderRadius && isTailwindClass(overrides.borderRadius) ? overrides.borderRadius : '',
+            overrides.backdropBlur ? overrides.backdropBlur : '',
+        ].filter(Boolean).join(' ');
+
         const cardStyle: React.CSSProperties = {
-            backgroundColor: overrides.bg || undefined,
+            backgroundColor: overrides.backgroundColor || overrides.bg || undefined,
             borderColor: overrides.borderColor || undefined,
             borderWidth: overrides.borderWidth !== undefined ? `${overrides.borderWidth}px` : undefined,
-            padding: overrides.padding !== undefined ? `${overrides.padding}px` : undefined,
-            borderRadius: overrides.borderRadius !== undefined ? `${overrides.borderRadius}px` : undefined,
+            padding: overrides.padding !== undefined ? (typeof overrides.padding === 'number' ? `${overrides.padding}px` : overrides.padding) : undefined,
+            borderRadius: overrides.borderRadius && !isTailwindClass(overrides.borderRadius) ? `${overrides.borderRadius}px` : undefined,
             opacity: overrides.visible === false ? 0.3 : (overrides.opacity !== undefined ? overrides.opacity : undefined),
+            backgroundImage: overrides.backgroundImage ? `url(${overrides.backgroundImage})` : undefined,
             ...style
         };
 
@@ -89,10 +106,10 @@ export const SmartCard: React.FC<SmartElementBaseProps & {
                 isSelected={isSelected}
                 onSelect={onSelect}
                 overrides={overrides}
-                className={className}
+                className={`${className} ${overrideClasses}`}
             >
                 <div
-                    className={`${className} ${isInteractive ? 'cursor-pointer active:scale-[0.98] transition-all' : ''}`}
+                    className={`${className} ${overrideClasses} ${isInteractive ? 'cursor-pointer active:scale-[0.98] transition-all' : ''}`}
                     style={cardStyle}
                     onClick={onClick}
                 >
